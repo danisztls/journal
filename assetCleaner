@@ -1,0 +1,2 @@
+#!/bin/bash
+# Checks the files in 'Notas' associated assets dir for non-sourced files and move them to a separate dir for manual review.

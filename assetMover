@@ -1,0 +1,5 @@
+#!/bin/bash
+# Moves the inputted file to the 'Notas' associated assets dir and copy to clipboard the markdown code to source it. 
+mv $1 ~/Notas/.assets/;
+echo -e "[$1](.assets/$1)" | xclip -selection clipboard
+

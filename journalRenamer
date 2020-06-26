@@ -1,0 +1,18 @@
+#!/bin/bash
+# Modifica uma nota exportada pelo Joplin, substituindo o título na primeira linha pelo respectivo cabeçalho YAML. Além disso substitui o nome do arquivo pela data de criação no padrão: "%y-%m-%d".
+
+for f in `ls *.md`;
+do
+	title=`sed -n 1p $f`;
+	date=${title:6:2}-${title:3:2}-${title:0:2};
+
+	if [ $title == "---" ];
+	then
+		echo "$f is already formatted!";
+	else
+		sed 1,2d $f | sed "1s?^?---\ntitle: $title\ntags: [journal]\ndate: $date\n---\n\n?" > $date.md; # had to change delimiter to '?'
+		mv $f ~/.local/share/Trash/files/;
+		echo "$f was done!";
+	fi
+done
+
