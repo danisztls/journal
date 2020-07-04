@@ -1,8 +1,3 @@
----
-title: Formatação Markdown
-tags: [misc]
----
-
 # Markdown
 [markdown-cheatsheet.pdf](../.assets//c39b2f242884473b86c778ea9c274382.pdf)
 

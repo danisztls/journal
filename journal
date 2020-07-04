@@ -1,50 +1,71 @@
 #!/bin/bash
-root=$HOME/Workshop
-todo=$root/journal/todo.txt
-baseline=$root/journal/baseline.txt
-journal=$root/journal/journal.txt
+root="$HOME/Workshop"
+todo="$root/journal/todo.txt"
+baseline="$root/journal/baseline.txt"
+buffer="$root/journal/buffer.txt"
+journal="$root/journal/journal.txt"
+categories=("ASAP" "TODO" "WAIT" "ROUTINE" "LATER")
 
-[ $1 ] || (echo -e "HELP:
-\t'show' will print the tasks in screen;
-\t'refresh' will save the tasks to a file;
-\t'commit' will parse the delta of tasks between now and the past." && exit)
+[ "$1" ] || (echo -e "HELP:
+\t'--show' will print the tasks in screen;
+\t'--refresh' will save the tasks to a file;
+\t'--diff' will print the changes in the backlog between now and past;
+\t'--commit' will save the changes to the journal." && exit)
 
-cd "$root" || exit # root dir to all notes
-
-function printTasks { # type=word color=bool
-	if [ $2 ]; then
-		echo -e "\n\e[1;34m====$1===="
-		rg -p -N -t md -g '!journal/*' $1:
-	else
-		echo -e "\n====$1===="
-		rg -N -t md -g '!journal/*' $1:
-	fi
+function printTasks { # $type=string $pretty=bool
+       if [ "$2" ]; then
+              echo -e "\n\e[1;34m====$1===="
+              rg -p -N -t md -g '!journal/*' "$1: "
+       else
+              rg -N -t md -g '!journal/*' "$1: "
+       fi
 }
 
-function showTasks() { # color=bool
-	printTasks ASAP $1
-	printTasks TODO $1
-	printTasks WAIT $1
-	printTasks ROUTINE $1
-	printTasks LATER $1
+function showTasks() { # $pretty=bool
+	for c in "${categories[@]}"; do
+		printTasks "$c" "$1"
+	done
+}
+
+function sanitize { # $file=file
+	sed -i '/^$/d;s/\x1b\[[0-9;]*m//g;s/\r//' "$1"
+	sed -i 's/ASAP: //;s/TODO: //;s/WAIT: //;s/ROUTINE: //;s/LATER: //' "$1"
+	sort "$1" -o "$1"
+}
+
+function sanitizeLight { # $file=file
+	sed -i '/^$/d;s/\x1b\[[0-9;]*m//g;s/\r//' "$1"
 }
 
 function refreshTasks() { # $todo=file
 	showTasks > "$1"
-} 
-
-function commitDelta() { # $todo=file $baseline=file $journal=file
-	refreshTasks > "$1"
-	echo -e "\n====$(date "+%d de %B de %Y")====\n" >> "$3"
-	diff "$1" "$2" | tee "$3"
-	mv "$1" "$2"
+	sanitize "$1"
 }
 
-[ -f $baseline ] || refreshTasks "$baseline" # create $baseline if it doesn't exist
+function showDiff() { # $todo=file $baseline=file
+	refreshTasks "$1"
+	sanitize "$1" && sanitize "$2"
+	echo -e "\e[1m====$(date "+%d de %B de %Y às %H:%M")===="
+	echo -e "\e[32m" && comm -23 "$1" "$2" | sed 's/^/+/' 
+	echo -e "\e[31m" && comm -13 "$1" "$2" | sed 's/^/-/'
+	echo -e "\n\e[1;34m+\t-\t=" && comm -123 --total "$1" "$2"
+}
+
+function commitDiff() { # $todo=file $baseline=file $buffer=file $journal=file
+	showDiff "$1" "$2" > "$3" && sanitizeLight "$3"
+	$EDITOR "$3" &&	cat "$3" >> "$4"
+	rm "$3" && mv "$1" "$2"
+}
+
+cd "$root" || (echo "Workshop dir don't exist." && exit) # root dir where all notes are
+
+[ -f "$baseline" ] || refreshTasks "$baseline" # create baseline if it doesn't exist
+[ -f "$todo" ] || refreshTasks "$todo" # create todo if it doesn't exist
 	
 case $1 in
-	show) showTasks true | less -R;;
-	refresh) refreshTasks "$todo";;
-	commit) commitTasks "$todo" "$baseline" "$journal";; 
+	--show) showTasks true | less -R;;
+	--refresh) refreshTasks "$todo";;
+	--diff) showDiff "$todo" "$baseline";;
+	--commit) commitDiff "$todo" "$baseline" "$buffer" "$journal";; 
 esac
 
