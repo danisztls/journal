@@ -1,0 +1,50 @@
+#!/bin/bash
+root=$HOME/Workshop
+todo=$root/journal/todo.txt
+baseline=$root/journal/baseline.txt
+journal=$root/journal/journal.txt
+
+[ $1 ] || (echo -e "HELP:
+\t'show' will print the tasks in screen;
+\t'refresh' will save the tasks to a file;
+\t'commit' will parse the delta of tasks between now and the past." && exit)
+
+cd "$root" || exit # root dir to all notes
+
+function printTasks { # type=word color=bool
+	if [ $2 ]; then
+		echo -e "\n\e[1;34m====$1===="
+		rg -p -N -t md -g '!journal/*' $1:
+	else
+		echo -e "\n====$1===="
+		rg -N -t md -g '!journal/*' $1:
+	fi
+}
+
+function showTasks() { # color=bool
+	printTasks ASAP $1
+	printTasks TODO $1
+	printTasks WAIT $1
+	printTasks ROUTINE $1
+	printTasks LATER $1
+}
+
+function refreshTasks() { # $todo=file
+	showTasks > "$1"
+} 
+
+function commitDelta() { # $todo=file $baseline=file $journal=file
+	refreshTasks > "$1"
+	echo -e "\n====$(date "+%d de %B de %Y")====\n" >> "$3"
+	diff "$1" "$2" | tee "$3"
+	mv "$1" "$2"
+}
+
+[ -f $baseline ] || refreshTasks "$baseline" # create $baseline if it doesn't exist
+	
+case $1 in
+	show) showTasks true | less -R;;
+	refresh) refreshTasks "$todo";;
+	commit) commitTasks "$todo" "$baseline" "$journal";; 
+esac
+
