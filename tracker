@@ -1,0 +1,45 @@
+#!/bin/bash
+root="$HOME/Workshop/source"
+now="$root/journal-now"
+past="$root/journal-past"
+cats="FIXME TODO"
+
+[ "$1" ] || (echo -e "HELP:
+\t'--show' will print the todos in screen;
+\t'--refresh' will save the todos to a file." && exit)
+
+function printTodos { # $type=string $pretty=bool
+       if [ "$2" ]; then
+	      rg -p -N -g '!*.md' -g '!journal-*' "$1:" | sed "s/^.*$1:/$1:/"
+       else
+	      rg -N -g '!*.md' -g '!journal-*' "$1:" | sed "s/:.*$1:/:/"
+       fi
+}
+
+function showTodos() { # $cats=string $pretty=bool
+	IFS=" " read -r -a c <<< "$cats"
+	for i in "${c[@]}"; do
+		printTodos "$i" "$2"
+	done
+}
+
+function sanitizeAll { # $file=file
+	sed -i '/`/d' "$1" # delete lines that start with `
+	sed -i '/^$/d;s/\x1b\[[0-9;]*m//g;s/\r//' "$1" # remove colors and misc
+	sort "$1" -o "$1" # sort alphabetically
+}
+
+function refreshTodos() { # $cats=string $now=file
+	showTodos "$1" > "$2"
+	sanitizeAll "$2"
+}
+
+mkdir -p "$root" && cd "$root" || exit # create root dir if it doesn't exist
+[ -f "$now" ] || refreshTodos "$cats" "$now" # create todo if it doesn't exist
+[ -f "$past" ] || refreshTodos "$cats" "$past" # create baseline if it doesn't exist
+
+case $1 in
+	--show) showTodos "$cats" true | less -R;;
+	--refresh) refreshTodos "$cats" "$now";;
+esac
+

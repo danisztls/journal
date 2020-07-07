@@ -52,6 +52,19 @@ LATER: Implement a task notification functionality using libnotify.
 
 LATER: Discuss how tasks can be scheduled to calendar.
 
+# Tracker
+Tracker is a spinoff of Journal aimed at helping teams or individuals manage their software development tasks.
+
+Journal is lacking the ability to reorder tasks in the backlog into a prioritized list, to assign owners and deadlines. Most project management solutions for an understandable but not adequate reason overengineer these functions into big and complex frontend/backend systems. While those have a long list of functionalities and a pretty interface they are a pain in the ass. Development should't be managed from a ivory tower but from the code itself and that's the value delivered by this tool: project management in the code itself with a git like tool.
+
+I propose a natural language syntax to assign deadlines and owners to the tasks:
+
+`TODO: Do something @owner lobocnz @until 10/07 @id I2 @tag frontend`
+
+TODO: Adapt Journal script to the Tracker scope.
+
+LATER: Develop the extended syntax functionality.
+
 # Eudaemon
 Eudaemon is the greek concept of good guardian spirit. It aids the user in seeing clearly his actions and avoiding unhealthy habits like being sitted in the computer for a long period of time.
 

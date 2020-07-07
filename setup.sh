@@ -5,3 +5,4 @@ bin="$HOME/.local/bin"
 
 cp journal "$bin/journal"
 cp cleaner "$bin/cleaner"
+
