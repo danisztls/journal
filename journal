@@ -3,7 +3,6 @@ root="$HOME/Workshop"
 now="$root/journal-now"
 past="$root/journal-past"
 hist="$root/journal-history"
-cats="ASAP TODO WAIT ROUTINE LATER"
 buffer="/tmp/$USER/journal-buffer"
 
 [ "$1" ] || (echo -e "HELP:
@@ -11,70 +10,64 @@ buffer="/tmp/$USER/journal-buffer"
 \t'diff' will print the changes in the backlog between now and past;
 \t'commit' will save the changes to the history file and git commit." && exit)
 
-function printTasks { # $type=string $pretty=bool
-       if [ "$2" ]; then
-              echo -e "\n\e[1;34m$1"
-              rg -p -N -t md -g '!journal-*' "$1: "
-       else
-              rg -N -t md -g '!journal-*' "$1: "
-       fi
+# Future Options
+# git_hook = true
+
+# Colors
+normal=$(printf '\033[0m')
+bold_blue=$(printf '\033[1;34m')
+red=$(printf '\033[31m')
+green=$(printf '\033[32m')
+
+function printTasks {
+	rg -N -t md -g '!journal-*' -e "^TODO:.*\+asap.*$"
+	rg -N -t md -g '!journal-*' -e "^TODO:.[^\+]*$"
+	rg -N -t md -g '!journal-*' -e "^TODO:.*\+later.*$"
 }
 
-# TODO: Exclude ignore file from search
-
-function showTasks() { # $cats=string $pretty=bool
-	IFS=" " read -r -a c <<< "$cats"
-	for i in "${c[@]}"; do
-		printTasks "$i" "$2"
-	done
+function sanitize {
+	sed '/^$/d;s/\x1b\[[0-9;]*m//g;s/\r//;s/TODO://'
 }
 
-function sanitizeColors { # $file=file
-	sed -i '/^$/d;s/\x1b\[[0-9;]*m//g;s/\r//' "$1"
+function prettify {
+	sed 's/:/\n/' | awk '!x[$0]++' | sed "s/^.*\.md$/\n${bold_blue}&${normal}/"	
+} 
+
+function refreshTasks() { # $todo=file
+	printTasks | sanitize | sort -o "$1"
 }
 
-function sanitizeAll { # $file=file
-	sed -i '/^$/d;s/\x1b\[[0-9;]*m//g;s/\r//' "$1" # remove colors and misc
-	sed -i 's/ASAP://;s/TODO://;s/WAIT://;s/ROUTINE://;s/LATER://' "$1" # remove the task code
-	sort "$1" -o "$1" # sort alphabetically
-}
-
-function refreshTasks() { # $cats=string $now=file
-	showTasks "$1" > "$2"
-	sanitizeAll "$2"
-}
-
-function showDiff() { # $cats=string $now=file $past=file
-	refreshTasks "$1" "$2"
+function showDiff() { # $now=file $past=file
+	refreshTasks "$1"
 	echo -e "\e[1m# $(date "+%d de %B de %Y às %H:%M")"
-	echo -e "\e[32m" && comm -23 "$2" "$3" | sed 's/^/+/' 
-	echo -e "\e[31m" && comm -13 "$2" "$3" | sed 's/^/-/'
-	echo -e "\n\e[1;34m+\t-\t=" && comm -123 --total "$2" "$3"
+	echo -e "\e[32m" && comm -23 "$1" "$2" | sed 's/^/+/' 
+	echo -e "\e[31m" && comm -13 "$1" "$2" | sed 's/^/-/'
+	echo -e "\n${bold_blue}+\t-\t=" && comm -123 --total "$1" "$2"
+}
+
+function commitJournal() { # $now=file $past=file $buffer=file $hist=file
+	showDiff "$1" "$2" | head -n -2 | sanitize > "$3"
+	$EDITOR "$3" &&	cat "$3" >> "$4"
+	rm "$3" && mv "$1" "$2"
 }
 
 function commitGit() { #$root=path
 	last_commit="git -C '$1' log HEAD^..HEAD --pretty=format:'%s'"  
-	today=$(date "+%y-%m-%d") 
-	git -C "$1" add -A && if [[ "$today" == "$last_commit" ]]; then
-		git -C "$1" commit --interactive --amend
+	today_commit=$(date "+%y-%m-%d") 
+	git -C "$1" add -A && if [[ "$today_commit" == "$last_commit" ]]; then
+		git -C "$1" commit --amend -m "$today_commit"
 	else
-		git -C "$1" commit --interactive
+		git -C "$1" commit -m "$today_commit"
 	fi
 }
 
-function commitJournal() { # $cats=string $now=file $past=file $buffer=file $hist=file
-	showDiff "$1" "$2" "$3" | head -n -2 > "$4" && sanitizeColors "$4"
-	$EDITOR "$4" &&	cat "$4" >> "$5"
-	rm "$4" && mv "$2" "$3"
-}
-
 mkdir -p "$root" && cd "$root" || exit # create root dir if it doesn't exist
-[ -f "$now" ] || refreshTasks "$cats" "$now" # create todo if it doesn't exist
-[ -f "$past" ] || refreshTasks "$cats" "$past" # create baseline if it doesn't exist
+[ -f "$now" ] || refreshTasks "$now" # create todo if it doesn't exist
+[ -f "$past" ] || refreshTasks "$past" # create baseline if it doesn't exist
 
 case $1 in
-	show) showTasks "$cats" true | less -R;;
-	diff) showDiff "$cats" "$now" "$past";;
-	commit) commitJournal "$cats" "$now" "$past" "$buffer" "$hist" && commitGit "$root";; 
+	show) printTasks | prettify | less -R;;
+	diff) showDiff "$now" "$past";;
+	commit) commitJournal "$now" "$past" "$buffer" "$hist" && commitGit "$root";; 
 esac
 

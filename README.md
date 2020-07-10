@@ -9,7 +9,9 @@ Workshop is a place to organize your life and get things done. It is an agnostic
 - [Nexus](#nexus)
 - [Journal](#journal)
 	- [Agile flow](#agile-flow)
-	- [Functionality](#functionality)
+	- [In development](#in-development)
+		- [Tags](#tags)
+		- [Other](#other)
 - [Eudaemon](#eudaemon)
 
 <!-- /TOC -->
@@ -36,14 +38,16 @@ Nexus is the Latin radical for conciseness. It is a document management system w
 
 Notes are saved in Markdown and metadata inserted in a YAML header. That means they can be edited in any text exitor, exported to almost any format using Pandoc and easily published with Jekyll.
 
-LATER: Develop Graph, a tool that generates a graph of scopes, notes and their links. It purpose is to aid in reorganizing notes into concise scopes.
+TODO: Develop Graph, a tool that generates a graph of scopes, notes and their links. It purpose is to aid in reorganizing notes into concise scopes. +later
 
-LATER: Develop Cleaner, a script that will search for unlinked assets and move them to a trash dir.
+TODO: Develop Cleaner, a script that will search for unlinked assets and move them to a trash dir. +later
 
-LATER: Develop Fixer, a tool to search for broken links in md notes and aid in fixing them.
+TODO: Develop Fixer, a tool to search for broken links in md notes and aid in fixing them. +later
 
 # Journal
 Journal is a tool to manage tasks and archive their creation and completion history. To keep track of what is to be done and what is done.
+
+TODO: Try [Taskwarrior](https://taskwarrior.org/) and [Timewarrior](https://timewarrior.net/).
 
 Tasks types: **ASAP, TODO, LATER, WAIT, ROUTINE.**
 
@@ -64,19 +68,37 @@ Effemeral tasks, tasks that are deleted before being commited, will not be logge
 >That is, while there is value in the items on the right, we value the items on the left more.
 The [Agile Manifesto](https://agilemanifesto.org)
 
-## Functionality
+## In development
 Right now Journal is lacking the ability to reorder tasks in the backlog into a prioritized list, to assign deadlines and view them in a calendar.
 
-I propose a natural language syntax to write metadata to tasks:
+### Tags
+**Priority**
+- `+asap`
+- `+later` 
 
-`TYPE: Task description @owner lobocnz @until 10/07 @id I2 @tag frontend`
-`TYPE: Task description @owner %10/07 &I2 #frontend`
+**Time-related**
+- `=20-07-30` notify at date
+- `>20-07-30` wait date to notify
+- `<20-07-30` notify until date with increasingly urgency
 
-TODO: Develop a metadata syntax functionality.
+Template variables: *monthly, weekly, daily, january, monday, day12* 
+
+**Context**
+
+`#house #linux`
+
+**Persons**
+
+`@lbcnz`
+
+TODO: Develop a tags parser. It should input a tasks lists and output per line the task and it's tags as strings of arrays arguments.
 
 TODO: Implement a task notification functionality using libnotify.
 
-LATER: Develop Planner, a tool to reorder tasks into prioritized, pack them into sprints and roadmap projects.
+There are basically two ways to develop a notifying daemon, I can create asynchronous event calls or periodically parse for possible events and notify on match. The latest is the easiest. 
+
+### Other
+Planner, a tool to reorder tasks into prioritized, pack them into sprints and roadmap projects.
 
 *[Tracker](tracker.md) is a spinoff of Journal aimed at helping teams or individuals manage their software development tasks. After Journal is mature I intend to adapt it to this new use case.*
 
@@ -85,5 +107,5 @@ Eudaemon is the greek concept of good guardian spirit. It aids the user in seein
 
 *Socrates during his lifetime had a daemon that always warned him of threats and bad judgment but never directed his actions.* 
 
-LATER: Develop a simple daemon that watches for keypresses or mouse movements and notify the user to take a break after extended periods.
+TODO: Develop a simple daemon that watches for keypresses or mouse movements and notify the user to take a break after extended periods. +later
 
