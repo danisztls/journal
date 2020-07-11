@@ -1,0 +1,45 @@
+#!/bin/bash
+# Tool to manage a markdown diary
+
+root="$HOME/Workshop/diary"
+daily=$(date '+%y-%m-%d' -d "-15days") # retention target for daily entries
+monthly=$(date '+%y-%m-%d' -d "-6months") # retention target for monthly entries
+today=$(date "+%y-%m-%d")
+
+cd "$root" || exit
+
+function editToday {
+	$EDITOR "$today.md" 
+}
+
+function cleanDiary {
+	for f in $(ls [0-9][0-9]-[0-9][0-9]-[0-9][0-9].md 2>/dev/null); do # daily
+		if [[ ${f:0:8} < $daily ]]; then
+			echo -e "Moved \e[31m$f\e[0m to \e[32m${f:0:5}.md\e[0m"
+			{ 	echo -e "## $(date '+%d de %B' -d "${f:0:8}")"
+				cat "$f" && echo -e "\n"
+			} >> "${f:0:5}.md"
+			rm "$f"
+		fi
+	done
+
+	for f in $(ls [0-9][0-9]-[0-9][0-9].md 2>/dev/null); do # monthly
+		if [[ ${f:0:5} < $monthly ]]; then
+			echo -e "Moved \e[31m$f\e[0m to \e[32m${f:0:2}.md\e[0m"
+			{ 	echo -e "## $(date '+%Y' -d "${f:0:5}")"
+				cat "$f" && echo -e "\n"
+			} >> "${f:0:2}.md"
+			rm "$f"
+		fi
+	done	
+}
+
+case $1 in
+	today) editToday && exit 0;;
+	clean) cleanDiary && exit 0;; 
+esac
+
+(echo -e "HELP:
+\t'today' will create/edit today's entry;
+\t'clean' will consolidate entries in monthly and yearly entries following a retention policy" && exit)
+

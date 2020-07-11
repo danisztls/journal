@@ -4,5 +4,6 @@
 bin="$HOME/.local/bin"
 
 cp journal "$bin/journal"
-cp cleaner "$bin/cleaner"
+# cp cleaner "$bin/cleaner"
+cp diary "$bin/diary"
 
