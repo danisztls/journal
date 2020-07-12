@@ -1,73 +1,71 @@
 #!/bin/bash
 root="$HOME/Workshop"
-now="$root/journal-now"
-past="$root/journal-past"
-hist="$root/journal-history"
-buffer="/tmp/$USER/journal-buffer"
-
-[ "$1" ] || (echo -e "HELP:
-\t'show' will print the tasks in screen;
-\t'diff' will print the changes in the backlog between now and past;
-\t'commit' will save the changes to the history file and git commit." && exit)
-
-# Future Options
-# git_hook = true
+hist="$root/JOURNAL.md"
 
 # Colors
-normal=$(printf '\033[0m')
+reset=$(printf '\033[0m')
 bold_blue=$(printf '\033[1;34m')
 red=$(printf '\033[31m')
 green=$(printf '\033[32m')
+magenta=$(printf '\033[35m')
+cyan=$(printf '\033[36m')
 
 function printTasks {
-	rg -N -t md -g '!journal-*' -e "^TODO:.*\+asap.*$"
-	rg -N -t md -g '!journal-*' -e "^TODO:.[^\+]*$"
-	rg -N -t md -g '!journal-*' -e "^TODO:.*\+later.*$"
+	rg -N -t md -g '!JOURNAL.md' -e "^TODO:.*\+done.*$"
+	rg -N -t md -g '!JOURNAL.md' -e "^TODO:.*\+asap.*$"
+	rg -N -t md -g '!JOURNAL.md' -e "^TODO:.[^\+]*$"
+	rg -N -t md -g '!JOURNAL.md' -e "^TODO:.*\+later.*$"
 }
 
 function sanitize {
-	sed '/^$/d;s/\x1b\[[0-9;]*m//g;s/\r//;s/TODO://'
+	sed 's/\x1b\[[0-9;]*m//g;s/\r//;s/TODO: //' # delete color codes, espace chars and todo preffix
 }
 
 function prettify {
-	sed 's/:/\n/' | awk '!x[$0]++' | sed "s/^.*\.md$/\n${bold_blue}&${normal}/"	
+	sed 's/:/\n/' | awk '!x[$0]++' | # split & dedup
+	sed "s/^.*\.md$/\n${bold_blue}&${reset}/;s/\+done/${green}&${reset}/;s/\+asap/${red}&${reset}/;s/\+later/${magenta}&${reset}/;s/[=<>].[^ ]*/${cyan}&${reset}/" # colorize	
 } 
 
-function refreshTasks() { # $todo=file
-	printTasks | sanitize | sort -o "$1"
+function confirmDialog {
+	# shellcheck disable=SC2162 # it don't matter
+	read -p "Are you sure? (y/N) " yn;
+	case $yn in
+		[Yy][Ee][Ss]|[Yy]) return 0;;
+		[Nn][Oo]|[Nn]) return 1;;
+		*) echo "Please answer yes or no." && return 1;;
+	esac
 }
 
-function showDiff() { # $now=file $past=file
-	refreshTasks "$1"
-	echo -e "\e[1m# $(date "+%d de %B de %Y às %H:%M")"
-	echo -e "\e[32m" && comm -23 "$1" "$2" | sed 's/^/+/' 
-	echo -e "\e[31m" && comm -13 "$1" "$2" | sed 's/^/-/'
-	echo -e "\n${bold_blue}+\t-\t=" && comm -123 --total "$1" "$2"
+function commitDone() { # write tasks done to journal file
+	echo -e "## $(date "+%d de %B de %Y às %H:%M")"
+	rg -N -t md -g '!journal-*' -e "^TODO:.*\+done.*$" | sed 's/:/: /;s/\+done//' && echo -e ""
 }
 
-function commitJournal() { # $now=file $past=file $buffer=file $hist=file
-	showDiff "$1" "$2" | head -n -2 | sanitize > "$3"
-	$EDITOR "$3" &&	cat "$3" >> "$4"
-	rm "$3" && mv "$1" "$2"
+function deleteDone() {	# delete tasks done from their files
+	for i in $(rg -N -t md -g '!journal-*' -e "^TODO:.*\+done.*$" | sed 's/:.*//' | awk '!x[$0]++'); do # iterate over files with tasks done
+		sed -i '/\+done/d' "$i"
+	done
 }
 
-function commitGit() { #$root=path
-	last_commit="git -C '$1' log HEAD^..HEAD --pretty=format:'%s'"  
+function commitGit() { # non-interactively git commit all changes in root dir
+	last_commit="git -C '$root' log HEAD^..HEAD --pretty=format:'%s'"  
 	today_commit=$(date "+%y-%m-%d") 
-	git -C "$1" add -A && if [[ "$today_commit" == "$last_commit" ]]; then
-		git -C "$1" commit --amend -m "$today_commit"
+	git -C "$root" add -A && if [[ "$today_commit" == "$last_commit" ]]; then
+		git -C "$root" commit --amend -m "$today_commit" # amend if not first commit in the day
 	else
-		git -C "$1" commit -m "$today_commit"
+		git -C "$root" commit -m "$today_commit"
 	fi
 }
 
-mkdir -p "$root" && cd "$root" || exit # create root dir if it doesn't exist
-[ -f "$now" ] || refreshTasks "$now" # create todo if it doesn't exist
-[ -f "$past" ] || refreshTasks "$past" # create baseline if it doesn't exist
+cd "$root" || exit
 
 case $1 in
-	show) printTasks | prettify | less -R;;
-	diff) showDiff "$now" "$past";;
-	commit) commitJournal "$now" "$past" "$buffer" "$hist" && commitGit "$root";; 
+	show) printTasks | sanitize | prettify && exit 0;;
+	commit) confirmDialog && commitDone | sanitize >> "$hist" && deleteDone && commitGit; exit 0;; 
 esac
+
+# Show help if no valid argument is parsed
+echo -e "HELP:
+\t'show' will print the tasks in screen;
+\t'commit' will clean tasks done, write them to a journal and git commit" && exit
 
