@@ -10,21 +10,31 @@ green=$(printf '\033[32m')
 magenta=$(printf '\033[35m')
 cyan=$(printf '\033[36m')
 
-function printTasks {
-	rg -N -t md -g '!JOURNAL.md' -e "^TODO:.*\+done.*$"
-	rg -N -t md -g '!JOURNAL.md' -e "^TODO:.*\+asap.*$"
-	rg -N -t md -g '!JOURNAL.md' -e "^TODO:.[^\+]*$"
-	rg -N -t md -g '!JOURNAL.md' -e "^TODO:.*\+later.*$"
+function printTasks { # $1=regex_rule
+	rg -N --color never --no-heading -t md -g '!JOURNAL.md' -e "$1" |
+	sed 's/TODO: //;s/\r//' # delete todo preffix and carriage return escape code
 }
 
-function sanitize {
-	sed 's/\x1b\[[0-9;]*m//g;s/\r//;s/TODO: //' # delete color codes, espace chars and todo preffix
+function printPlain {
+	printTasks "^TODO:.*\+done.*$"; printTasks "^TODO:.*\+asap.*$"; printTasks "^TODO:.[^\+]*$"; printTasks "^TODO:.*\+later.*$"
 }
 
 function prettify {
 	sed 's/:/\n/' | awk '!x[$0]++' | # split & dedup
 	sed "s/^.*\.md$/\n${bold_blue}&${reset}/;s/\+done/${green}&${reset}/;s/\+asap/${red}&${reset}/;s/\+later/${magenta}&${reset}/;s/[=<>].[^ ]*/${cyan}&${reset}/" # colorize	
 } 
+
+function printPretty {
+	printTasks "^TODO:.*\+done.*$" | prettify
+	printTasks "^TODO:.*\+asap.*$" | prettify
+	printTasks "^TODO:.[^\+]*$" | prettify
+	printTasks "^TODO:.*\+later.*$" | pretiffy
+}
+
+function fuzzy() {
+	rg -t md -n --no-heading -g '!journal-*' -e 'TODO: ' -r '' | fzf --delimiter : --preview "fzf-bat-preview {1} {2}"
+}
+
 
 function confirmDialog {
 	# shellcheck disable=SC2162 # it don't matter
@@ -38,7 +48,7 @@ function confirmDialog {
 
 function commitDone() { # write tasks done to journal file
 	echo -e "## $(date "+%d de %B de %Y às %H:%M")"
-	rg -N -t md -g '!journal-*' -e "^TODO:.*\+done.*$" | sed 's/:/: /;s/\+done//' && echo -e ""
+	rg -N --color never --no-heading -t md -g '!journal-*' -e "^TODO:.*\+done.*$" | sed 's/:/: /;s/\+done//' && echo -e ""
 }
 
 function deleteDone() {	# delete tasks done from their files
@@ -60,12 +70,16 @@ function commitGit() { # non-interactively git commit all changes in root dir
 cd "$root" || exit
 
 case $1 in
-	show) printTasks | sanitize | prettify && exit 0;;
-	commit) confirmDialog && commitDone | sanitize >> "$hist" && deleteDone && commitGit; exit 0;; 
+	print) printPlain; exit 0;;
+	show) printPretty | less -R; exit 0;;
+	fuzzy) fuzzy; exit 0;;
+	commit) confirmDialog && commitDone >> "$hist" && deleteDone && commitGit; exit 0;; 
 esac
 
 # Show help if no valid argument is parsed
 echo -e "HELP:
-\t'show' will print the tasks in screen;
-\t'commit' will clean tasks done, write them to a journal and git commit" && exit
+\t'print' will print the tasks in stdout in plain mode;
+\t'show' will show the tasks in a pager in pretty mode;
+\t'fuzzy' will show tasks in fzf with note preview;
+\t'commit' will clean tasks done, write them to a journal and git commit." && exit
 

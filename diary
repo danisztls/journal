@@ -35,11 +35,11 @@ function cleanDiary {
 }
 
 case $1 in
-	today) editToday && exit 0;;
+	write) editToday && exit 0;;
 	clean) cleanDiary && exit 0;; 
 esac
 
 (echo -e "HELP:
-\t'today' will create/edit today's entry;
+\t'write' will create/edit today's entry;
 \t'clean' will consolidate entries in monthly and yearly entries following a retention policy" && exit)
 

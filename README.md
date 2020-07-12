@@ -49,8 +49,13 @@ To quickly find, preview and edit notes I use fzf with ripgrep and a custom shel
 export FZF_DEFAULT_OPTS="--bind 'f1:execute(nvim {}),f2:execute(xdg-open {}),f3:execute(nautilus {}),f4:execute(ranger {}),f5:execute(echo {} | xclip)' --color=dark --color=fg:-1,bg:-1,hl:#9173eb,fg+:#ffffff,bg+:#2d3444,hl+:#7047eb --color=info:#98c379,prompt:#61afef,pointer:#be5046,marker:#e5c07b,spinner:#61afef,header:#61afef"
 prev="bat --style=numbers --color=always --line-range :500 {}"
 alias 'f=rg -i -t md --files | fzf --preview "$prev"' # markdown files only
-
 ```
+
+TODO: Print, printf, less, grep and fuzzy options instead of just show. +asap
+
+TODO: Preview in fuzzy. +asap
+
+TODO: Create binds in fuzzy to edit tasks and cycle between priorities tags.
 
 TODO: Graph, a tool that generates a graph of scopes, notes and their links. It purpose is to aid in reorganizing notes into concise scopes. +later
 
@@ -69,7 +74,6 @@ TODO: Some tasks are appearing in the wrong file group during show due to the wa
 **Priority**
 - `+asap`
 - `+later`
-- `+done`
 
 Basically prioritized, non prioritized, deprioritized and completed.
 
@@ -92,15 +96,13 @@ TODO: Stateless task notification functionality using libnotify and Gnome calend
 
 Tasks showed can be further refined by context or people through tools like grep and less. 
 
-TODO: New commit function that logs and deletes tasks tagged with done tag. +done
 
-TODO: Colorize status tags. +done
 
 ## Diary
 Diary aids in the management a markdown diary.  Mostly it saves time that would be spent in copy/paste and file naming.
 
 **How to use**
-- `diary today` will open today's entry in a text editor.
+- `diary write` will open today's entry in a text editor.
 - `diary clean` will rotate old entries into monthly/yearly notes.
 
 It expects notes saved in **YY-MM-DD.md**, **YY-MM.md** and **YY.md** format and will ignore other files. The default retention policy is 15 days for daily entries and 6 months for monthly entries.
