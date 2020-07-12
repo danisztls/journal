@@ -1,0 +1,5 @@
+#!/bin/bash
+# This prints an example of the markdown extended todo syntax in the way I envision it. 
+
+echo -e "\e[1mTODO:\e[0m \e[39mDo something.\e[0m \e[1;31m+\e[31masap\e[0m \e[1;32m+\e[32mdone\e[0m \e[1;35m+\e[35mlater\e[0m \e[1;34m@lbcnz\e[0m \e[1;33m#\e[33msystem\e[0m \e[1;36m=\e[36m20-07-15 >20-07-15 !20-07-15\e[0m"
+

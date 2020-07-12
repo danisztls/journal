@@ -1,0 +1,41 @@
+%YAML 1.2
+---
+# http://www.sublimetext.com/docs/3/syntax.html
+name: Journal Markdown
+file_extensions:
+	- md
+	- markdown
+scope: text.html.markdown
+contexts:
+	preffix:
+		- match: '^TODO:\b'
+		meta_scope: preffix.todo.markdown
+		include:
+
+	priority-tag:
+		- match: '\b\+.*\b'
+		meta_scope: priority.todo.markdown
+      		include:
+
+		done
+			- match: '\b\+done\b'
+      		asap:
+			- match: '\b\+asap\b'
+		later
+  			- match: '\b\+later\b'
+
+ 	date-tag:
+    		- match: '^\b[=>!].*\b'
+      		meta_scope:
+      		include:
+ 	 
+  	context-tag:
+    		- match: '\b#.*\b'
+      		meta_scope:
+      		include:
+	
+	person-tag:
+    		- match: '\b@.*\b'
+		meta_scope:
+      		include:
+

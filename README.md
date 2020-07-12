@@ -51,11 +51,13 @@ prev="bat --style=numbers --color=always --line-range :500 {}"
 alias 'f=rg -i -t md --files | fzf --preview "$prev"' # markdown files only
 ```
 
-TODO: Print, printf, less, grep and fuzzy options instead of just show. +asap
+TODO: Fuzzy finder an print plain functionality. +done
+TODO: Preview in fuzzy finder. +done
 
-TODO: Preview in fuzzy. +asap
+TODO: Bat highlight tasks and tags. +asap
+TODO: Vim [syntax](http://vimdoc.sourceforge.net/htmldoc/options.html#'syntax') highlight tasks and tags. +asap
 
-TODO: Create binds in fuzzy to edit tasks and cycle between priorities tags.
+TODO: Binds in fuzzy to edit tasks and cycle between priorities tags.
 
 TODO: Graph, a tool that generates a graph of scopes, notes and their links. It purpose is to aid in reorganizing notes into concise scopes. +later
 
@@ -66,9 +68,7 @@ TODO: Fixer, a tool to search for broken links in notes and aid in fixing them. 
 # Journal
 Journal is a tool to manage tasks, to keep track of what is to be done and what is done.
 
-TODO: Vim [syntax](http://vimdoc.sourceforge.net/htmldoc/options.html#'syntax') highlight tasks and tags. +asap
-
-TODO: Some tasks are appearing in the wrong file group during show due to the way deduplication is done. +asap #bug
+TODO: Some tasks are appearing in the wrong file group during show due to the way deduplication is done. +done #bug
 
 ## Tags
 **Priority**
@@ -80,7 +80,7 @@ Basically prioritized, non prioritized, deprioritized and completed.
 **Time-related**
 - `=20-07-30` notify **at** date
 - `>20-07-30` **wait** for date to start and notifying
-- `<20-07-30` notify **until** date with increasingly urgency
+- `!20-07-30` notify **until** date with increasingly urgency
 
 Template variables: *monthly, weekly, daily, january, monday, day12* 
 
@@ -95,7 +95,6 @@ TODO: Stateless task notification functionality using libnotify and Gnome calend
 `@lbcnz`
 
 Tasks showed can be further refined by context or people through tools like grep and less. 
-
 
 
 ## Diary
