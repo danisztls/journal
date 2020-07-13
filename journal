@@ -14,12 +14,11 @@ yellow=$(printf '\033[33m')
 blue=$(printf '\033[34m')
 
 function printTasks { # $1=regex_rule
-	rg -N --color never --no-heading -t md --ignore-file "$ignore" -e "$1" |
-	sed 's/TODO: //;s/\r//' # delete todo preffix and carriage return escape code
-}
-
-function printPlain {
-	printTasks "^TODO:.*\+done.*$"; printTasks "^TODO:.*\+asap.*$"; printTasks "^TODO:.[^\+]*$"; printTasks "^TODO:.*\+later.*$"
+	if [ "$1" ]; then
+		rg -N --color never --no-heading -t md --ignore-file "$ignore" -e "$1"
+	else
+		rg -n --color never --no-heading -t md --ignore-file "$ignore" -e "TODO: "
+	fi | sed 's/TODO: //;s/\r//' # delete todo preffix and carriage return escape code
 }
 
 function prettify {
@@ -34,8 +33,8 @@ function printPretty {
 	printTasks "^TODO:.*\+later.*$" | prettify
 }
 
-function fuzzy() {
-	rg -t md -n --no-heading --ignore-file "$ignore" -e 'TODO: ' -r '' | fzf --delimiter : --preview "fzf-bat-preview {1} {2}"
+function fuzzy() { # {1} is file name, {2} is line number and {3} is task description.
+	printTasks | fzf --delimiter : --preview "journal-fzf preview {1} {2}" --bind "f1:execute($EDITOR {1}),f2:execute(xdg-open {1}),f3:reload(journal-fzf cycle {1} {2} {3} && journal-fzf print)"
 }
 
 function confirmDialog {
@@ -72,7 +71,7 @@ function commitGit() { # non-interactively git commit all changes in root dir
 cd "$root" || exit
 
 case $1 in
-	print) printPlain; exit 0;;
+	print) printTasks;;
 	show) printPretty | less -R; exit 0;;
 	fuzzy) fuzzy; exit 0;;
 	commit) confirmDialog && commitDone >> "$hist" && deleteDone && commitGit; exit 0;; 
@@ -80,8 +79,8 @@ esac
 
 # Show help if no valid argument is parsed
 echo -e "HELP:
-\t\e[1m'print'\e[0m print the tasks in stdout in plain mode;
-\t\e[1m'show'\e[0m show the tasks in a pager in pretty mode;
+\t\e[1m'print'\e[0m print the tasks to stdout in plain text;
+\t\e[1m'show'\e[0m show the tasks in a pager with pretty formatting;
 \t\e[1m'fuzzy'\e[0m show tasks in fzf with note preview;
-\t\e[1m'commit'\e[0m clean tasks done, write them to a journal and git commit." && exit
+\t\e[1m'commit'\e[0m clean done tasks and write them to journal." && exit
 

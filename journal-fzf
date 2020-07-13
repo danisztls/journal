@@ -1,0 +1,28 @@
+#!/bin/bash
+# Support script for use with FZF.
+
+# Output a preview of the file with the selected line somewhat centered. $LINES and $COLUMNS is the size of the preview window from the fzf env.
+# $1 is function, $2 is file name, $3 is line number and $4 is task description.
+
+function previewNote {
+	t=$(( LINES / 2 )) # threshold
+	s=$(( $2 - t )) && [ $s -lt 1 ] && s=1 # start line w/ failsafe
+	e=$(( $2 + t )) # end line
+	c=$(( $(tput cols) / 2 - 4 )) # $COLUMNS isn't working reliably
+	bat --color always -l md --wrap character --terminal-width $c --highlight-line "$2" -r $s:$e -pp "$1"
+}
+
+function cyclePriority {
+	echo "$3" | rg "\+asap" >/dev/null && sed -i "$2s/\+asap/\+done/" "$1" && return 0
+	echo "$3" | rg "\+done" >/dev/null && sed -i "$2s/\+done/\+later/" "$1" && return 0
+	echo "$3" | rg "\+later" >/dev/null && sed -i "$2s/\+later/\+asap/" "$1" && return 0
+}
+
+case $1 in
+	preview) previewNote "$2" "$3";;
+	cycle) cyclePriority "$2" "$3" "$4";;
+	print) journal print;; # a hack as subshell can't invoke script functions
+esac
+
+exit 0
+

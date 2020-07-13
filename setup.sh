@@ -5,7 +5,7 @@ bin="$HOME/.local/bin" && mkdir -p "$bin"
 config="$XDG_CONFIG_HOME/workshop" && mkdir -p "$config"
 
 # Install Journal
-cp journal fzf-bat-preview diary "$bin/"
+cp journal journal-fzf diary "$bin/"
 cp journal.ignore "$config/"
 
 if [ "$VIMINIT" ]; then

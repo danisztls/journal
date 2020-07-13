@@ -2,9 +2,9 @@
 
 - [Design](#design)
 - [Nexus](#nexus)
-	- [Fuzzy finder](#fuzzy-finder)
 - [Journal](#journal)
-	- [Todo syntax for Markdown](#todo-syntax-for-markdown)
+	- [Todo syntax](#todo-syntax)
+- [Notifications](#notifications)
 		- [Highlightining](#highlightining)
 	- [Diary](#diary)
 	- [Planner](#planner)
@@ -43,15 +43,8 @@ Nexus is the Latin radical for conciseness. It is a document management system w
 Notes are saved in Markdown and metadata inserted with a YAML header. Notes can be exported to practically any format using Pandoc and easily published with Jekyll.
 
 
-## Fuzzy finder
+**Fuzzy finder**
 To quickly find, preview and edit notes I use [fzf](https://github.com/junegunn/fzf) with [ripgrep](https://github.com/BurntSushi/ripgrep) and custom aliases. They are a robust combination that allows me to search files and tasks.
-
-```sh
-export FZF_DEFAULT_OPTS="--bind 'f1:execute(nvim {}),f2:execute(xdg-open {}),f3:execute(nautilus {}),f4:execute(ranger {}),f5:execute(echo {} | xclip)' --color=dark --color=fg:-1,bg:-1,hl:#9173eb,fg+:#ffffff,bg+:#2d3444,hl+:#7047eb --color=info:#98c379,prompt:#61afef,pointer:#be5046,marker:#e5c07b,spinner:#61afef,header:#61afef"
-prev="bat --style=numbers --color=always --line-range :500 {}"
-alias 'f=rg -i -t md --files | fzf --preview "$prev"' # markdown files only
-```
-
 
 **Graph**
 TODO: Graph, a tool that generates a graph of scopes, notes and their links. It purpose is to aid in reorganizing notes into concise scopes. +later
@@ -62,48 +55,59 @@ TODO: Cleaner, a script that will search for unlinked assets and send them to tr
 **Fixer**
 TODO: Fixer, a tool to search for broken links in notes and aid in fixing them. +later
 
+
 # Journal
 Journal is a tool to manage tasks, to keep track of what is to be done and what is done.
 
-**Management**
+**How to use**
+- `journal show` print the tasks to stdout in plain text;
+- `journal print` show the tasks in a pager with pretty formatting;
+- `journal fuzzy` show tasks in fzf with note preview;
+- `journal commit` clean done tasks and write them to journal.
 
-TODO: Binds in fuzzy to edit tasks and cycle between priorities tags. +asap
+Commit function will post-call `git commit -m $today_date`.
 
-**Notification**
+Fzf binds:
 
-
-TODO: Stateless task notification functionality using libnotify and Gnome calendar. +asap
-
-
-
+- F1 opens task note in $EDITOR
+- F2 opens task note with xdg-open
+- F3 cycle task priority tag 
 
 
+TODO: Binds in fuzzy to edit tasks and cycle between priorities tags. +done
 
-## Todo syntax for Markdown
+
+## Todo syntax
 **Priority**
-- `+asap`
-- `+later`
+- +asap
+- +later
+- +done
 
 **Time-related**
-- `=20-07-30` **at** date
-- `>20-07-30` **wait** for date
-- `!20-07-30` **until** date
+- =20-07-30 **at** date
+- >20-07-30 **wait** for date
+- !20-07-30 **until** date
 
 Template variables for date: *monthly, weekly, daily, january, monday, day12* 
 
 **Context**
-
-`#house #linux`
+- #house
+- #linux
 
 **People**
+- @lbcnz
 
-`@lbcnz`
+
+# Notifications
+TODO: Stateless task notification functionality using libnotify and Gnome calendar. +asap
 
 
 ### Highlightining
-Sublimes highlighting is done through a syntax files that attributes scopes to regex matches and a theme files that attributes colors to those scopes.
+It has todo syntax and highlighting for Vim.
 
-TODO: Sublime extended markdown todo highlighting for bat.
+TODO: Sublime extended markdown todo highlighting to use in bat.
+
+Sublimes highlighting is done through a syntax files that attributes scopes to regex matches and a theme files that attributes colors to those scopes.
 
 [Sublime docs](https://www.sublimetext.com/docs/3/syntax.html)
 
@@ -111,7 +115,7 @@ TODO: Sublime extended markdown todo highlighting for bat.
 
 I wrote the RE matches but the complexity of Sublime metasyntax was too complex for me to grasp in a short amount of time. 
 
-TODO: Vim extended markdown todo highlighting.
+TODO: Vim extended markdown todo highlighting. +done
 
 
 ## Diary
@@ -145,7 +149,6 @@ TODO: Daemon that watches for keypresses or mouse movements and notify the user 
 Just run the **setup** script to install it in your home. Dependencies are **ripgrep**, **fzf**, **bat**.
 
 TODO: AUR build script. +later
-
 
 # Development
 This project is under active development and still in it's infancy. Right now I'm looking to write code to view tasks in a calendar and be notified about them following the time-related tags syntax that I propposed above. Contributors are welcome. 
