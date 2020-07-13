@@ -13,9 +13,16 @@
 
 This is a syntax matching and highlighting test.
 
-**With Markdown...**
+# Journal
+**This should get highlighted:**
 
-# Header
+TODO: Do something. +later +asap +done #test @lbcnz =20-07-12 >20-07-12 !20-07-12 
+
+**While this shouldn't:**
+
+In the middle of a setence a TODO isn't a todo. Commitment + Time = Achievments! Consistency > short-term results. Some things are done, some I will do later and some I must do asap. # in the start of a line and followed by a space is a header. Email me at user@server.com.
+
+# Markdown
 ## Sub-header
 Some are **bold** but many are *italic* or _italic_. 
 
@@ -66,16 +73,6 @@ While you can always insert HTML.
 
 <p>Science bitch!</p>
 
-# TODO
-But more importantly...
-
-**This should get highlighted:**
-
-TODO: Do something. +later +asap +done #test @lbcnz =20-07-12 >20-07-12 !20-07-12 
-
-**While this shouldn't:**
-
-TODO: Do something. + later + asap + done # test @ lbcnz =20-07-12 >20-07-12 !20-07-12 
 
 <<<<<<< HEAD
 =======

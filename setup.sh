@@ -1,12 +1,17 @@
 #!/bin/sh
 # Install the script to home dir
 
-bin="$HOME/.local/bin"
-config="$XDG_CONFIG_HOME/workshop"
+bin="$HOME/.local/bin" && mkdir -p "$bin"
+config="$XDG_CONFIG_HOME/workshop" && mkdir -p "$config"
 
-mkdir -p "$config"
-cp journal "$bin/"
-cp fzf-bat-preview "$bin/"
+# Install Journal
+cp journal fzf-bat-preview diary "$bin/"
 cp journal.ignore "$config/"
-cp diary "$bin/"
 
+if [ "$VIMINIT" ]; then
+	vim_after=$(echo "$VIMINIT" | sed "s/.*runtimepath+=~\///;s/|source.*//") && vim_after="$HOME/$vim_after"
+else
+	vim_after="$HOME/.vim/after"
+fi
+
+mkdir -p "$vim_after" && cp "syntax/markdown.vim" "$vim_after/syntax/markdown.vim"
