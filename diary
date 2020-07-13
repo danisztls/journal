@@ -2,7 +2,7 @@
 # Tool to manage a markdown diary
 
 root="$HOME/Workshop/diary"
-daily=$(date '+%y-%m-%d' -d "-15days") # retention target for daily entries
+daily=$(date '+%y-%m-%d' -d "-30days") # retention target for daily entries
 monthly=$(date '+%y-%m-%d' -d "-6months") # retention target for monthly entries
 today=$(date "+%y-%m-%d")
 
@@ -10,6 +10,10 @@ cd "$root" || exit
 
 function editToday {
 	$EDITOR "$today.md" 
+}
+
+function readDiary {
+	rg -t md --files | fzf --preview "bat --color always -pp --wrap character --terminal-width $(( $(tput cols) / 2 - 4)) -l md -r :500 {}" # $COLUMNS isn't working reliably
 }
 
 function cleanDiary {
@@ -35,11 +39,13 @@ function cleanDiary {
 }
 
 case $1 in
-	write) editToday && exit 0;;
-	clean) cleanDiary && exit 0;; 
+	write) editToday; exit 0;;
+	read) readDiary; exit 0;;
+	clean) cleanDiary; exit 0;; 
 esac
 
 (echo -e "HELP:
-\t'write' will create/edit today's entry;
-\t'clean' will consolidate entries in monthly and yearly entries following a retention policy" && exit)
+\t\e[1m'write'\e[0m create/edit today's entry;
+\t\e[1m'read'\e[0m fuzzy search among entries; 
+\t\e[1m'clean'\e[0m merge entries in monthly and yearly entries following a retention policy." && exit)
 
