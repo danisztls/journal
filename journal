@@ -1,6 +1,7 @@
 #!/bin/bash
 root="$HOME/Workshop"
 hist="$root/JOURNAL.md"
+ignore="$XDG_CONFIG_HOME/workshop/journal.ignore"
 
 # Colors
 reset=$(printf '\033[0m')
@@ -9,9 +10,11 @@ red=$(printf '\033[31m')
 green=$(printf '\033[32m')
 magenta=$(printf '\033[35m')
 cyan=$(printf '\033[36m')
+yellow=$(printf '\033[33m')
+blue=$(printf '\033[34m')
 
 function printTasks { # $1=regex_rule
-	rg -N --color never --no-heading -t md -g '!JOURNAL.md' -e "$1" |
+	rg -N --color never --no-heading -t md --ignore-file "$ignore" -e "$1" |
 	sed 's/TODO: //;s/\r//' # delete todo preffix and carriage return escape code
 }
 
@@ -21,20 +24,19 @@ function printPlain {
 
 function prettify {
 	sed 's/:/\n/' | awk '!x[$0]++' | # split & dedup
-	sed "s/^.*\.md$/\n${bold_blue}&${reset}/;s/\+done/${green}&${reset}/;s/\+asap/${red}&${reset}/;s/\+later/${magenta}&${reset}/;s/[=<>].[^ ]*/${cyan}&${reset}/" # colorize	
+	sed "s/^.*\.md$/\n${bold_blue}&${reset}/;s/\+done/${green}&${reset}/;s/\+asap/${red}&${reset}/;s/\+later/${magenta}&${reset}/;s/[=>].[^ ]*/${cyan}&${reset}/;s/\!.[^ ]*/${cyan}&${reset}/;s/#.[^ ]*/${yellow}&${reset}/;s/@.[^ ]*/${blue}&${reset}/" # colorize	
 } 
 
 function printPretty {
 	printTasks "^TODO:.*\+done.*$" | prettify
 	printTasks "^TODO:.*\+asap.*$" | prettify
 	printTasks "^TODO:.[^\+]*$" | prettify
-	printTasks "^TODO:.*\+later.*$" | pretiffy
+	printTasks "^TODO:.*\+later.*$" | prettify
 }
 
 function fuzzy() {
-	rg -t md -n --no-heading -g '!journal-*' -e 'TODO: ' -r '' | fzf --delimiter : --preview "fzf-bat-preview {1} {2}"
+	rg -t md -n --no-heading --ignore-file "$ignore" -e 'TODO: ' -r '' | fzf --delimiter : --preview "fzf-bat-preview {1} {2}"
 }
-
 
 function confirmDialog {
 	# shellcheck disable=SC2162 # it don't matter
@@ -48,11 +50,11 @@ function confirmDialog {
 
 function commitDone() { # write tasks done to journal file
 	echo -e "## $(date "+%d de %B de %Y às %H:%M")"
-	rg -N --color never --no-heading -t md -g '!journal-*' -e "^TODO:.*\+done.*$" | sed 's/:/: /;s/\+done//' && echo -e ""
+	rg -N --color never --no-heading -t md --ignore-file "$ignore" -e "^TODO:.*\+done.*$" | sed 's/:/: /;s/\+done//' && echo -e ""
 }
 
 function deleteDone() {	# delete tasks done from their files
-	for i in $(rg -N -t md -g '!journal-*' -e "^TODO:.*\+done.*$" | sed 's/:.*//' | awk '!x[$0]++'); do # iterate over files with tasks done
+	for i in $(rg -N -t md --ignore-file "$ignore" -e "^TODO:.*\+done.*$" | sed 's/:.*//' | awk '!x[$0]++'); do # iterate over files with tasks done
 		sed -i '/\+done/d' "$i"
 	done
 }
@@ -78,8 +80,8 @@ esac
 
 # Show help if no valid argument is parsed
 echo -e "HELP:
-\t'print' will print the tasks in stdout in plain mode;
-\t'show' will show the tasks in a pager in pretty mode;
-\t'fuzzy' will show tasks in fzf with note preview;
-\t'commit' will clean tasks done, write them to a journal and git commit." && exit
+\t\e[1m'print'\e[0m print the tasks in stdout in plain mode;
+\t\e[1m'show'\e[0m show the tasks in a pager in pretty mode;
+\t\e[1m'fuzzy'\e[0m show tasks in fzf with note preview;
+\t\e[1m'commit'\e[0m clean tasks done, write them to a journal and git commit." && exit
 
