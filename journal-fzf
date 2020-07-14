@@ -19,9 +19,15 @@ function cyclePriority {
 	echo "$3" | rg "\+later" >/dev/null && sed -i "$2s/\+later/\+asap/" "$1" && return 0
 }
 
+function deleteTask {
+	del=$2 && del+=d
+	sed -i "$del" "$1"
+}
+
 case $1 in
 	preview) previewNote "$2" "$3";;
 	cycle) cyclePriority "$2" "$3" "$4";;
+	delete) deleteTask "$2" "$3";;
 	print) journal print;; # a hack as subshell can't invoke script functions
 esac
 

@@ -4,10 +4,10 @@
 - [Nexus](#nexus)
 - [Journal](#journal)
 	- [Todo syntax](#todo-syntax)
-- [Notifications](#notifications)
-		- [Highlightining](#highlightining)
+	- [Highlighting](#highlighting)
+	- [Calendar](#calendar)
 	- [Diary](#diary)
-	- [Planner](#planner)
+	- [Planning](#planning)
 - [Eudaemon](#eudaemon)
 - [Install](#install)
 - [Development](#development)
@@ -72,16 +72,14 @@ Fzf binds:
 - F1 opens task note in $EDITOR
 - F2 opens task note with xdg-open
 - F3 cycle task priority tag 
+- F4 delete the task
 
-
-TODO: Binds in fuzzy to edit tasks and cycle between priorities tags. +done
 
 
 ## Todo syntax
 **Priority**
 - +asap
 - +later
-- +done
 
 **Time-related**
 - =20-07-30 **at** date
@@ -97,15 +95,14 @@ Template variables for date: *monthly, weekly, daily, january, monday, day12*
 **People**
 - @lbcnz
 
+TODO: Swap > for ~ or other key for better compatibility. +asap
 
-# Notifications
-TODO: Stateless task notification functionality using libnotify and Gnome calendar. +asap
+TODO: Try todo.txt
 
+## Highlighting
+Todo syntax and highlighting for Vim is implemented.
 
-### Highlightining
-It has todo syntax and highlighting for Vim.
-
-TODO: Sublime extended markdown todo highlighting to use in bat.
+TODO: Sublime extended markdown todo highlighting to use in bat. +asap
 
 Sublimes highlighting is done through a syntax files that attributes scopes to regex matches and a theme files that attributes colors to those scopes.
 
@@ -113,10 +110,16 @@ Sublimes highlighting is done through a syntax files that attributes scopes to r
 
 [Oniguruma RE docs](https://raw.githubusercontent.com/kkos/oniguruma/5.9.6/doc/RE)
 
-I wrote the RE matches but the complexity of Sublime metasyntax was too complex for me to grasp in a short amount of time. 
+I wrote some RE matches but the intricacies of Sublime were too complex for me to grasp in a short amount of time. 
 
-TODO: Vim extended markdown todo highlighting. +done
 
+
+## Calendar
+Gnome Calendar have good integration with Gnome Shell. I just need to find a good way to add events to a local calendar. Is it possible to write a stateless script that does that to be called after a journal commit?
+
+TODO: Stateless script to add tasks as events to a local Gnome calendar. +asap
+
+There's also Gnome Todo. Can I interface with it?
 
 ## Diary
 Diary aids in the management a markdown diary.  Mostly it saves time that would be spent in copy/paste and file naming.
@@ -129,7 +132,7 @@ Diary aids in the management a markdown diary.  Mostly it saves time that would 
 It expects notes saved in **YY-MM-DD.md**, **YY-MM.md** and **YY.md** format and will ignore other files. The default retention policy is 15 days for daily entries and 6 months for monthly entries.
 
 
-## Planner
+## Planning
 Planner, is a tool to organize the backlog, pack tasks into sprints, roadmap projects and see statistics like backlog size and burnout rate.
 
 TODO: Log backlog statistics with every commit. +later
@@ -138,18 +141,22 @@ TODO: Graphically explore the backlog statistics. +later
 
 
 # Eudaemon
-Eudaemon is the greek concept of good guardian spirit. It aids the user in seeing clearly his actions and avoiding unhealthy habits like being sitted in the computer for a long period of time.
+Eudaemon is the Greek concept of good guardian spirit. It aids the user in seeing clearly his actions and avoiding unhealthy habits like use the computer for a long period of time.
 
 *Socrates during his lifetime had a daemon that always warned him of threats and bad judgment but never directed his actions.* 
 
-TODO: Daemon that watches for keypresses or mouse movements and notify the user to take a break after extended periods.
+As I dislike micromanagement and obtrusive software I'm thinking on using libnotify. It's trivial to implement and Gnome Shell have a do not disturb feature if the user really need/want to stay in the computer. I was addicted to computers and games in the past and I believe that hardcore features like locking the user out are more a pain in the ass than useful. Addicts just need a good timeout to get it out of their system, they're not slaves they don't need a leash.
 
+xidletime show user idleness without root and apparently is reliable. And I can write a daemon in Python to transform that into a temporal series showing user activity. InfluxDB is perfect to store and explore temporal series but not something expected to be installed in a user desktop so I will log the data to CSV files instead and maybe write a plugin for InfluxDB. I am overengineering this but I want to show user activity in a beautiful detailed timeline. Daily data should have high resolution but older data can be aggressively downsampled and writes aggressively reduced by transforming it in memory before writing.
+
+TODO: Prototype in Python that calls xidletime, transform input and store temporal data of user activity as CSV. +later #python 
 
 # Install
 Just run the **setup** script to install it in your home. Dependencies are **ripgrep**, **fzf**, **bat**.
 
-TODO: AUR build script. +later
+TODO: AUR build script. +later #arch
+
 
 # Development
-This project is under active development and still in it's infancy. Right now I'm looking to write code to view tasks in a calendar and be notified about them following the time-related tags syntax that I propposed above. Contributors are welcome. 
+This project is under active development and still in it's infancy. Contributors and feedback are welcomed. 
 
