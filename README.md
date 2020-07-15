@@ -118,6 +118,8 @@ iCalendar and CalDAV are IETF protocols for calendar events and tasks.
 
 TODO: Export tasks to iCalendar file. +asap
 
+[cdav-library](https://github.com/nextcloud/cdav-library) and [caldav](https://pypi.org/project/caldav/) are a JS and a Python CalDAV libraries.
+
 ## Diary
 Diary aids in the management a markdown diary.  Mostly it saves time that would be spent in copy/paste and file naming.
 

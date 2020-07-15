@@ -4,12 +4,13 @@
 root="$HOME/Workshop/diary"
 daily=$(date '+%y-%m-%d' -d "-30days") # retention target for daily entries
 monthly=$(date '+%y-%m-%d' -d "-6months") # retention target for monthly entries
-today=$(date "+%y-%m-%d")
+today=$(date '+%y-%m-%d').md
 
 cd "$root" || exit
 
 function editToday {
-	$EDITOR "$today.md" 
+    echo -e "### $(date '+%H:%M')\n" >> "$today"
+	$EDITOR "$today" 
 }
 
 function readDiary {
@@ -30,7 +31,7 @@ function cleanDiary {
 	for f in $(ls [0-9][0-9]-[0-9][0-9].md 2>/dev/null); do # monthly
 		if [[ ${f:0:5} < $monthly ]]; then
 			echo -e "Moved \e[31m$f\e[0m to \e[32m${f:0:2}.md\e[0m"
-			{ 	echo -e "## $(date '+%Y' -d "${f:0:5}")"
+			{ 	echo -e "# $(date '+%Y' -d "${f:0:5}")"
 				cat "$f" && echo -e "\n"
 			} >> "${f:0:2}.md"
 			rm "$f"
