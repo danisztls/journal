@@ -3,11 +3,11 @@
 - [Design](#design)
 - [Nexus](#nexus)
 - [Journal](#journal)
-	- [Todo syntax](#todo-syntax)
-	- [Highlighting](#highlighting)
-	- [Calendar](#calendar)
-	- [Diary](#diary)
-	- [Planning](#planning)
+    - [Todo syntax](#todo-syntax)
+    - [Highlighting](#highlighting)
+    - [Calendar](#calendar)
+    - [Diary](#diary)
+    - [Planning](#planning)
 - [Eudaemon](#eudaemon)
 - [Install](#install)
 - [Development](#development)
@@ -113,13 +113,10 @@ Sublimes highlighting is done through a syntax files that attributes scopes to r
 I wrote some RE matches but the intricacies of Sublime were too complex for me to grasp in a short amount of time. 
 
 
-
 ## Calendar
-Gnome Calendar have good integration with Gnome Shell. I just need to find a good way to add events to a local calendar. Is it possible to write a stateless script that does that to be called after a journal commit?
+iCalendar and CalDAV are IETF protocols for calendar events and tasks.
 
-TODO: Stateless script to add tasks as events to a local Gnome calendar. +asap
-
-There's also Gnome Todo. Can I interface with it?
+TODO: Export tasks to iCalendar file. +asap
 
 ## Diary
 Diary aids in the management a markdown diary.  Mostly it saves time that would be spent in copy/paste and file naming.
