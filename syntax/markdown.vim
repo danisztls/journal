@@ -4,7 +4,7 @@ syn match TODO "^TODO:"
 syn match TodoAsap "+asap"
 syn match TodoLater "+later"
 syn match TodoDone "+done"
-syn match TodoDate "[=>!][0-9-]\+"
+syn match TodoDate "[=!?][0-9-]\+"
 syn match TodoContext "\s#[a-zA-Z0-9]\+"
 syn match TodoPerson "\s@[a-zA-Z0-9]\+"
 

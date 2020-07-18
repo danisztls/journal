@@ -83,7 +83,7 @@ Fzf binds:
 
 **Time-related**
 - =20-07-30 **at** date
-- >20-07-30 **wait** for date
+- ?20-07-30 **wait** for date
 - !20-07-30 **until** date
 
 Template variables for date: *monthly, weekly, daily, january, monday, day12* 
@@ -95,9 +95,7 @@ Template variables for date: *monthly, weekly, daily, january, monday, day12*
 **People**
 - @lbcnz
 
-TODO: Swap > for ~ or other key for better compatibility. +asap
-
-TODO: Try todo.txt
+TODO: Review todo.txt, org-mode and taskwarrior. Why journal is better than them?
 
 ## Highlighting
 Todo syntax and highlighting for Vim is implemented.
