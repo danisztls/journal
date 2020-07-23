@@ -142,6 +142,11 @@ Eudaemon is the Greek concept of good guardian spirit. It aids the user in seein
 
 *Socrates during his lifetime had a daemon that always warned him of threats and bad judgment but never directed his actions.* 
 
+**Health features**
+- Pause to rest
+- Lunch time
+- Go to bed
+
 As I dislike micromanagement and obtrusive software I'm thinking on using libnotify. It's trivial to implement and Gnome Shell have a do not disturb feature if the user really need/want to stay in the computer. I was addicted to computers and games in the past and I believe that hardcore features like locking the user out are more a pain in the ass than useful. Addicts just need a good timeout to get it out of their system, they're not slaves they don't need a leash.
 
 xidletime show user idleness without root and apparently is reliable. And I can write a daemon in Python to transform that into a temporal series showing user activity. InfluxDB is perfect to store and explore temporal series but not something expected to be installed in a user desktop so I will log the data to CSV files instead and maybe write a plugin for InfluxDB. I am overengineering this but I want to show user activity in a beautiful detailed timeline. Daily data should have high resolution but older data can be aggressively downsampled and writes aggressively reduced by transforming it in memory before writing.

@@ -1,5 +1,8 @@
 #!/bin/bash
-# Support script for use with FZF.
+
+# This is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License v3 as published by the Free Software Foundation.
+# It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with it. If not, see <https://www.gnu.org/licenses/>.
 
 # Output a preview of the file with the selected line somewhat centered. $LINES and $COLUMNS is the size of the preview window from the fzf env.
 # $1 is function, $2 is file name, $3 is line number and $4 is task description.

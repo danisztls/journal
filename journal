@@ -1,5 +1,10 @@
 #!/bin/bash
-root="$HOME/Workshop"
+
+# This is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License v3 as published by the Free Software Foundation.
+# It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with it. If not, see <https://www.gnu.org/licenses/>.
+
+root="$HOME/Forge"
 hist="$root/JOURNAL.md"
 ignore="$XDG_CONFIG_HOME/workshop/journal.ignore"
 
@@ -79,8 +84,8 @@ esac
 
 # Show help if no valid argument is parsed
 echo -e "HELP:
-\t\e[1m'print'\e[0m print the tasks to stdout in plain text;
-\t\e[1m'show'\e[0m show the tasks in a pager with pretty formatting;
-\t\e[1m'fuzzy'\e[0m show tasks in fzf with note preview;
-\t\e[1m'commit'\e[0m clean done tasks and write them to journal." && exit
+\e[1m'print'\e[0m print the tasks to stdout in plain text;
+\e[1m'show'\e[0m show the tasks in a pager with pretty formatting;
+\e[1m'fuzzy'\e[0m show tasks in fzf with note preview;
+\e[1m'commit'\e[0m clean done tasks and write them to journal." && exit
 
