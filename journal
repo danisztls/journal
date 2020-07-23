@@ -6,7 +6,7 @@
 
 root="$HOME/Forge"
 hist="$root/JOURNAL.md"
-ignore="$XDG_CONFIG_HOME/workshop/journal.ignore"
+ignore="$XDG_CONFIG_HOME/journal/journal.ignore"
 
 # Colors
 reset=$(printf '\033[0m')
@@ -18,7 +18,16 @@ cyan=$(printf '\033[36m')
 yellow=$(printf '\033[33m')
 blue=$(printf '\033[34m')
 
-function printTasks { # $1=regex_rule
+
+printHelp() { # Show help if no valid argument is parsed
+    echo -e "HELP:
+    \e[1m'print'\e[0m print the tasks to stdout in plain text;
+    \e[1m'show'\e[0m show the tasks in a pager with pretty formatting;
+    \e[1m'fuzzy'\e[0m show tasks in fzf with note preview;
+    \e[1m'commit'\e[0m clean done tasks and write them to journal." && exit
+}
+
+printTasks() { # $1=regex_rule
 	if [ "$1" ]; then
 		rg -N --color never --no-heading -t md --ignore-file "$ignore" -e "$1"
 	else
@@ -26,23 +35,23 @@ function printTasks { # $1=regex_rule
 	fi | sed 's/TODO: //;s/\r//' # delete todo preffix and carriage return escape code
 }
 
-function prettify {
+prettify() {
 	sed 's/:/\n/' | awk '!x[$0]++' | # split & dedup
 	sed "s/^.*\.md$/\n${bold_blue}&${reset}/;s/\+done/${green}&${reset}/;s/\+asap/${red}&${reset}/;s/\+later/${magenta}&${reset}/;s/[=>].[^ ]*/${cyan}&${reset}/;s/\!.[^ ]*/${cyan}&${reset}/;s/#.[^ ]*/${yellow}&${reset}/;s/@.[^ ]*/${blue}&${reset}/" # colorize	
 } 
 
-function printPretty {
+printPretty() {
 	printTasks "^TODO:.*\+done.*$" | prettify
 	printTasks "^TODO:.*\+asap.*$" | prettify
 	printTasks "^TODO:.[^\+]*$" | prettify
 	printTasks "^TODO:.*\+later.*$" | prettify
 }
 
-function fuzzy() { # {1} is file name, {2} is line number and {3} is task description.
+fuzzy() { # {1} is file name, {2} is line number and {3} is task description.
 	printTasks | fzf --delimiter : --preview "journal-fzf preview {1} {2}" --preview-window=right:50%:wrap --bind "f1:execute($EDITOR {1}),f2:execute(xdg-open {1}),f3:reload(journal-fzf cycle {1} {2} {3} && journal-fzf print),f4:reload(journal-fzf delete {1} {2} && journal-fzf print)"
 }
 
-function confirmDialog {
+confirmDialog() {
 	# shellcheck disable=SC2162 # it don't matter
 	read -p "Are you sure? (y/N) " yn;
 	case $yn in
@@ -52,18 +61,18 @@ function confirmDialog {
 	esac
 }
 
-function commitDone() { # write tasks done to journal file
+commitDone() { # write tasks done to journal file
 	echo -e "## $(date "+%d de %B de %Y às %H:%M")"
 	rg -N --color never --no-heading -t md --ignore-file "$ignore" -e "^TODO:.*\+done.*$" | sed 's/:/: /;s/\+done//' && echo -e ""
 }
 
-function deleteDone() {	# delete tasks done from their files
+deleteDone() {	# delete tasks done from their files
 	for i in $(rg -N -t md --ignore-file "$ignore" -e "^TODO:.*\+done.*$" | sed 's/:.*//' | awk '!x[$0]++'); do # iterate over files with tasks done
 		sed -i '/\+done/d' "$i"
 	done
 }
 
-function commitGit() { # non-interactively git commit all changes in root dir
+commitGit() { # non-interactively git commit all changes in root dir
 	last_commit="git -C '$root' log HEAD^..HEAD --pretty=format:'%s'"  
 	today_commit=$(date "+%y-%m-%d") 
 	git -C "$root" add -A && if [[ "$today_commit" == "$last_commit" ]]; then
@@ -76,16 +85,10 @@ function commitGit() { # non-interactively git commit all changes in root dir
 cd "$root" || exit
 
 case $1 in
-	print) printTasks; exit 0;;
-	show) printPretty | less -R; exit 0;;
-	fuzzy) fuzzy; exit 0;;
-	commit) confirmDialog && commitDone >> "$hist" && deleteDone && commitGit; exit 0;; 
+	print) printTasks;;
+	show) printPretty | less -R;;
+	fuzzy) fuzzy;;
+	commit) confirmDialog && commitDone >> "$hist" && deleteDone && commitGit;;
+    *) printHelp;;
 esac
-
-# Show help if no valid argument is parsed
-echo -e "HELP:
-\e[1m'print'\e[0m print the tasks to stdout in plain text;
-\e[1m'show'\e[0m show the tasks in a pager with pretty formatting;
-\e[1m'fuzzy'\e[0m show tasks in fzf with note preview;
-\e[1m'commit'\e[0m clean done tasks and write them to journal." && exit
 

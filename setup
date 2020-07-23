@@ -2,7 +2,7 @@
 # Install the script to home dir
 
 bin="$HOME/.local/bin" && mkdir -p "$bin"
-config="$XDG_CONFIG_HOME/workshop" && mkdir -p "$config"
+config="$XDG_CONFIG_HOME/journal" && mkdir -p "$config"
 
 # Install Journal
 cp journal journal-fzf diary "$bin/"

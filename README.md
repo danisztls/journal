@@ -2,21 +2,19 @@
 
 - [Design](#design)
 - [Nexus](#nexus)
-- [Journal](#journal)
-    - [Todo syntax](#todo-syntax)
+- [Todo](#todo)
+    - [Syntax](#syntax)
     - [Highlighting](#highlighting)
     - [Calendar](#calendar)
     - [Diary](#diary)
-    - [Planning](#planning)
+    - [Planner](#planner)
 - [Eudaemon](#eudaemon)
 - [Install](#install)
 - [Development](#development)
 
 <!-- /TOC -->
 
-Workshop is a place to organize your life and get things done. It is an agnostic approach to note management and personal organization integrated to the desktop and console environments.
-
-*Isn't forge a better sounded and less overused name?*
+Journal is a place to organize your life and get things done. It is an agnostic approach to note management and personal organization integrated to the desktop and console environments.
 
 # Design
 **Design principles**
@@ -56,8 +54,8 @@ TODO: Cleaner, a script that will search for unlinked assets and send them to tr
 TODO: Fixer, a tool to search for broken links in notes and aid in fixing them. +later
 
 
-# Journal
-Journal is a tool to manage tasks, to keep track of what is to be done and what is done.
+# Todo
+Todo is a tool to manage tasks, to keep track of what is to be done and what is done.
 
 **How to use**
 - `journal show` print the tasks to stdout in plain text;
@@ -74,9 +72,7 @@ Fzf binds:
 - F3 cycle task priority tag 
 - F4 delete the task
 
-
-
-## Todo syntax
+## Syntax
 **Priority**
 - +asap
 - +later
@@ -95,7 +91,7 @@ Template variables for date: *monthly, weekly, daily, january, monday, day12*
 **People**
 - @lbcnz
 
-TODO: Review todo.txt, org-mode and taskwarrior. Why journal is better than them?
+TODO: Review todo.txt, org-mode and taskwarrior. In what journal is different and maybe better than them?
 
 ## Highlighting
 Todo syntax and highlighting for Vim is implemented.
@@ -112,11 +108,15 @@ I wrote some RE matches but the intricacies of Sublime were too complex for me t
 
 
 ## Calendar
-iCalendar and CalDAV are IETF protocols for calendar events and tasks.
+reminder is a minimalistic cli calendar and reminder tool. I think it is a good combo for Todo.
 
-TODO: Export tasks to iCalendar file. +asap
+TODO: Export tasks to reminder format.
+
+iCalendar and CalDAV are IETF protocols for calendar events and tasks. 
 
 [cdav-library](https://github.com/nextcloud/cdav-library) and [caldav](https://pypi.org/project/caldav/) are a JS and a Python CalDAV libraries.
+
+TODO: Export tasks to iCalendar.
 
 ## Diary
 Diary aids in the management a markdown diary.  Mostly it saves time that would be spent in copy/paste and file naming.
@@ -128,8 +128,7 @@ Diary aids in the management a markdown diary.  Mostly it saves time that would 
 
 It expects notes saved in **YY-MM-DD.md**, **YY-MM.md** and **YY.md** format and will ignore other files. The default retention policy is 15 days for daily entries and 6 months for monthly entries.
 
-
-## Planning
+## Planner
 Planner, is a tool to organize the backlog, pack tasks into sprints, roadmap projects and see statistics like backlog size and burnout rate.
 
 TODO: Log backlog statistics with every commit. +later
