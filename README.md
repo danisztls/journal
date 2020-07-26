@@ -5,7 +5,7 @@
 - [Todo](#todo)
     - [Syntax](#syntax)
     - [Highlighting](#highlighting)
-    - [Calendar](#calendar)
+    - [Reminders](#reminders)
     - [Diary](#diary)
     - [Planner](#planner)
 - [Eudaemon](#eudaemon)
@@ -58,10 +58,10 @@ TODO: Fixer, a tool to search for broken links in notes and aid in fixing them. 
 Todo is a tool to manage tasks, to keep track of what is to be done and what is done.
 
 **How to use**
-- `journal show` print the tasks to stdout in plain text;
-- `journal print` show the tasks in a pager with pretty formatting;
-- `journal fuzzy` show tasks in fzf with note preview;
-- `journal commit` clean done tasks and write them to journal.
+- `journal-tasks show` print the tasks to stdout in plain text;
+- `journal-tasks print` show the tasks in a pager with pretty formatting;
+- `journal-tasks fuzzy` show tasks in fzf with note preview;
+- `journal-tasks commit` clean done tasks and write them to journal.
 
 Commit function will post-call `git commit -m $today_date`.
 
@@ -76,13 +76,13 @@ Fzf binds:
 **Priority**
 - +asap
 - +later
+- +done
 
-**Time-related**
-- =20-07-30 **at** date
-- ?20-07-30 **wait** for date
-- !20-07-30 **until** date
-
-Template variables for date: *monthly, weekly, daily, january, monday, day12* 
+**Reminders**
+- =20-07-30 *remind at July 30* 
+- =07-01 *remind annualy at January 1*
+- =07 *remind monthly at day 1* 
+- =monday *remind weekly at monday*  
 
 **Context**
 - #house
@@ -107,24 +107,27 @@ Sublimes highlighting is done through a syntax files that attributes scopes to r
 I wrote some RE matches but the intricacies of Sublime were too complex for me to grasp in a short amount of time. 
 
 
-## Calendar
+## Reminders
 reminder is a minimalistic cli calendar and reminder tool. I think it is a good combo for Todo.
 
 TODO: Export tasks to reminder format.
 
-iCalendar and CalDAV are IETF protocols for calendar events and tasks. 
+```
+REM Jan 1 MSG Remind every year on new years day
+REM January 1 2015 MSG Remind only on new years day 2015
+REM Sunday 2 MSG Remind every second Sunday
+REM March Monday 1 --7 MSG remind on the last Monday of February
+REM December 25 +30 MSG Christmas
+```
 
-[cdav-library](https://github.com/nextcloud/cdav-library) and [caldav](https://pypi.org/project/caldav/) are a JS and a Python CalDAV libraries.
-
-TODO: Export tasks to iCalendar.
 
 ## Diary
 Diary aids in the management a markdown diary.  Mostly it saves time that would be spent in copy/paste and file naming.
 
 **How to use**
-- `diary write` open today's entry in a text editor.
-- `diary clean` rotate old entries into monthly/yearly notes.
-- `diary read` fuzzy search among entries.
+- `journal-log write` open a new entry in a text editor.
+- `journal-log read` fuzzy browse among entries.
+- `journal-log clean` rotate old entries into monthly/yearly notes.
 
 It expects notes saved in **YY-MM-DD.md**, **YY-MM.md** and **YY.md** format and will ignore other files. The default retention policy is 15 days for daily entries and 6 months for monthly entries.
 

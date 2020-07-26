@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# This is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License v3 as published by the Free Software Foundation.
+# It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with it. If not, see <https://www.gnu.org/licenses/>.
+
+root="$HOME/Forge/diary"
+daily=$(date '+%y-%m-%d' -d "-7days") # retention target for daily entries
+monthly=$(date '+%y-%m-%d' -d "-3months") # retention target for monthly entries
+
+cd "$root" || exit
+
+printHelp() {
+    echo -e "HELP:
+    \t\e[1m'write'\e[0m create/edit entry;
+    \t\e[1m'read'\e[0m fuzzy browse among entries; 
+    \t\e[1m'clean'\e[0m merge entries in monthly and yearly entries following the retention policy." && exit
+}
+
+editToday() {
+    now=$(date '+%y-%m-%dT-%H-%M').md
+    echo -e "### $(date '%H:%M')\n" >> "$now"
+	$EDITOR "$now" 
+}
+
+readDiary() {
+    fd '^[0-9]{2}.*.md$' | fzf --tac --no-sort --preview "bat --color always -pp --wrap character --terminal-width $(( $(tput cols) / 2 - 4)) -l md -r :500 {}"
+}
+
+cleanDiary() {
+    mapfile -t daily_entries < <(fd '^[0-9]{2}-[0-9]{2}-[0-9]{2}.*.md$')
+	for entry in "${daily_entries[@]}"; do
+		if [[ ${entry:0:8} < $daily ]]; then
+			echo -e "Moved \e[31m$entry\e[0m to \e[32m${entry:0:5}.md\e[0m"
+			{ 	echo -e "## $(date '+%B %d, %A' -d "${entry:0:8}")"
+				cat "$entry" && echo -e "\n"
+			} >> "${entry:0:5}.md"
+			rm "$entry"
+		fi
+	done
+
+    mapfile -t monthly_entries < <(fd '^[0-9]{2}-[0-9]{2}.md$')
+	for entry in "${monthly_entries[@]}"; do
+		if [[ ${entry:0:5} < $monthly ]]; then
+			echo -e "Moved \e[31m$entry\e[0m to \e[32m${entry:0:2}.md\e[0m"
+			{ 	echo -e "# $(date '+%Y' -d "${entry:0:5}")"
+				cat "$entry" && echo -e "\n"
+			} >> "${entry:0:2}.md"
+			rm "$entry"
+		fi
+	done	
+}
+
+case $1 in
+	write) editToday;;
+	read) readDiary;;
+	clean) cleanDiary;;
+    *) printHelp;;
+esac
+
