@@ -27,6 +27,8 @@ printHelp() { # Show help if no valid argument is parsed
     \e[1m'commit'\e[0m clean done tasks and write them to journal." && exit
 }
 
+# rg uses [Rust RE](https://docs.rs/regex/1.3.9/regex/)
+
 printTasks() { # $1=regex_rule
 	if [ "$1" ]; then
 		rg -N --color never --no-heading -t md --ignore-file "$ignore" -e "$1"
@@ -35,9 +37,31 @@ printTasks() { # $1=regex_rule
 	fi | sed 's/TODO: //;s/\r//' # delete todo preffix and carriage return escape code
 }
 
+printReminders() {
+    printTasks "^TODO:.*=[^ ].*$"
+#    mapfile -t reminders < <(printTasks "^TODO:.*=[^ ].*$") # FIXME: Edit RE to also match template variables
+    
+#    for event in "${reminders[@]}"; do
+#        eventREM=
+#        eventMSG=
+#    done
+}
+
+# TODO SYNTAX
+# TODO: It's christmas! =20-12-25  
+# TODO: Annualy every July 1. =07-01
+# TODO: Monthly at first day. =01 *remind monthly at day 1* 
+# TODO: Every monday =monday *remind weekly at monday*  
+
+# REMIND SYNTAX
+# REM December 25 2020 MSG It's christmas!
+# REM Jul 1 MSG Annualy every July 1.
+# REM 1 MSG msg Monthly at first day.
+# REM Monday MSG msg Every monday.
+
 prettify() {
 	sed 's/:/\n/' | awk '!x[$0]++' | # split & dedup
-	sed "s/^.*\.md$/\n${bold_blue}&${reset}/;s/\+done/${green}&${reset}/;s/\+asap/${red}&${reset}/;s/\+later/${magenta}&${reset}/;s/[=>].[^ ]*/${cyan}&${reset}/;s/\!.[^ ]*/${cyan}&${reset}/;s/#.[^ ]*/${yellow}&${reset}/;s/@.[^ ]*/${blue}&${reset}/" # colorize	
+	sed "s/^.*\.md$/\n${bold_blue}&${reset}/;s/\+done/${green}&${reset}/;s/\+asap/${red}&${reset}/;s/\+later/${magenta}&${reset}/;s/[=!?].[^ ]*/${cyan}&${reset}/;s/\!.[^ ]*/${cyan}&${reset}/;s/#.[^ ]*/${yellow}&${reset}/;s/@.[^ ]*/${blue}&${reset}/" # colorize	
 } 
 
 printPretty() {
@@ -88,6 +112,7 @@ case $1 in
 	print) printTasks;;
 	show) printPretty | less -R;;
 	fuzzy) fuzzy;;
+    reminders) printReminders;;
 	commit) confirmDialog && commitDone >> "$hist" && deleteDone && commitGit;;
     *) printHelp;;
 esac

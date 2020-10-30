@@ -31,7 +31,7 @@ case $1 in
 	preview) previewNote "$2" "$3";;
 	cycle) cyclePriority "$2" "$3" "$4";;
 	delete) deleteTask "$2" "$3";;
-	print) journal print;; # a hack as subshell can't invoke script functions
+	print) journal print;; # a hack as subshell can't invoke parent functions
 esac
 
 exit 0
