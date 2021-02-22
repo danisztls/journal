@@ -71,8 +71,7 @@ And in some cases insert emoticons: :smiley:
 
 While you can always insert HTML.
 
-<p>Science bitch!</p>
-
+<p>It just works!</p>
 
 <<<<<<< HEAD
 =======
