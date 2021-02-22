@@ -25,11 +25,19 @@ REM Sunday 2 MSG Remind every second Sunday
 REM March Monday 1 --7 MSG remind on the last Monday of February
 REM December 25 +30 MSG Christmas
 ```
+[remind](https://pypi.org/project/remind/): python lib to convert between Remind and iCalendar
 
 ## Similar tools
-Todo.txt, org-mode and taskwarrior in what journal is different and maybe better than them? What they do better?
+In what journal is different and maybe better than them? What they do better?
 
-TODO: Review and write a comparison between tools.
+- Todo.txt
+- [org-mode](https://orgmode.org/worg/org-contrib/babel/examples/foo.html)
+- taskwarrior
+- [tickgit](https://www.tickgit.com/): code-based project management, without breaking your flow. 
+- [jrnl](https://github.com/jrnl-org/jrnl): a simple journal application for the command line. 
+- [stretchly](https://hovancik.net/stretchly/): reminds you to take breaks 
+
+TODO: Try these tools later
 
 # Future
 Some ideas I have for the future after Journal is mature/stable enough.
