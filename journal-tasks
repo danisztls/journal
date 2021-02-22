@@ -4,7 +4,7 @@
 # It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with it. If not, see <https://www.gnu.org/licenses/>.
 
-root="$HOME/Forge"
+root="$HOME/Docs"
 hist="$root/JOURNAL.md"
 ignore="$XDG_CONFIG_HOME/journal/journal.ignore"
 
@@ -38,7 +38,7 @@ printTasks() { # $1=regex_rule
 }
 
 printReminders() {
-    printTasks "^TODO:.*=[^ ].*$"
+    printTasks "^TODO:.*=[^ ].*$" | sed 's/.*://'
 #    mapfile -t reminders < <(printTasks "^TODO:.*=[^ ].*$") # FIXME: Edit RE to also match template variables
     
 #    for event in "${reminders[@]}"; do

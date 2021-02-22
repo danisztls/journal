@@ -4,7 +4,7 @@
 # It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with it. If not, see <https://www.gnu.org/licenses/>.
 
-root="$HOME/Forge/diary"
+root="$HOME/Docs/diary"
 daily=$(date '+%y-%m-%d' -d "-7days") # retention target for daily entries
 monthly=$(date '+%y-%m-%d' -d "-3months") # retention target for monthly entries
 
@@ -19,7 +19,7 @@ printHelp() {
 
 editToday() {
     now=$(date '+%y-%m-%dT-%H-%M').md
-    echo -e "### $(date '%H:%M')\n" >> "$now"
+    echo -e "### $(date '+%H:%M')\n" >> "$now"
 	$EDITOR "$now" 
 }
 
