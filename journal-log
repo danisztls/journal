@@ -14,7 +14,7 @@ printHelp() {
     echo -e "HELP:
     \t\e[1m'write'\e[0m create/edit entry;
     \t\e[1m'read'\e[0m fuzzy browse among entries; 
-    \t\e[1m'clean'\e[0m merge entries in monthly and yearly entries following the retention policy." && exit
+    \t\e[1m'rotate'\e[0m merge entries in monthly and yearly entries following the retention policy." && exit
 }
 
 editToday() {
@@ -27,7 +27,7 @@ readDiary() {
     fd '^[0-9]{2}.*.md$' | fzf --tac --no-sort --preview "bat --color always -pp --wrap character --terminal-width $(( $(tput cols) / 2 - 4)) -l md -r :500 {}"
 }
 
-cleanDiary() {
+rotateDiary() {
     mapfile -t daily_entries < <(fd '^[0-9]{2}-[0-9]{2}-[0-9]{2}.*.md$')
 	for entry in "${daily_entries[@]}"; do
 		if [[ ${entry:0:8} < $daily ]]; then
@@ -54,7 +54,7 @@ cleanDiary() {
 case $1 in
 	write) editToday;;
 	read) readDiary;;
-	clean) cleanDiary;;
+	rotate) rotateDiary;;
     *) printHelp;;
 esac
 

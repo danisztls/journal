@@ -1,9 +1,0 @@
-Eliminar risco de tombo nas pedras. +asap =monday
-Verificar glicemia. =every-3m
-Checkup cardiológico e ECC. =annualy
-Checkup odontológico. =every-1y
-Vacinar contra a gripe em meados de Março. =every-march
-Escovar o pelo. =weekly
-Passear. =weekly
-Dar banho. =every3m
-Pagar contas do mês de Novembro. =monthly

@@ -3,7 +3,7 @@
 " Maintainer: lbcnz
 " URL:
 
-syn match todoLine "^TODO:.*"
+syn match todoLine "^TODO:"
 syn match todoAsap "+asap"
 syn match todoLater "+later"
 syn match todoDone "+done"

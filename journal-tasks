@@ -18,12 +18,11 @@ cyan=$(printf '\033[36m')
 yellow=$(printf '\033[33m')
 blue=$(printf '\033[34m')
 
-
 printHelp() { # Show help if no valid argument is parsed
     echo -e "HELP:
     \e[1m'print'\e[0m print the tasks to stdout in plain text;
     \e[1m'show'\e[0m show the tasks in a pager with pretty formatting;
-    \e[1m'fuzzy'\e[0m show tasks in fzf with note preview;
+    \e[1m'search'\e[0m show tasks in fzf with note preview;
     \e[1m'commit'\e[0m clean done tasks and write them to journal." && exit
 }
 
@@ -36,28 +35,6 @@ printTasks() { # $1=regex_rule
 		rg -n --color never --no-heading -t md --ignore-file "$ignore" -e "TODO: "
 	fi | sed 's/TODO: //;s/\r//' # delete todo preffix and carriage return escape code
 }
-
-printReminders() {
-    printTasks "^TODO:.*=[^ ].*$" | sed 's/.*://'
-#    mapfile -t reminders < <(printTasks "^TODO:.*=[^ ].*$") # FIXME: Edit RE to also match template variables
-    
-#    for event in "${reminders[@]}"; do
-#        eventREM=
-#        eventMSG=
-#    done
-}
-
-# TODO SYNTAX
-# TODO: It's christmas! =20-12-25  
-# TODO: Annualy every July 1. =07-01
-# TODO: Monthly at first day. =01 *remind monthly at day 1* 
-# TODO: Every monday =monday *remind weekly at monday*  
-
-# REMIND SYNTAX
-# REM December 25 2020 MSG It's christmas!
-# REM Jul 1 MSG Annualy every July 1.
-# REM 1 MSG msg Monthly at first day.
-# REM Monday MSG msg Every monday.
 
 prettify() {
 	sed 's/:/\n/' | awk '!x[$0]++' | # split & dedup
@@ -111,8 +88,7 @@ cd "$root" || exit
 case $1 in
 	print) printTasks;;
 	show) printPretty | less -R;;
-	fuzzy) fuzzy;;
-    reminders) printReminders;;
+	search) jfuzz;;
 	commit) confirmDialog && commitDone >> "$hist" && deleteDone && commitGit;;
     *) printHelp;;
 esac
