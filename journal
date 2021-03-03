@@ -4,12 +4,13 @@
 # It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with it. If not, see <https://www.gnu.org/licenses/>.
 
-# Config
+config_file="$HOME/.config/journal/config"
 
+# General
 root="$HOME/Docs"
 hist="$root/JOURNAL.md"
-root="$root/log"
-ignore="$XDG_CONFIG_HOME/journal/journal.ignore"
+log="$root/log"
+ignore="$XDG_CONFIG_HOME/journal/ignore"
 daily=$(date '+%y-%m-%d' -d "-7days") # retention target for daily entries
 monthly=$(date '+%y-%m-%d' -d "-3months") # retention target for monthly entries
 
@@ -23,12 +24,16 @@ cyan=$(printf '\033[36m')
 yellow=$(printf '\033[33m')
 blue=$(printf '\033[34m')
 
+[ -f "$config_file" ] && source "$config_file"
+
 printHelp() { # Show help if no valid argument is parsed
     echo -e "HELP:
+    \e[1mTASKS:[0m
     \t\e[1m'print'\e[0m print the tasks to stdout in plain text;
     \t\e[1m'show'\e[0m show the tasks in a pager with pretty formatting;
     \t\e[1m'search'\e[0m show tasks in fzf with note preview;
     \t\e[1m'commit'\e[0m clean done tasks and write them to journal.;
+    \e[1mJOURNALING:[0m
     \t\e[1m'write'\e[0m create/edit entry;
     \t\e[1m'read'\e[0m fuzzy browse among entries; 
     \t\e[1m'rotate'\e[0m merge entries in monthly and yearly entries following the retention policy." && exit
@@ -59,7 +64,7 @@ printPretty() {
 }
 
 fuzzy() { # {1} is file name, {2} is line number and {3} is task description.
-	printTasks | fzf --delimiter : --preview "journal-fzf preview {1} {2}" --preview-window=right:50%:wrap --bind "f1:execute($EDITOR {1}),f2:execute(xdg-open {1}),f3:reload(journal-fzf cycle {1} {2} {3} && journal-fzf print),f4:reload(journal-fzf delete {1} {2} && journal-fzf print)"
+	printTasks | fzf --delimiter : --preview "jfzf preview {1} {2}" --preview-window=right:50%:wrap --bind "f1:execute($EDITOR {1}),f2:execute(xdg-open {1}),f3:reload(jfzf cycle {1} {2} {3} && jfzf print),f4:reload(jfzf delete {1} {2} && jfzf print)"
 }
 
 confirmDialog() {
@@ -97,16 +102,19 @@ cd "$root" || exit
 
 # LOG
 editToday() {
+    cd "$log" && exit 1
     now=$(date '+%y-%m-%dT-%H-%M').md
     echo -e "### $(date '+%H:%M')\n" >> "$now"
 	$EDITOR "$now" 
 }
 
 readDiary() {
+    cd "$log" && exit 1
     fd '^[0-9]{2}.*.md$' | fzf --tac --no-sort --preview "bat --color always -pp --wrap character --terminal-width $(( $(tput cols) / 2 - 4)) -l md -r :500 {}"
 }
 
 rotateDiary() {
+    cd "$log" && exit 1
     mapfile -t daily_entries < <(fd '^[0-9]{2}-[0-9]{2}-[0-9]{2}.*.md$')
 	for entry in "${daily_entries[@]}"; do
 		if [[ ${entry:0:8} < $daily ]]; then
@@ -134,7 +142,7 @@ rotateDiary() {
 case $1 in
 	print) printTasks;;
 	show) printPretty | less -R;;
-	search) jfuzz;;
+	search) jfzf;;
 	commit) confirmDialog && commitDone >> "$hist" && deleteDone && commitGit;;
 	write) editToday;;
 	read) readDiary;;
