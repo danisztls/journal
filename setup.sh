@@ -5,7 +5,7 @@ doInstall () {
 	bin="$HOME/.local/bin" && mkdir -p "$bin"
 	config="$XDG_CONFIG_HOME/journal" && mkdir -p "$config"
 	
-	cp journal-tasks journal-fzf journal-log "$bin/"
+	cp journal jfuzz "$bin/"
 	cp journal.ignore "$config/"
 
 	if [ "$VIMINIT" ]; then
