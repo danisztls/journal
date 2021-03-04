@@ -32,7 +32,7 @@ printHelp() {
     TODOs:
     \t\e[1m'print'\e[0m print todo tasks to stdout in plain text;
     \t\e[1m'show'\e[0m show TODOs in a pager with pretty formatting;
-    \t\e[1m'find'\e[0m show TODOs in fzf with note preview;
+    \t\e[1m'find'\e[0m show TODOs in fzf with note preview. f1 opens in editor, f2 cycles priority tags and f5 delete;
     \t\e[1m'plan'\e[0m export TODOs to a backlog file for task execution planning;
     \t\e[1m'commit'\e[0m write to journal and clean done TODOs within files.;
     LOG:
@@ -84,7 +84,7 @@ printPrettyTodos() {
 # Invoke FZF to fuzzy find and preview TODOs context
 # {1} is file name, {2} is line number and {3} is task description.
 findTodos() {
-	printTodos | fzf --delimiter : --preview "jfzf preview {1} {2}" --preview-window=right:50%:wrap --bind "f1:execute($EDITOR {1}),f2:execute(xdg-open {1}),f3:reload(jfzf cycle {1} {2} {3} && jfzf print),f4:reload(jfzf delete {1} {2} && jfzf print)"
+	printTodos | fzf --delimiter : --preview "jfzf preview {1} {2}" --preview-window=right:50%:wrap --bind "f1:execute($EDITOR {1}),f2:reload(jfzf cycle {1} {2} {3} && jfzf print),f5:reload(jfzf delete {1} {2} && jfzf print)"
 }
 
 # Export TODOs to a backlog file for priority order and scheduling.
