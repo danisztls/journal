@@ -2,12 +2,14 @@
 # Script to install/uninstall Journal
 
 doInstall () {
-	bin="$HOME/.local/bin" && mkdir -p "$bin"
-	config="$XDG_CONFIG_HOME/journal" && mkdir -p "$config"
-	
-	cp journal jfuzz "$bin/"
-	cp journal.ignore "$config/"
+    # Install binaries
+	bin="$HOME/.local/bin" && mkdir -p "$bin" && cp journal jfzf "$bin/"
+    
+    # Create config dir if not existent
+    config="$XDG_CONFIG_HOME/journal" && mkdir -p "$config"
+    [ -f "$config/ignore" ] || echo -e "log/journal.md\nlog/backlog.md" > "$config/ignore" 
 
+    # Install syntax for vim
 	if [ "$VIMINIT" ]; then
 		vim_after=$(echo "$VIMINIT" | sed "s/.*runtimepath+=~\///;s/|source.*//") && vim_after="$HOME/$vim_after"
 	else
@@ -16,9 +18,10 @@ doInstall () {
 
 	mkdir -p "$vim_after" && cp "syntax/markdown.vim" "$vim_after/syntax/markdown.vim"
 
-    echo "All done!"
+    echo "Setup completed!"
 }
 
+# TODO: Write a uninstall script
 #doUninstall () {
 #}
 

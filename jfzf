@@ -7,7 +7,7 @@
 # Output a preview of the file with the selected line somewhat centered. $LINES and $COLUMNS is the size of the preview window from the fzf env.
 # $1 is function, $2 is file name, $3 is line number and $4 is task description.
 
-function previewNote {
+function previewFile {
 	t=$(( LINES / 2 )) # threshold
 	s=$(( $2 - t )) && [ $s -lt 1 ] && s=1 # start line w/ failsafe
 	e=$(( $2 + t )) # end line
@@ -22,15 +22,15 @@ function cyclePriority {
 	echo "$3" | rg "\+later" >/dev/null && sed -i "$2s/\+later/\+asap/" "$1" && return 0
 }
 
-function deleteTask {
+function deleteTodo {
 	del=$2 && del+=d
 	sed -i "$del" "$1"
 }
 
 case $1 in
-	preview) previewNote "$2" "$3";;
+	preview) previewFile "$2" "$3";;
 	cycle) cyclePriority "$2" "$3" "$4";;
-	delete) deleteTask "$2" "$3";;
+	delete) deleteTodo "$2" "$3";;
 	print) journal print;; # a hack as subshell can't invoke parent functions
 esac
 
