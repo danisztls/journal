@@ -55,6 +55,7 @@ confirmDialog() {
 
 ## TODOs ##
 cd "$root" || exit 1
+[ -d "$root/log" ] || mkdir -p "$root/log"
 
 # Find TODOs on files and send as plain-text to STDOUT
 # $1 is a [Rust RE](https://docs.rs/regex/1.3.9/regex/) rule
@@ -127,7 +128,7 @@ commitDoneTodos() {
 # Create a log entry with present date/time and open it with $EDITOR
 writeLog() {
     cd "$root/log" || exit 1
-    now=$(date '+%y-%m-%dT-%H-%M').md
+    now="$(date '+%y-%m-%dT-%H-%M').md"
     echo -e "### $(date '+%H:%M')\n" >> "$now"
 	$EDITOR "$now" 
 }

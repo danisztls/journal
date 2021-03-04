@@ -7,18 +7,17 @@ doInstall () {
     
     # Create config dir if not existent
     config="$XDG_CONFIG_HOME/journal" && mkdir -p "$config"
-    [ -f "$config/ignore" ] || echo -e "log/journal.md\nlog/backlog.md" > "$config/ignore" 
+    [ -f "$config/ignore" ] || printf "log/journal.md\nlog/backlog.md\nlog/backlog-old.md\n" > "$config/ignore" 
 
     # Install syntax for vim
 	if [ "$VIMINIT" ]; then
-		vim_after=$(echo "$VIMINIT" | sed "s/.*runtimepath+=~\///;s/|source.*//") && vim_after="$HOME/$vim_after"
+		vim_after=$(printf "$VIMINIT\n" | sed "s/.*runtimepath+=~\///;s/|source.*//") && vim_after="$HOME/$vim_after"
 	else
 		vim_after="$HOME/.vim/after"
 	fi
-
 	mkdir -p "$vim_after" && cp "syntax/markdown.vim" "$vim_after/syntax/markdown.vim"
 
-    echo "Setup completed!"
+    printf "Setup completed!\n"
 }
 
 # TODO: Write a uninstall script
