@@ -32,7 +32,7 @@ printHelp() {
     TODOs:
     \t\e[1m'print'\e[0m print todo tasks to stdout in plain text;
     \t\e[1m'show'\e[0m show TODOs in a pager with pretty formatting;
-    \t\e[1m'search'\e[0m show TODOs in fzf with note preview;
+    \t\e[1m'find'\e[0m show TODOs in fzf with note preview;
     \t\e[1m'plan'\e[0m export TODOs to a backlog file for task execution planning;
     \t\e[1m'commit'\e[0m write to journal and clean done TODOs within files.;
     LOG:
@@ -81,11 +81,10 @@ printPrettyTodos() {
 	printTodos "^TODO:.*\+later.*$" | prettifyTodos
 }
 
-# Invoke FZF to fuzzy search and preview TODOs context
+# Invoke FZF to fuzzy find and preview TODOs context
 # {1} is file name, {2} is line number and {3} is task description.
-searchTodos() {
-	printTodos | fzf --delimiter : --preview "jfzf preview {1} {2}" --preview-window=right:50%:wrap --bind \
-        "f1:execute($EDITOR {1}),f2:execute(xdg-open {1}),f3:reload(jfzf cycle {1} {2} {3} && jfzf print),f4:reload(jfzf delete {1} {2} && jfzf print)"
+findTodos() {
+	printTodos | fzf --delimiter : --preview "jfzf preview {1} {2}" --preview-window=right:50%:wrap --bind "f1:execute($EDITOR {1}),f2:execute(xdg-open {1}),f3:reload(jfzf cycle {1} {2} {3} && jfzf print),f4:reload(jfzf delete {1} {2} && jfzf print)"
 }
 
 # Export TODOs to a backlog file for priority order and scheduling.
@@ -133,7 +132,7 @@ writeLog() {
 	$EDITOR "$now" 
 }
 
-# Invoke FZF to fuzzy search and preview log entries
+# Invoke FZF to fuzzy find and preview log entries
 readLog() {
     cd "$root/log" || exit 1
     fd '^[0-9]{2}.*.md$' | fzf --tac --no-sort --preview "bat --color always -pp --wrap character --terminal-width $(( $(tput cols) / 2 - 4)) -l md -r :500 {}"
@@ -169,7 +168,7 @@ rotateLog() {
 case $1 in
 	print) printTodos;;
 	show) printPrettyTodos | less -R;;
-	search) searchTodos;;
+    find) findTodos;;
     plan) planTodos;;
 	commit) commitDoneTodos;;
 	write) writeLog;;
