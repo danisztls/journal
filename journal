@@ -7,9 +7,6 @@
 ## CONFIG ##
 # General defaults
 root="$HOME/Docs"
-log="$root/log"
-hist="$log/journal.md"
-backlog="$log/backlog.md"
 ignore="$XDG_CONFIG_HOME/journal/ignore"
 daily=$(date '+%y-%m-%d' -d "-7days") # retention target for daily entries
 monthly=$(date '+%y-%m-%d' -d "-3months") # retention target for monthly entries
@@ -36,6 +33,7 @@ printHelp() {
     \t\e[1m'print'\e[0m print todo tasks to stdout in plain text;
     \t\e[1m'show'\e[0m show TODOs in a pager with pretty formatting;
     \t\e[1m'search'\e[0m show TODOs in fzf with note preview;
+    \t\e[1m'plan'\e[0m export TODOs to a backlog file for task execution planning;
     \t\e[1m'commit'\e[0m write to journal and clean done TODOs within files.;
     LOG:
     \t\e[1m'write'\e[0m create/edit log entry;
@@ -89,6 +87,13 @@ searchTodos() {
         "f1:execute($EDITOR {1}),f2:execute(xdg-open {1}),f3:reload(jfzf cycle {1} {2} {3} && jfzf print),f4:reload(jfzf delete {1} {2} && jfzf print)"
 }
 
+# Export TODOs to a backlog file for priority order and scheduling.
+planTodos() {
+    [ -f "log/backlog.md" ] && mv "log/backlog.md" "log/backlog-old.md"
+    printTodos > "log/backlog.md"
+    $EDITOR "log/backlog.md"
+}
+
 #  Print done TODOs to STDOUT
 printDoneTodos() { 
 	echo -e "## $(date "+%d de %B de %Y às %H:%M")"
@@ -115,13 +120,13 @@ commitGit() {
 
 # Commit all done TODOs to a journaling
 commitDoneTodos() {
-    confirmDialog && printDoneTodos >> "$hist" && deleteDoneTodos && commitGit
+    confirmDialog && printDoneTodos >> "journal.md" && deleteDoneTodos && commitGit
 }
 
 # LOG
 # Create a log entry with present date/time and open it with $EDITOR
 writeLog() {
-    cd "$log" || exit 1
+    cd "$root/log" || exit 1
     now=$(date '+%y-%m-%dT-%H-%M').md
     echo -e "### $(date '+%H:%M')\n" >> "$now"
 	$EDITOR "$now" 
@@ -129,13 +134,13 @@ writeLog() {
 
 # Invoke FZF to fuzzy search and preview log entries
 readLog() {
-    cd "$log" || exit 1
+    cd "$root/log" || exit 1
     fd '^[0-9]{2}.*.md$' | fzf --tac --no-sort --preview "bat --color always -pp --wrap character --terminal-width $(( $(tput cols) / 2 - 4)) -l md -r :500 {}"
 }
 
 # Rotate old entries to monthly/yearly entries
 rotateLog() {
-    cd "$log" || exit 1
+    cd "$root/log" || exit 1
     mapfile -t daily_entries < <(fd '^[0-9]{2}-[0-9]{2}-[0-9]{2}.*.md$')
 	for entry in "${daily_entries[@]}"; do
 		if [[ ${entry:0:8} < $daily ]]; then
@@ -164,6 +169,7 @@ case $1 in
 	print) printTodos;;
 	show) printPrettyTodos | less -R;;
 	search) searchTodos;;
+    plan) planTodos;;
 	commit) commitDoneTodos;;
 	write) writeLog;;
 	read) readLog;;
