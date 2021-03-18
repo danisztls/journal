@@ -31,12 +31,12 @@ printHelp() {
     echo -e "HELP:
     TODOs:
     \t\e[1m'print'\e[0m print todo tasks to stdout in plain text;
-    \t\e[1m'show'\e[0m show TODOs in a pager with pretty formatting;
-    \t\e[1m'find'\e[0m show TODOs in fzf with note preview. f1 opens in editor, f2 cycles priority tags and f5 delete;
-    \t\e[1m'plan'\e[0m export TODOs to a backlog file for task execution planning;
-    \t\e[1m'commit'\e[0m write to journal and clean done TODOs within files.;
+    \t\e[1m'show'\e[0m show tasks in a pager with pretty formatting, use -a to display parked tasks;
+    \t\e[1m'find'\e[0m show tasks in fzf with note preview. f1 opens in editor, f2 cycles priority tags and f5 delete;
+    \t\e[1m'plan'\e[0m export tasks to a backlog file for task execution planning;
+    \t\e[1m'commit'\e[0m write to journal and clean done tasks within files.;
     LOG:
-    \t\e[1m'write'\e[0m create/edit log entry;
+    \t\e[1m'write'\e[0m create/edit log entry, use -d to do a daily "standup";
     \t\e[1m'read'\e[0m fuzzy browse among entries; 
     \t\e[1m'rotate'\e[0m merge entries in monthly and yearly entries following the retention policy." && exit
 }
@@ -44,7 +44,7 @@ printHelp() {
 ## UTILS ##
 # Subprocedure that asks for user confirmation
 confirmDialog() {
-	# shellcheck disable=SC2162 # it don't matter
+	# shellcheck disable=SC2162 # it don't mattebash r
 	read -p "Are you sure? (y/N) " yn;
 	case $yn in
 		[Yy][Ee][Ss]|[Yy]) return 0;;
@@ -75,10 +75,18 @@ prettifyTodos() {
 
 # Print pretty TODOs to STDOUT to browse with a pager
 printPrettyTodos() {
+    while getopts ":a" option; do
+      case $option in
+        a) all_todos=True ;;
+        ?) echo "Error: option -$OPTARG is not implemented";;
+      esac
+    done
+
 	printTodos "^TODO:.*\+done.*$" | prettifyTodos
 	printTodos "^TODO:.*\+asap.*$" | prettifyTodos
 	printTodos "^TODO:.[^\+]*$" | prettifyTodos
-	printTodos "^TODO:.*\+later.*$" | prettifyTodos
+	# only print those if -a flag is set
+    [ $all_todos ] && printTodos "^TODO:.*\+later.*$" | prettifyTodos
 }
 
 # Invoke FZF to fuzzy find and preview TODOs context
@@ -126,9 +134,25 @@ commitDoneTodos() {
 # LOG
 # Create a log entry with present date/time and open it with $EDITOR
 writeLog() {
+    while getopts ":d" option; do
+      case $option in
+        d) daily_standup=True ;;
+        ?) echo "Error: option -$OPTARG is not implemented";;
+      esac
+    done
+
     cd "$root/log" || exit 1
-    now="$(date '+%y-%m-%dT-%H-%M').md"
-    echo -e "### $(date '+%H:%M')\n" >> "$now"
+    #now="$(date '+%y-%m-%dT-%H-%M').md"
+    now="$(date '+%y-%m-%d').md"
+    # insert line break if file exists
+    [[ -f $now ]] && header="\n"
+    header+="### $(date '+%H:%M')"
+    # insert daily standup if flag if found
+    [[ $daily_standup ]] && header+="
+#### What did I accomplish yesterday?
+#### What will I do today?
+#### What obstacles are impeding my progress?\n"
+    echo -e "$header" >> "$now"
 	$EDITOR "$now" 
 }
 
@@ -167,11 +191,11 @@ rotateLog() {
 # Switches
 case $1 in
 	print) printTodos;;
-	show) printPrettyTodos | less -R;;
+	show) printPrettyTodos "${@:2}" | less -R;;
     find) findTodos;;
     plan) planTodos;;
 	commit) commitDoneTodos;;
-	write) writeLog;;
+	write) writeLog "${@:2}";;
 	read) readLog;;
 	rotate) rotateLog;;
     *) printHelp;;
