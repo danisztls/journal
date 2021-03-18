@@ -3,10 +3,12 @@
 
 doInstall () {
     # Install binaries
-	bin="$HOME/.local/bin" && mkdir -p "$bin" && cp journal jfzf "$bin/"
+	bin="$HOME/.local/bin" && mkdir -p "$bin" && cp journal "$bin/"
     
     # Create config dir if not existent
     config="$XDG_CONFIG_HOME/journal" && mkdir -p "$config"
+    
+    # Create default ignore file if non existent
     [ -f "$config/ignore" ] || printf "log/journal.md\nlog/backlog.md\nlog/backlog-old.md\n" > "$config/ignore" 
 
     # Install syntax for vim
