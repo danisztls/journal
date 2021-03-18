@@ -13,6 +13,7 @@ monthly=$(date '+%y-%m-%d' -d "-3months") # retention target for monthly entries
 
 # Colors defaults
 reset=$(printf '\033[0m')
+gray=$(printf '\033[2;20m')
 bold_blue=$(printf '\033[1;34m')
 red=$(printf '\033[31m')
 green=$(printf '\033[32m')
@@ -92,7 +93,12 @@ printPrettyTodos() {
 # Invoke FZF to fuzzy find and preview TODOs context
 # {1} is file name, {2} is line number and {3} is task description.
 findTodos() {
-	printTodos | fzf --delimiter : --preview "jfzf preview {1} {2}" --preview-window=right:50%:wrap --bind "f1:execute($EDITOR {1}),f2:reload(jfzf cycle {1} {2} {3} && jfzf print),f5:reload(jfzf delete {1} {2} && jfzf print)"
+    printTodos |
+    sed -E "s/(.*):([0-9]*):(.*)/${magenta}\1${reset}:${gray}\2${reset}:\3/" |
+    fzf --ansi --delimiter ':' \
+        --preview "jfzf preview {1} {2}" \
+        --preview-window=right:50%:wrap \
+        --bind "f1:execute($EDITOR {1}),f2:reload(jfzf cycle {1} {2} {3} && jfzf print),f5:reload(jfzf delete {1} {2} && jfzf print)"
 }
 
 # Export TODOs to a backlog file for priority order and scheduling.
