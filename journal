@@ -37,7 +37,7 @@ printHelp() {
     \t\e[1m'plan'\e[0m export tasks to a backlog file for task execution planning;
     \t\e[1m'commit'\e[0m write to journal and clean done tasks within files.;
     LOG:
-    \t\e[1m'write'\e[0m create/edit log entry, use -d to do a daily "standup";
+    \t\e[1m'write'\e[0m create/edit log entry, use -d to do a daily review
     \t\e[1m'read'\e[0m fuzzy browse among entries; 
     \t\e[1m'rotate'\e[0m merge entries in monthly and yearly entries following the retention policy." && exit
 }
@@ -71,7 +71,14 @@ printTodos() {
 # Format and colorize plain-text TODOs from STDIN 
 prettifyTodos() {
 	sed 's/:/\n/' | awk '!x[$0]++' | # split & dedup
-	sed "s/^.*\.md$/\n${bold_blue}&${reset}/;s/\+done/${green}&${reset}/;s/\+asap/${red}&${reset}/;s/\+later/${magenta}&${reset}/;s/[=!?].[^ ]*/${cyan}&${reset}/;s/\!.[^ ]*/${cyan}&${reset}/;s/#.[^ ]*/${yellow}&${reset}/;s/@.[^ ]*/${blue}&${reset}/" #colorize
+	sed "s/^.*\.md$/\n${bold_blue}&${reset}/;
+        s/\+done/${green}&${reset}/;
+        s/\+asap/${red}&${reset}/;
+        s/\+later/${magenta}&${reset}/;
+        s/[=!?].[^ ]*/${cyan}&${reset}/;
+        s/\!.[^ ]*/${cyan}&${reset}/;
+        s/#.[^ ]*/${yellow}&${reset}/;
+        s/@.[^ ]*/${blue}&${reset}/" #colorize
 }
 
 # Print pretty TODOs to STDOUT to browse with a pager
@@ -111,7 +118,8 @@ planTodos() {
 #  Print done TODOs to STDOUT
 printDoneTodos() { 
 	echo -e "## $(date "+%d de %B de %Y às %H:%M")"
-	rg -N --color never --no-heading -t md --ignore-file "$ignore" -e "^TODO:.*\+done.*$" | sed 's/:/: /;s/\+done//' && echo -e ""
+	rg -N --color never --no-heading -t md --ignore-file "$ignore" -e "^TODO:.*\+done.*$" |
+    sed 's/:/: /;s/\+done//' && echo -e ""
 }
 
 # Delete done TODOs within files
@@ -165,7 +173,8 @@ writeLog() {
 # Invoke FZF to fuzzy find and preview log entries
 readLog() {
     cd "$root/log" || exit 1
-    fd '^[0-9]{2}.*.md$' | fzf --tac --no-sort --preview "bat --color always -pp --wrap character --terminal-width $(( $(tput cols) / 2 - 4)) -l md -r :500 {}"
+    fd '^[0-9]{2}.*.md$' |
+    fzf --tac --no-sort --preview "bat --color always -pp --wrap character --terminal-width $(( $(tput cols) / 2 - 4)) -l md -r :500 {}"
 }
 
 # Rotate old entries to monthly/yearly entries
