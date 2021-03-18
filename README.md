@@ -5,6 +5,7 @@
 * [Task management](#task-management)
         * [Syntax](#syntax)
 * [Journaling](#journaling)
+* [Screenshot](#screenshot)
 * [Setup](#setup)
 * [Development](#development)
 
@@ -36,16 +37,16 @@ Manage tasks, keep track and archive them after they are done.
 **How to use**
 - `journal show` print the tasks to stdout in plain text;
 - `journal print` show the tasks in a pager with pretty formatting;
-- `journal search` search tasks in fzf with note preview;
+- `journal find` search tasks in fzf with note preview;
 - `journal commit` clean done tasks and write them to journal.
 
 Commit function will post-call `git commit -m $today_date`.
 
 Search binds:
-- F1 opens task note in `$EDITOR`
-- F2 opens task note with `xdg-open`
-- F3 cycles task priority tag 
-- F4 deletes the task
+- `F1` opens task note with `xdg-open`
+- `F2` opens task note in `$EDITOR`
+- `F3` cycles task priority tag 
+- `DEL` deletes the task
 
 #### Syntax
 **Priority**
@@ -70,8 +71,13 @@ Aids in the management a markdown diary and saves time that would be spent with 
 
 It expects notes saved in **YY-MM-DD.md**, **YY-MM.md** and **YY.md** format and will ignore other files. The default retention policy is 15 days for daily entries and 6 months for monthly entries.
 
+## Screenshot
+Example of fuzzy finding TODOs among files.
+
+![$ journal find](journal-fuzzy.png) 
+
 ## Setup
-Run the **setup** script to install it in home. Dependencies are **ripgrep**, **fzf**, **bat**.
+Run the **setup** script to install it in home. Dependencies are **ripgrep**, **fzf** and **bat**.
 
 I will write an AUR script in the future but I am not comfortable releasing it now as I am doing frequent design changes.
 
