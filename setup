@@ -1,7 +1,7 @@
 #!/bin/sh
 # Script to install/uninstall Journal
 
-doInstall () {
+doInstall() {
     # Install binaries
 	bin="$HOME/.local/bin" && mkdir -p "$bin" && cp journal "$bin/"
     
@@ -22,12 +22,12 @@ doInstall () {
     printf "Setup completed!\n"
 }
 
-# TODO: Write a uninstall script
-#doUninstall () {
-#}
+doUninstall() {
+    rm -rf "$bin/journal"
+}
 
 case $1 in
 	install) doInstall;;
-	# uninstall) doUninstall;;
+	uninstall) doUninstall;;
 esac
 
