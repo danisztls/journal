@@ -60,7 +60,7 @@ printHelp() {
 }
 
 ## UTILS ##
-confirmDialog() {
+_confirmDialog() {
 # Subprocedure that asks for user confirmation
     # shellcheck disable=SC2162
 	read -p "Are you sure? (y/N) " yn;
@@ -85,7 +85,7 @@ printTodos() {
 	fi | sed 's/TODO: //;s/\r//' # delete todo preffix and carriage return escape code
 }
 
-prettifyTodos() {
+_prettifyTodos() {
 # Format and colorize plain-text TODOs from STDIN 
 	sed 's/:/\n/' | awk '!x[$0]++' | # split & dedup
 	sed "s/^.*\.md$/\n${bold_blue}&${reset}/;
@@ -107,28 +107,29 @@ printPrettyTodos() {
       esac
     done
 
-	printTodos "^TODO:.*\+done.*$" | prettifyTodos
-	printTodos "^TODO:.*\+asap.*$" | prettifyTodos
-	printTodos "^TODO:.[^\+]*$" | prettifyTodos
+	printTodos "^TODO:.*\+done.*$"  | _prettifyTodos
+	printTodos "^TODO:.*\+asap.*$"  | _prettifyTodos
+	printTodos "^TODO:.[^\+]*$"     | _prettifyTodos
 	# only print those if -a flag is set
-    [ $all_todos ] && printTodos "^TODO:.*\+later.*$" | prettifyTodos
+    [ $all_todos ] &&
+    printTodos "^TODO:.*\+later.*$" | _prettifyTodos
 }
 
-printDoneTodos() { 
+_printDoneTodos() { 
 #  Print done TODOs to STDOUT
 	echo -e "## $(date "+%d de %B de %Y às %H:%M")"
 	rg -N --color never --no-heading -t md --ignore-file "$ignore" -e "^TODO:.*\+done.*$" |
     sed 's/:/: /;s/\+done//' && echo -e ""
 }
 
-deleteDoneTodos() {	
+_deleteDoneTodos() {	
 # Delete done TODOs within files
 	for i in $(rg -N -t md --ignore-file "$ignore" -e "^TODO:.*\+done.*$" | sed 's/:.*//' | awk '!x[$0]++'); do # iterate over files with done TODOs
 		sed -i '/\+done/d' "$i"
 	done
 }
 
-commitGit() {
+_commitGit() {
 # Non-interactively commit changes in a Git repo
 	last_commit="git -C '$root' log HEAD^..HEAD --pretty=format:'%s'"  
 	today_commit=$(date "+%y-%m-%d") 
@@ -141,7 +142,7 @@ commitGit() {
 
 # Commit all done TODOs to a journaling
 commitDoneTodos() {
-    confirmDialog && printDoneTodos >> "journal.md" && deleteDoneTodos && commitGit
+    _confirmDialog && _printDoneTodos >> "journal.md" && _deleteDoneTodos && _commitGit
 }
 
 # FZF
@@ -168,7 +169,8 @@ del:reload(journal fzf-delete {1} {2} && journal fzf-print)"
 }
 
 fzfPreview() {
-# Output a preview of the file with the selected line somewhat centered. $LINES and $COLUMNS is the size of the preview window from the fzf env.
+# Output a preview of the file with the selected line somewhat centered.
+# $LINES and $COLUMNS is the size of the preview window from the fzf env.
 # $1 is function, $2 is file name, $3 is line number and $4 is task description.
 	t=$(( LINES / 2 )) # threshold
 	s=$(( $2 - t )) && [ $s -lt 1 ] && s=1 # start line w/ failsafe
