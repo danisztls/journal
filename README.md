@@ -74,7 +74,9 @@ Aids in the management a markdown diary and saves time that would be spent with 
 It expects notes saved in **YY-MM-DD.md**, **YY-MM.md** and **YY.md** format and will ignore other files. The default retention policy is 15 days for daily entries and 6 months for monthly entries.
 
 ## Setup
-Run the **setup** script to install it in home. Dependencies are **ripgrep**, **fzf** and **bat**.
+Install through the [AUR](https://aur.archlinux.org/packages/journal-git/).
+
+Or run the **setup** script to install it in home. Dependencies are **ripgrep**, **fzf** and **bat**.
 
 ## Development
 Feedback and contributions are welcomed. Development info at [DEVELOPMENT.md](https://gitlab.com/lbcnz/journal/-/blob/master/DEVELOPMENT.md).
@@ -85,4 +87,3 @@ Feedback and contributions are welcomed. Development info at [DEVELOPMENT.md](ht
 **Hierarchical**: Tags are popular nowadays and really useful but file systems are hierarchical and I am sticking with it. Although you can still tag your notes and use content search to find tagged notes, you can even put everything inside a single directory.
 
 **Interoperability**: Agnosticism, botttom-up approach, form follows functions, minimalism and modularity are principles that guide its development.
-
