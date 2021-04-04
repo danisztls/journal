@@ -44,6 +44,10 @@ if ! [ "$editor" ]; then
     fi
 fi
 
+# Open vim and jump to given line (to use with fzf)
+# shellcheck disable=SC2001
+editor_jump_to_line=$(sed "s/vim/vim {1} -c '{2} normal zz'/" <<< "$editor")
+
 ## HELP ##
 # Show help if no valid argument is parsed
 printHelp() {
@@ -163,7 +167,7 @@ fzfFind() {
         --layout=reverse \
         --bind \
 "f1:execute-silent(xdg-open {1} 2>/dev/null),\
-f2:execute($editor {1}),\
+f2:execute($editor_jump_to_line),\
 f3:reload(journal fzf-cycle {1} {2} {3} && journal fzf-print),\
 del:reload(journal fzf-delete {1} {2} && journal fzf-print)"
 }
