@@ -24,7 +24,8 @@ yellow=$(printf '\033[33m')
 blue=$(printf '\033[34m')
 
 # Load user configuration
-config_file="$HOME/.config/journal/config"
+config_file="$XDG_CONFIG_HOME/journal/config"
+#shellcheck disable=SC1090
 [ -f "$config_file" ] && source "$config_file"
 
 ## HELP ##
@@ -35,7 +36,6 @@ printHelp() {
     \t\e[1m'print'\e[0m print todo tasks to stdout in plain text;
     \t\e[1m'show'\e[0m show tasks in a pager with pretty formatting, use -a to display parked tasks;
     \t\e[1m'find'\e[0m show tasks in fzf with note preview. f1 opens in editor, f2 cycles priority tags and f5 delete;
-    \t\e[1m'plan'\e[0m export tasks to a backlog file for task execution planning;
     \t\e[1m'commit'\e[0m write to journal and clean done tasks within files.;
     LOG:
     \t\e[1m'write'\e[0m create/edit log entry, use -d to do a daily review
@@ -95,13 +95,6 @@ printPrettyTodos() {
 	printTodos "^TODO:.[^\+]*$" | prettifyTodos
 	# only print those if -a flag is set
     [ $all_todos ] && printTodos "^TODO:.*\+later.*$" | prettifyTodos
-}
-
-planTodos() {
-# Export TODOs to a backlog file for priority order and scheduling.
-    [ -f "log/backlog.md" ] && mv "log/backlog.md" "log/backlog-old.md"
-    printTodos > "log/backlog.md"
-    $EDITOR "log/backlog.md"
 }
 
 printDoneTodos() { 
@@ -252,7 +245,6 @@ case $1 in
 	print) printTodos;;
 	show) printPrettyTodos "${@:2}" | less -R;;
     find) fzfFind;;
-    plan) planTodos;;
 	commit) commitDoneTodos;;
 	write) writeLog "${@:2}";;
 	read) readLog;;
@@ -263,4 +255,3 @@ case $1 in
 	fzf-delete) fzfDelete "$2" "$3";;
     *) printHelp;;
 esac
-
