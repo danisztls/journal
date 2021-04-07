@@ -20,13 +20,13 @@
 - Task management with markdown notes without effort.
 - Fuzzy search for TODOs in your files.
 
-![$ journal find](https://github.com/lbcnz/journal/blob/main/journal-fzf.png) 
+![$ journal find](https://github.com/lbcnz/journal/blob/main/journal-fzf.png)
 
 ## Design
 - Notes are short named [markdown](markdown.md) files and thus can be viewed and edited in any text editor and easily exported to any format.
 - Assets are images, documents and other files linked inside notes.
 - Hyperlinks are the glue that connects everything into a meaningful knowledge base.
-- Tasks are lines in notes that start with the `TODO:` placeholder, a common convention. 
+- Tasks are lines in notes that start with the `TODO:` placeholder, a common convention.
 - Log entries are time named notes that are merged and archived after some time.
 - Scripts automates trivial tasks and creates useful functionality that goes beyond pen and paper or conventional text editing.
 - Notes are contained in plain text files inside directories. What fits under the same scope is put in the same subdirectory.
@@ -48,7 +48,7 @@ Commit function will post-call `git commit -m $today_date`.
 Search binds:
 - `F1` opens task note with `xdg-open`
 - `F2` opens task note in `$EDITOR`
-- `F3` cycles task priority tag 
+- `F3` cycles task priority tag
 - `DEL` deletes the task
 
 **Syntax**
