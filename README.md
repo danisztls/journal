@@ -14,7 +14,9 @@
 
 **Journal** is a place to organize your life and get things done. It is an agnostic approach to note management and personal organization.
 
-![$ journal find](https://github.com/lbcnz/journal/raw/master/journal-fzf.png) 
+[![GitHub Super-Linter](https://github.com/lbcnz/journal/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
+
+![$ journal find](https://github.com/lbcnz/journal/blob/master/journal-fzf.png) 
 
 ## Features
 - A journaling helper *(to take notes like a Starfleet captain)*.
