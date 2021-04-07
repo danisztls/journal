@@ -13,7 +13,7 @@ doInstall() {
 
     # Install syntax for vim
 	if [ "$VIMINIT" ]; then
-		vim_after=$(printf "$VIMINIT\n" | sed "s/.*runtimepath+=~\///;s/|source.*//") && vim_after="$HOME/$vim_after"
+		vim_after=$(printf "%s\n" "$VIMINIT" | sed "s/.*runtimepath+=~\///;s/|source.*//") && vim_after="$HOME/$vim_after"
 	else
 		vim_after="$HOME/.vim/after"
 	fi
