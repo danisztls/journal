@@ -11,9 +11,9 @@
 * [Setup](#setup)
 * [Development](#development)
 * [Extra](#extra)
-    * [Contained](#contained)
-    * [Hierarchical](#hierarchical)
-    * [Design principles](#design-principles)
+  * [Contained](#contained)
+  * [Hierarchical](#hierarchical)
+  * [Design principles](#design-principles)
 
 <!-- /TOC -->
 
@@ -82,11 +82,11 @@ Or run the **setup** script to install it at home. Dependencies are **ripgrep**,
 Feedback and contributions are welcomed. Development info at [DEVELOPMENT.md](https://gitlab.com/lbcnz/journal/-/blob/main/DEVELOPMENT.md).
 
 ## Extra
-#### Contained
+### Contained
 Assets should, preferably, be contained in the same directory as it parent note. If they are stored somewhere else it will be painful to move the note without breaking links. Also Electron based text editors, like Visual Studio, will not allow access to assets outside root directory of file. In other words, preview will be broken.
 
-#### Hierarchical
+### Hierarchical
 Tags are popular nowadays and really useful but file systems are hierarchical and I am sticking with it. Although you can still tag your notes and use content search to find tagged notes, you can even put everything inside a single directory.
 
-#### Design principles
+### Design principles
 Agnosticism, bottom-up approach, form follows functions, minimalism, modularity and interoperability are principles that guide its development.
