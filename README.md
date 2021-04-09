@@ -38,9 +38,9 @@
 Manage tasks, keep track and archive them after they are done.
 
 **How to use**
-- `journal show` print the tasks to stdout in plain text;
+- `journal show` print the tasks to STDOUT in plain text;
 - `journal print` show the tasks in a pager with pretty formatting;
-- `journal find` search tasks in fzf with note preview;
+- `journal find` search tasks in Fzf with note preview;
 - `journal commit` clean done tasks and write them to journal.
 
 Commit function will post-call `git commit -m $today_date`.
@@ -61,9 +61,6 @@ Context
 - #house
 - #linux
 
-People
-- @danisztls
-
 ## Journaling
 Aids in the management a markdown diary and saves time that would be spent with file naming and copy/paste.
 
@@ -77,7 +74,7 @@ It expects notes saved in **YY-MM-DD.md**, **YY-MM.md** and **YY.md** format and
 ## Setup
 Install through the [AUR](https://aur.archlinux.org/packages/journal-git/).
 
-Or run the **setup** script to install it in home. Dependencies are **ripgrep**, **fzf** and **bat**.
+Or run the **setup** script to install it at home. Dependencies are **ripgrep**, **fzf** and **bat**.
 
 ## Development
 Feedback and contributions are welcomed. Development info at [DEVELOPMENT.md](https://gitlab.com/lbcnz/journal/-/blob/main/DEVELOPMENT.md).
@@ -87,4 +84,4 @@ Feedback and contributions are welcomed. Development info at [DEVELOPMENT.md](ht
 
 **Hierarchical**: Tags are popular nowadays and really useful but file systems are hierarchical and I am sticking with it. Although you can still tag your notes and use content search to find tagged notes, you can even put everything inside a single directory.
 
-**Interoperability**: Agnosticism, botttom-up approach, form follows functions, minimalism and modularity are principles that guide its development.
+**Interoperability**: Agnosticism, bottom-up approach, form follows functions, minimalism and modularity are principles that guide its development.
