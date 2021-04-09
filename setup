@@ -12,12 +12,14 @@ doInstall() {
     [ -f "$config/ignore" ] || printf "log/journal.md\nlog/backlog.md\nlog/backlog-old.md\n" > "$config/ignore" 
 
     # Install syntax for vim
-	if [ "$VIMINIT" ]; then
-		vim_after=$(printf "%s\n" "$VIMINIT" | sed "s/.*runtimepath+=~\///;s/|source.*//") && vim_after="$HOME/$vim_after"
-	else
-		vim_after="$HOME/.vim/after"
-	fi
-	mkdir -p "$vim_after" && cp "syntax/markdown.vim" "$vim_after/syntax/markdown.vim"
+    if [ "$(command -v vim)" ] || [ "$(command -v nvim)" ]; then
+        if [ "$VIMINIT" ]; then
+            vim_after=$(printf "%s\n" "$VIMINIT" | sed "s/.*runtimepath+=~\///;s/|source.*//") && vim_after="$HOME/$vim_after"
+        else
+            vim_after="$HOME/.vim/after"
+        fi
+        mkdir -p "$vim_after" && cp "syntax/markdown.vim" "$vim_after/syntax/markdown.vim"
+    fi
 
     printf "Setup completed!\n"
 }
