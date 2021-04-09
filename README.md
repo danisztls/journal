@@ -1,5 +1,7 @@
 # Journal
+**Journal** is a place to organize your life and get things done. It is an agnostic CLI approach to personal organization and note management.
 
+[![GitHub Super-Linter](https://github.com/lbcnz/journal/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
 <!-- TOC GitLab -->
 
 * [Features](#features)
@@ -8,16 +10,16 @@
 * [Journaling](#journaling)
 * [Setup](#setup)
 * [Development](#development)
-* [Notes](#notes)
+* [Extra](#extra)
+    * [Contained](#contained)
+    * [Hierarchical](#hierarchical)
+    * [Design principles](#design-principles)
 
 <!-- /TOC -->
 
-**Journal** is a place to organize your life and get things done. It is an agnostic approach to note management and personal organization.
-
-[![GitHub Super-Linter](https://github.com/lbcnz/journal/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
 ## Features
-- A journaling helper *(to take notes like a Starfleet captain)*.
-- Task management with markdown notes without effort.
+- Assisted journaling *(to take notes like a Starfleet captain)*.
+- Task management within markdown notes.
 - Fuzzy search for TODOs in your files.
 
 ![$ journal find](https://github.com/lbcnz/journal/blob/main/journal-fzf.png)
@@ -79,9 +81,12 @@ Or run the **setup** script to install it at home. Dependencies are **ripgrep**,
 ## Development
 Feedback and contributions are welcomed. Development info at [DEVELOPMENT.md](https://gitlab.com/lbcnz/journal/-/blob/main/DEVELOPMENT.md).
 
-## Notes
-**Contained**: Assets should, preferably, be contained in the same directory as it parent note. If they are stored somewhere else it will be painful to move the note without breaking links. Also Electron based text editors, like Visual Studio, will not allow access to assets outside root directory of file. In other words, preview will be broken.
+## Extra
+#### Contained
+Assets should, preferably, be contained in the same directory as it parent note. If they are stored somewhere else it will be painful to move the note without breaking links. Also Electron based text editors, like Visual Studio, will not allow access to assets outside root directory of file. In other words, preview will be broken.
 
-**Hierarchical**: Tags are popular nowadays and really useful but file systems are hierarchical and I am sticking with it. Although you can still tag your notes and use content search to find tagged notes, you can even put everything inside a single directory.
+#### Hierarchical
+Tags are popular nowadays and really useful but file systems are hierarchical and I am sticking with it. Although you can still tag your notes and use content search to find tagged notes, you can even put everything inside a single directory.
 
-**Interoperability**: Agnosticism, bottom-up approach, form follows functions, minimalism and modularity are principles that guide its development.
+#### Design principles
+Agnosticism, bottom-up approach, form follows functions, minimalism, modularity and interoperability are principles that guide its development.
