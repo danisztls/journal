@@ -221,8 +221,9 @@ fzfCycle() {
 }
 
 fzfDelete() {
-	del=$2 && del+=d
-	sed -i "$del" "$1"
+    local file="$1"
+    local line="$2"
+	sed -i "${line}d" "$file"
 }
 
 ## JOURNALING ##
