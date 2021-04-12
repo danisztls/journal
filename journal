@@ -6,7 +6,8 @@
 
 ## CONFIG ##
 # Set general defaults
-root="$HOME/Docs"
+root_dir="$HOME"
+log_dir="$HOME/Docs/log"
 ignore="$XDG_CONFIG_HOME/journal/ignore"
 daily=$(date '+%y-%m-%d' -d "-7days") # retention target for daily entries
 monthly=$(date '+%y-%m-%d' -d "-3months") # retention target for monthly entries
@@ -76,8 +77,8 @@ _confirmDialog() {
 }
 
 ## TASKS ##
-cd "$root" || exit 1
-[ -d "$root/log" ] || mkdir -p "$root/log"
+cd "$root_dir" || exit 1
+[ -d "$log_dir" ] || mkdir -p "$log_dir"
 
 printTodos() { 
 # Find TODOs on files and send as plain-text to STDOUT
@@ -135,12 +136,12 @@ _deleteDoneTodos() {
 
 _commitGit() {
 # Non-interactively commit changes in a Git repo
-	last_commit="git -C '$root' log HEAD^..HEAD --pretty=format:'%s'"  
+	last_commit="git -C '$root_dir' log HEAD^..HEAD --pretty=format:'%s'"  
 	today_commit=$(date "+%y-%m-%d") 
-	git -C "$root" add -A && if [[ "$today_commit" == "$last_commit" ]]; then
-		git -C "$root" commit --amend -m "$today_commit" # amend if not first commit in the day
+	git -C "$root_dir" add -A && if [[ "$today_commit" == "$last_commit" ]]; then
+		git -C "$root_dir" commit --amend -m "$today_commit" # amend if not first commit in the day
 	else
-		git -C "$root" commit -m "$today_commit"
+		git -C "$root_dir" commit -m "$today_commit"
 	fi
 }
 
@@ -211,7 +212,7 @@ writeLog() {
       esac
     done
 
-    cd "$root/log" || exit 1
+    cd "$log_dir" || exit 1
     #now="$(date '+%y-%m-%dT-%H-%M').md"
     now="$(date '+%y-%m-%d').md"
     # insert line break if file exists
@@ -228,7 +229,7 @@ writeLog() {
 
 readLog() {
 # Invoke FZF to fuzzy find and preview log entries
-    cd "$root/log" || exit 1
+    cd "$log_dir" || exit 1
     fd '^[0-9]{2}.*.md$' |
     fzf --tac --no-sort \
         --layout=reverse \
@@ -239,7 +240,7 @@ readLog() {
 
 rotateLog() {
 # Rotate old entries to monthly/yearly entries
-    cd "$root/log" || exit 1
+    cd "$log_dir" || exit 1
     mapfile -t daily_entries < <(fd '^[0-9]{2}-[0-9]{2}-[0-9]{2}.*.md$')
 	for entry in "${daily_entries[@]}"; do
 		if [[ ${entry:0:8} < $daily ]]; then
