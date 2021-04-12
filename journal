@@ -148,12 +148,13 @@ _deleteDoneTodos() {
 
 _commitGit() {
 # Non-interactively commit changes in a Git repo
-	last_commit="git -C '$root_dir' log HEAD^..HEAD --pretty=format:'%s'"  
-	today_commit=$(date "+%y-%m-%d") 
-	git -C "$root_dir" add -A && if [[ "$today_commit" == "$last_commit" ]]; then
-		git -C "$root_dir" commit --amend -m "$today_commit" # amend if not first commit in the day
+	local last_commit="git -C '$root_dir' log HEAD^..HEAD --pretty=format:'%s'" # find last commit
+	local today && today=$(date "+%y-%m-%d") 
+	git -C "$root_dir" add -A &&
+    if [ "$today" = "$last_commit" ]; then
+		git -C "$root_dir" commit --amend -m "$today" # amend if not first commit in the day
 	else
-		git -C "$root_dir" commit -m "$today_commit"
+		git -C "$root_dir" commit -m "$today" # do not amend otherwise
 	fi
 }
 
