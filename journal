@@ -205,15 +205,19 @@ fzfPreview() {
 }
 
 fzfCycle() {
+# Cycle between task priorities
+    local file="$1"
+    local line="$2"
+    local task="$3"
     # check if priority tag exists in tasks and append +asap if not
-    if ! rg '\+(asap|done|later)' <<< "$3" >/dev/null; then
-        sed -i -E "$2s/^(.*)$/\1 \+asap/" "$1" && return 0
+    if ! rg '\+(asap|done|later)' <<< "$task" >/dev/null; then
+        sed -i -E "${line}s/^(.*)$/\1 \+asap/" "$file" && return 0
     fi
 
     # cycle between priority tags otherwise
-	echo "$3" | rg "\+asap" >/dev/null && sed -i "$2s/\+asap/\+done/" "$1" && return 0
-	echo "$3" | rg "\+done" >/dev/null && sed -i "$2s/\+done/\+later/" "$1" && return 0
-	echo "$3" | rg "\+later" >/dev/null && sed -i "$2s/\+later//" "$1" && return 0
+    rg "\+asap"  <<< "$task" >/dev/null && sed -i "${line}s/\+asap/\+done/" "$file" && return 0
+    rg "\+done"  <<< "$task" >/dev/null && sed -i "${line}s/\+done/\+later/" "$file" && return 0
+    rg "\+later" <<< "$task" >/dev/null && sed -i "${line}s/\+later//" "$file" && return 0
 }
 
 fzfDelete() {
