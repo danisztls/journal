@@ -141,8 +141,13 @@ _printDoneTodos() {
 
 _deleteDoneTodos() {	
 # Delete done TODOs within files
-	for i in $(rg -N -t md --ignore-file "$ignore" -e "^TODO:.*\+done.*$" | sed 's/:.*//' | awk '!x[$0]++'); do # iterate over files with done TODOs
-		sed -i '/\+done/d' "$i"
+    local files && files=$(
+        rg -N -t md --ignore-file "$ignore" -e "^TODO:.*\+done.*$" | # find done todos
+        sed 's/:.*//' | # extract files
+        awk '!x[$0]++' # remove duplicates
+    )
+	for file in $files; do # iterate over files
+		sed -i '/\+done/d' "$file" # delete line with todo
 	done
 }
 
