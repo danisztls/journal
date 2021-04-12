@@ -194,14 +194,14 @@ del:reload(journal fzf-delete {1} {2} && journal fzf-print)"
 
 fzfPreview() {
 # Output a preview of the file with the selected line somewhat centered.
-# $LINES and $COLUMNS is the size of the preview window from the fzf env.
-# $1 is function, $2 is file name, $3 is line number and $4 is task description.
-	t=$(( LINES / 2 )) # threshold
-	s=$(( $2 - t )) && [ $s -lt 1 ] && s=1 # start line w/ failsafe
-	e=$(( $2 + t )) # end line
-	#c=$(( $(tput cols) / 2 - 4 )) # $COLUMNS isn't working reliably
-	#bat --color always -l md --wrap character --terminal-width $c --highlight-line "$2" -r $s:$e -pp "$1"
-	bat --color always -l md --highlight-line "$2" -r $s:$e -pp "$1" # wraping is being done in fzf now
+# FZF env: $FZF_PREVIEW_LINES and $FZF_PREVIEW_COLUMNS is the size of the preview window.
+    local file="$1"
+    local line="$2"
+
+    t=$(( FZF_PREVIEW_LINES / 2 )) # threshold
+	s=$(( line - t )) && [ $s -lt 1 ] && s=1 # start line w/ failsafe
+	e=$(( line + t )) # end line
+	bat --color always -l md --highlight-line "$line" -r $s:$e -pp "$file" # wraping is being done in fzf now
 }
 
 fzfCycle() {
