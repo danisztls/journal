@@ -28,6 +28,18 @@ config_file="$XDG_CONFIG_HOME/journal/config"
 #shellcheck disable=SC1090
 [ -f "$config_file" ] && source "$config_file"
 
+# Testing mode
+# Overrides conf for unit testing if $journalTesting=true
+# shellcheck disable=SC2154
+if [ "$journalTesting" = "true" ]; then
+    root_dir="sample"
+    log_dir="sample/log"
+    unset ignore
+    if ! { [ -d "$root_dir" ] && [ -d "$log_dir" ]; }; then
+       echo "Expected dirs weren't found!" && exit 1 
+    fi
+fi
+
 # Set editor
 # Use $editor from config, otherwise, use $EDITOR, if defined, or whatever is available.
 if ! [ "$editor" ]; then
