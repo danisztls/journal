@@ -84,10 +84,6 @@ set -u
     fi
 fi
 
-# Open vim and jump to given line (to use with fzf)
-# shellcheck disable=SC2001
-editorJump2Line=$(sed "s/vim/vim {1} -c '{2} normal zz'/" <<< "$editor")
-
 #------#
 # HELP #
 #------#
@@ -127,6 +123,11 @@ if [ "$(command -v trash)" ]; then
 else
     _gro="rm"
 fi
+
+# Jump to line with Vim when openingand jump to given line (to use with fzf)
+# if not vim or nvim it will be the same as $editor
+# shellcheck disable=SC2001
+editorJump2Line=$(sed "s/vim/vim {1} -c '{2} normal zz'/" <<< "$editor")
 
 #-------#
 # TASKS #
