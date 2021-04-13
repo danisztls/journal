@@ -148,10 +148,10 @@ printTodos() {
 
 printPrettyTodos() {
 # Print pretty TODOs to STDOUT to browse with a pager
-    while getopts ":a" option; do
+    while getopts "a" option; do
+      # shellcheck disable=SC2220 # let getopts deal with it
       case $option in
         a) local printAll=True ;;
-        ?) echo "Error, wrong argument.";;
       esac
     done
     regexRules=("^TODO:.*\+done.*$" "^TODO:.*\+asap.*$" "^TODO:.[^\+]*$") 
@@ -263,11 +263,11 @@ fzfDelete() {
 ## JOURNALING ##
 writeLog() {
 # Create a log entry with present date/time and open it with $EDITOR
-    while getopts ":d" option; do
-      case $option in
-        d) dailyStandup=true ;;
-        ?) echo "Error, wrong argument.";;
-      esac
+    while getopts "d" option; do
+        # shellcheck disable=SC2220 # let getops deal with it
+        case $option in
+            d) dailyStandup=true ;;
+        esac
     done
 
     cd "$logPath" || exit 1
