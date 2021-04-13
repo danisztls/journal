@@ -4,12 +4,12 @@
 # It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with it. If not, see <https://www.gnu.org/licenses/>.
 
-## CONFIG ##
+## CONFIG
 # Set general defaults
 root_dir="$HOME"
 log_dir="$HOME/Docs/log"
-# TODO: Use ignore only if ignore file exists
 ignore="$XDG_CONFIG_HOME/journal/ignore"
+[ -f "$ignore" ] || unset ignore # unset if ignore is not a file
 # TODO: move daily and monthly to local variables
 daily=$(date '+%y-%m-%d' -d "-7days") # retention target for daily entries
 monthly=$(date '+%y-%m-%d' -d "-3months") # retention target for monthly entries
