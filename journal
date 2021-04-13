@@ -14,16 +14,16 @@ ignore="$XDG_CONFIG_HOME/journal/ignore"
 daily=$(date '+%y-%m-%d' -d "-7days") # retention target for daily entries
 monthly=$(date '+%y-%m-%d' -d "-3months") # retention target for monthly entries
 
-# Set colors defaults
-reset=$(printf '\033[0m')
-gray=$(printf '\033[2;20m')
-bold_blue=$(printf '\033[1;34m')
-red=$(printf '\033[31m')
-green=$(printf '\033[32m')
-magenta=$(printf '\033[35m')
-cyan=$(printf '\033[36m')
-yellow=$(printf '\033[33m')
-blue=$(printf '\033[34m')
+# Set escape code colors variables
+reset=$(printf '\e[0m')
+gray=$(printf '\e[2;20m')
+bold_blue=$(printf '\e[1;34m')
+red=$(printf '\e[31m')
+green=$(printf '\e[32m')
+magenta=$(printf '\e[35m')
+cyan=$(printf '\e[36m')
+yellow=$(printf '\e[33m')
+blue=$(printf '\e[34m')
 
 # Load user configuration
 config_file="$XDG_CONFIG_HOME/journal/config"
