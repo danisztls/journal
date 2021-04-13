@@ -105,12 +105,9 @@ cd "$root_dir" || exit 1
 printTodos() { 
 # Find TODOs on files and send as plain-text to STDOUT
 # $1 is a [Rust RE](https://docs.rs/regex/1.3.9/regex/) rule
-    re_string="$1"
-	if [ "$re_string" ]; then
-		rg -N --color never --no-heading -t md --ignore-file "$ignore" -e "$re_string"
-	else
-		rg -n --color never --no-heading -t md --ignore-file "$ignore" -e "TODO: "
-	fi | sed 's/TODO: //;s/\r//' # delete todo preffix and carriage return escape code
+    re_string="{$1:-TODO: }"
+	rg -N --color never --no-heading -t md --ignore-file "$ignore" -e "$re_string" |
+    sed 's/TODO: //;s/\r//' # delete todo preffix and carriage return escape code
 }
 
 _prettifyTodos() {
