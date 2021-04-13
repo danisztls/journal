@@ -6,18 +6,17 @@
 
 ## CONFIG
 # Set general defaults
-root_dir="$HOME"
-log_dir="$HOME/Docs/log"
+todoPath="$HOME"
+logPath="$HOME/Docs/log"
 ignore="$XDG_CONFIG_HOME/journal/ignore"
 [ -f "$ignore" ] || unset ignore # unset if ignore is not a file
-# TODO: move daily and monthly to local variables
 retentionDaily="-7days" # leave the minus, unless you want to warp time
 retentionMonthly="-3months"
 
 # Set escape code colors variables
 reset=$(printf '\e[0m')
 gray=$(printf '\e[2;20m')
-bold_blue=$(printf '\e[1;34m')
+boldBlue=$(printf '\e[1;34m')
 red=$(printf '\e[31m')
 green=$(printf '\e[32m')
 magenta=$(printf '\e[35m')
@@ -26,18 +25,18 @@ yellow=$(printf '\e[33m')
 blue=$(printf '\e[34m')
 
 # Load user configuration
-config_file="$XDG_CONFIG_HOME/journal/config"
+configFile="$XDG_CONFIG_HOME/journal/config"
 #shellcheck disable=SC1090
-[ -f "$config_file" ] && source "$config_file"
+[ -f "$configFile" ] && source "$configFile"
 
 # Testing mode
 # Overrides conf for unit testing if $journalTesting=true
 # shellcheck disable=SC2154
-if [ "$journalTesting" = "true" ]; then
-    root_dir="sample"
-    log_dir="sample/log"
+if [ "$journalTesting" ]; then
+    todoPath="sample"
+    logPath="sample/log"
     unset ignore
-    if ! { [ -d "$root_dir" ] && [ -d "$log_dir" ]; }; then
+    if ! { [ -d "$todoPath" ] && [ -d "$logPath" ]; }; then
        echo "Expected dirs weren't found!" && exit 1 
     fi
 fi
@@ -61,7 +60,7 @@ fi
 
 # Open vim and jump to given line (to use with fzf)
 # shellcheck disable=SC2001
-editor_jump_to_line=$(sed "s/vim/vim {1} -c '{2} normal zz'/" <<< "$editor")
+editorJump2Line=$(sed "s/vim/vim {1} -c '{2} normal zz'/" <<< "$editor")
 
 ## HELP ##
 # Show help if no valid argument is parsed
@@ -99,21 +98,21 @@ else
 fi
 
 ## TASKS ##
-cd "$root_dir" || exit 1
-[ -d "$log_dir" ] || mkdir -p "$log_dir"
+cd "$todoPath" || exit 1
+[ -d "$logPath" ] || mkdir -p "$logPath"
 
 printTodos() { 
 # Find TODOs on files and send as plain-text to STDOUT
 # $1 is a [Rust RE](https://docs.rs/regex/1.3.9/regex/) rule
-    re_string="{$1:-TODO: }"
-	rg -N --color never --no-heading -t md --ignore-file "$ignore" -e "$re_string" |
+    reString="{$1:-TODO: }"
+	rg -N --color never --no-heading -t md --ignore-file "$ignore" -e "$reString" |
     sed 's/TODO: //;s/\r//' # delete todo preffix and carriage return escape code
 }
 
 _prettifyTodos() {
 # Format and colorize plain-text TODOs from STDIN 
 	sed 's/:/\n/' | awk '!x[$0]++' | # split & dedup
-	sed "s/^.*\.md$/\n${bold_blue}&${reset}/;
+	sed "s/^.*\.md$/\n${boldBlue}&${reset}/;
         s/\+done/${green}&${reset}/;
         s/\+asap/${red}&${reset}/;
         s/\+later/${magenta}&${reset}/;
@@ -127,7 +126,7 @@ printPrettyTodos() {
 # Print pretty TODOs to STDOUT to browse with a pager
     while getopts ":a" option; do
       case $option in
-        a) all_todos=True ;;
+        a) local printAll=True ;;
         ?) echo "Error: option -$OPTARG is not implemented";;
       esac
     done
@@ -135,7 +134,7 @@ printPrettyTodos() {
 	printTodos "^TODO:.*\+done.*$"  | _prettifyTodos
 	printTodos "^TODO:.*\+asap.*$"  | _prettifyTodos
 	printTodos "^TODO:.[^\+]*$"     | _prettifyTodos
-    [ $all_todos ] && # only print if -a flag is set
+    [ $printAll ] && # only print if -a flag is set
     printTodos "^TODO:.*\+later.*$" | _prettifyTodos
 }
 
@@ -160,13 +159,13 @@ _deleteDoneTodos() {
 
 _commitGit() {
 # Non-interactively commit changes in a Git repo
-	local last_commit="git -C '$root_dir' log HEAD^..HEAD --pretty=format:'%s'" # find last commit
+	local lastCommit="git -C '$todoPath' log HEAD^..HEAD --pretty=format:'%s'" # find last commit
 	local today && today=$(date "+%y-%m-%d") 
-	git -C "$root_dir" add -A &&
-    if [ "$today" = "$last_commit" ]; then
-		git -C "$root_dir" commit --amend -m "$today" # amend if not first commit in the day
+	git -C "$todoPath" add -A &&
+    if [ "$today" = "$lastCommit" ]; then
+		git -C "$todoPath" commit --amend -m "$today" # amend if not first commit in the day
 	else
-		git -C "$root_dir" commit -m "$today" # do not amend otherwise
+		git -C "$todoPath" commit -m "$today" # do not amend otherwise
 	fi
 }
 
@@ -195,7 +194,7 @@ fzfFind() {
         --layout=reverse \
         --bind \
 "f1:execute-silent(xdg-open {1} 2>/dev/null),\
-f2:execute($editor_jump_to_line),\
+f2:execute($editorJump2Line),\
 f3:reload(journal fzf-cycle {1} {2} {3} && journal fzf-print),\
 del:reload(journal fzf-delete {1} {2} && journal fzf-print)"
 }
@@ -239,19 +238,19 @@ writeLog() {
 # Create a log entry with present date/time and open it with $EDITOR
     while getopts ":d" option; do
       case $option in
-        d) daily_standup=True ;;
+        d) dailyStandup=True ;;
         ?) echo "Error: option -$OPTARG is not implemented";;
       esac
     done
 
-    cd "$log_dir" || exit 1
+    cd "$logPath" || exit 1
     #now="$(date '+%y-%m-%dT-%H-%M').md"
     now="$(date '+%y-%m-%d').md"
     # insert line break if file exists
     [[ -f $now ]] && header="\n"
     header+="### $(date '+%H:%M')"
     # insert daily standup if flag if found
-    [[ $daily_standup ]] && header+="
+    [[ $dailyStandup ]] && header+="
 #### What did I accomplish yesterday?
 #### What will I do today?
 #### What obstacles are impeding my progress?\n"
@@ -261,7 +260,7 @@ writeLog() {
 
 readLog() {
 # Invoke FZF to fuzzy find and preview log entries
-    cd "$log_dir" || exit 1
+    cd "$logPath" || exit 1
     fd '^[0-9]{2}.*.md$' |
     fzf --tac --no-sort \
         --layout=reverse \
@@ -292,7 +291,7 @@ _rotateLog() {
 
 rotateLogs() {
 # Rotate old entries to monthly and yearly entries
-    cd "$log_dir" || exit 1
+    cd "$logPath" || exit 1
     _rotateLog "^[0-9]{2}-[0-9]{2}-[0-9]{2}T.*.md$" 8 5 "$retentionDaily" "+%B %d, %A" 
     _rotateLog "^[0-9]{2}-[0-9]{2}.md$" 5 2 "$retentionMonthly" "+%Y"
 }
