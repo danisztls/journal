@@ -59,7 +59,7 @@ set -u
     logPath="sample/log"
     unset ignoreFile
     if ! { [ -d "$todoPath" ] && [ -d "$logPath" ]; }; then
-       echo "Expected dirs weren't found!" && exit 1 
+       printf "Expected dirs weren't found!\n" && exit 1 
     fi
 fi
 
@@ -93,7 +93,7 @@ editorJump2Line=$(sed "s/vim/vim {1} -c '{2} normal zz'/" <<< "$editor")
 #------#
 # Show help if no valid argument is parsed
 printHelp() {
-    echo -e "HELP:
+    printf "HELP:
     TODOs:
     \t\e[1m'print'\e[0m print todo tasks to stdout in plain text;
     \t\e[1m'show'\e[0m show tasks in a pager with pretty formatting, use -a to display parked tasks;
@@ -102,7 +102,7 @@ printHelp() {
     LOG:
     \t\e[1m'write'\e[0m create/edit log entry, use -d to do a daily review
     \t\e[1m'read'\e[0m fuzzy browse among entries; 
-    \t\e[1m'rotate'\e[0m merge entries in monthly and yearly entries following the retention policy." && exit
+    \t\e[1m'rotate'\e[0m merge entries in monthly and yearly entries following the retention policy.\n" && exit
 }
 
 #-------#
@@ -115,7 +115,7 @@ _confirmDialog() {
 	case $yn in
 		[Yy][Ee][Ss]|[Yy]) return 0;;
 		[Nn][Oo]|[Nn]) return 1;;
-		*) echo "Please answer yes or no." && return 1;;
+		*) printf "Please answer yes or no.\n" && return 1;;
 	esac
 }
 
@@ -175,9 +175,9 @@ printPrettyTodos() {
 
 _printDoneTodos() { 
 #  Print done TODOs to STDOUT
-	echo -e "## $(date "+%d de %B de %Y às %H:%M")"
+	printf "## %s\n" "$(date "+%d de %B de %Y às %H:%M")"
     printTodos "^TODO:.*\+done.*$" |
-    sed 's/:/: /;s/\+done//' && echo -e ""
+    sed 's/:/: /;s/\+done//' # && echo -e ""
 }
 
 _deleteDoneTodos() {	
