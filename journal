@@ -133,9 +133,21 @@ fi
 #-------#
 cd "$todoPath" || exit 1
 
+_queryTodos() { 
+# Find TODOs on files
+# $1 is a [Rust RE](https://docs.rs/regex/1.3.9/regex/) rule
+    local regexRule="${regexRule:-TODO: }"
+	rg -N --color never --no-heading -t md --ignore-file "$ignoreFile" -e "$regexRule"
+}
+
+printTodos() { 
+# Print plain TODOs to STDOUT
+    _queryTodos | sed 's/TODO: //;s/\r//' # delete todo preffix and carriage return escape code
+}
+
 _prettifyTodos() {
 # Format and colorize plain-text TODOs from STDIN 
-	sed 's/:/\n/' | awk '!x[$0]++' | # split & dedup
+	sed 's/TODO: //;s/:/\n/' | awk '!x[$0]++' | # split & dedup
 	sed "s/^.*\.md$/\n${boldBlue}&${reset}/;
         s/\+done/${green}&${reset}/;
         s/\+asap/${red}&${reset}/;
@@ -146,49 +158,46 @@ _prettifyTodos() {
         s/@.[^ ]*/${blue}&${reset}/" #colorize
 }
 
-printTodos() { 
-# Find TODOs on files and send as plain-text to STDOUT
-# $1 is a [Rust RE](https://docs.rs/regex/1.3.9/regex/) rule
-    reString="${1:-TODO: }"
-	rg -N --color never --no-heading -t md --ignore-file "$ignoreFile" -e "$reString" |
-    sed 's/TODO: //;s/\r//' # delete todo preffix and carriage return escape code
-}
-
 printPrettyTodos() {
-# Print pretty TODOs to STDOUT to browse with a pager
+# Print pretty TODOs to STDOUT
     while getopts "a" option; do
-      # shellcheck disable=SC2220 # let getopts deal with it
+      # shellcheck disable=SC2220 # let getopts deal with input validation
       case $option in
         a) local printAll=True ;;
       esac
     done
     regexRules=("^TODO:.*\+done.*$" "^TODO:.*\+asap.*$" "^TODO:.[^\+]*$") 
+
     set +u
     if [ $printAll ]; then # only print if -a flag is set
         regexRules+=("^TODO:.*\+later.*$")
     fi
     set -u
-    for rule in "${regexRules[@]}"; do
-        printTodos "$rule" | _prettifyTodos
+
+    local regexRule
+    for regexRule in "${regexRules[@]}"; do
+        _queryTodos | _prettifyTodos
     done
 }
 
 _printDoneTodos() { 
 #  Print done TODOs to STDOUT
+    local regexRule="^TODO:.*\+done.*$"
 	printf "## %s\n" "$(date "+%d de %B de %Y às %H:%M")"
-    printTodos "^TODO:.*\+done.*$" |
-    sed 's/:/: /;s/\+done//' # && echo -e ""
+    _queryTodos |
+    sed 's/TODO: //;s/:/: /;s/\+done//' # && echo -e ""
 }
 
 _deleteDoneTodos() {	
 # Delete done TODOs within files
+    local regexRule="^TODO:.*\+done.*$"
     local files && files=$(
-        printTodos "^TODO:.*\+done.*$" | # find done todos
+        _queryTodos   | # find done todos
         sed 's/:.*//' | # extract files
-        awk '!x[$0]++' # remove duplicates
+        awk '!x[$0]++'  # remove duplicates
     )
 	for file in $files; do # iterate over files
-		sed -i '/\+done/d' "$file" # delete line with todo
+		sed -i '/\^TODO: .*+done/d' "$file" # delete line with todo
 	done
 }
 
@@ -214,7 +223,7 @@ commitDoneTodos() {
 # FZF env: $1 is function, $2 is file name, $3 is line number and $4 is task description.
 fzfPrint() {
 # Print TODOs for fzf
-    printTodos |
+    _queryTodos |
     sed -E "s/(.*):([0-9]*):(.*)/${magenta}\1${reset}:${gray}\2${reset}:\3/"
 }
 
@@ -277,7 +286,7 @@ fzfDelete() {
 writeLog() {
 # Create a log entry with present date/time and open it with $EDITOR
     while getopts "d" option; do
-        # shellcheck disable=SC2220 # let getops deal with it
+        # shellcheck disable=SC2220 # let getops deal with input validation
         case $option in
             d) dailyStandup=true ;;
         esac
