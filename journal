@@ -168,14 +168,14 @@ printPrettyTodos() {
 _printDoneTodos() { 
 #  Print done TODOs to STDOUT
 	echo -e "## $(date "+%d de %B de %Y às %H:%M")"
-	rg -N --color never --no-heading -t md --ignore-file "$ignoreFile" -e "^TODO:.*\+done.*$" |
+    printTodos "^TODO:.*\+done.*$" |
     sed 's/:/: /;s/\+done//' && echo -e ""
 }
 
 _deleteDoneTodos() {	
 # Delete done TODOs within files
     local files && files=$(
-        rg -N -t md --ignore-file "$ignoreFile" -e "^TODO:.*\+done.*$" | # find done todos
+        printTodos "^TODO:.*\+done.*$" | # find done todos
         sed 's/:.*//' | # extract files
         awk '!x[$0]++' # remove duplicates
     )
