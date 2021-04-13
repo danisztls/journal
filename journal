@@ -158,8 +158,8 @@ _prettifyTodos() {
         s/@.[^ ]*/${blue}&${reset}/" #colorize
 }
 
-printPrettyTodos() {
-# Print pretty TODOs to STDOUT
+showPrettyTodos() {
+# Show pretty TODOs on a pager
     while getopts "a" option; do
       # shellcheck disable=SC2220 # let getopts deal with input validation
       case $option in
@@ -175,9 +175,11 @@ printPrettyTodos() {
     set -u
 
     local regexRule
+    {
     for regexRule in "${regexRules[@]}"; do
         _queryTodos | _prettifyTodos
     done
+    } | less -R 
 }
 
 _printDoneTodos() { 
@@ -357,7 +359,7 @@ rotateLogs() {
 set +u
 case $1 in
 	print) printTodos;;
-	show) printPrettyTodos "${@:2}" | less -R;;
+	show) showPrettyTodos "${@:2}";;
     find) fzfFind;;
 	commit) commitDoneTodos;;
 	write) writeLog "${@:2}";;
