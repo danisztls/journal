@@ -125,14 +125,6 @@ fi
 cd "$todoPath" || exit 1
 [ -d "$logPath" ] || mkdir -p "$logPath"
 
-printTodos() { 
-# Find TODOs on files and send as plain-text to STDOUT
-# $1 is a [Rust RE](https://docs.rs/regex/1.3.9/regex/) rule
-    reString="${1:-TODO: }"
-	rg -N --color never --no-heading -t md --ignore-file "$ignoreFile" -e "$reString" |
-    sed 's/TODO: //;s/\r//' # delete todo preffix and carriage return escape code
-}
-
 _prettifyTodos() {
 # Format and colorize plain-text TODOs from STDIN 
 	sed 's/:/\n/' | awk '!x[$0]++' | # split & dedup
@@ -146,6 +138,14 @@ _prettifyTodos() {
         s/@.[^ ]*/${blue}&${reset}/" #colorize
 }
 
+printTodos() { 
+# Find TODOs on files and send as plain-text to STDOUT
+# $1 is a [Rust RE](https://docs.rs/regex/1.3.9/regex/) rule
+    reString="${1:-TODO: }"
+	rg -N --color never --no-heading -t md --ignore-file "$ignoreFile" -e "$reString" |
+    sed 's/TODO: //;s/\r//' # delete todo preffix and carriage return escape code
+}
+
 printPrettyTodos() {
 # Print pretty TODOs to STDOUT to browse with a pager
     while getopts ":a" option; do
@@ -154,14 +154,15 @@ printPrettyTodos() {
         ?) echo "Error, wrong argument.";;
       esac
     done
-
-	printTodos "^TODO:.*\+done.*$"  | _prettifyTodos
-	printTodos "^TODO:.*\+asap.*$"  | _prettifyTodos
-	printTodos "^TODO:.[^\+]*$"     | _prettifyTodos
+    regexRules=("^TODO:.*\+done.*$" "^TODO:.*\+asap.*$" "^TODO:.[^\+]*$") 
     set +u
-    [ $printAll ] && # only print if -a flag is set
-    printTodos "^TODO:.*\+later.*$" | _prettifyTodos
+    if [ $printAll ]; then # only print if -a flag is set
+        regexRules+=("^TODO:.*\+later.*$")
+    fi
     set -u
+    for rule in "${regexRules[@]}"; do
+        printTodos "$rule" | _prettifyTodos
+    done
 }
 
 _printDoneTodos() { 
