@@ -4,8 +4,9 @@
 # It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with it. If not, see <https://www.gnu.org/licenses/>.
 
-## DEBUG
-
+#-------#
+# DEBUG #
+#-------#
 # Command verbosity 
 # set -v
 
@@ -20,7 +21,9 @@ set -u
 # Exit if any command in a pipe fail
 set -o pipefail
 
-## CONFIG
+#--------#
+# CONFIG #
+#--------#
 # Set general defaults
 todoPath="$HOME"
 logPath="$HOME/Docs/log"
@@ -85,7 +88,9 @@ fi
 # shellcheck disable=SC2001
 editorJump2Line=$(sed "s/vim/vim {1} -c '{2} normal zz'/" <<< "$editor")
 
-## HELP ##
+#------#
+# HELP #
+#------#
 # Show help if no valid argument is parsed
 printHelp() {
     echo -e "HELP:
@@ -100,7 +105,9 @@ printHelp() {
     \t\e[1m'rotate'\e[0m merge entries in monthly and yearly entries following the retention policy." && exit
 }
 
-## UTILS ##
+#-------#
+# UTILS #
+#-------#
 _confirmDialog() {
 # Subprocedure that asks for user confirmation
     # shellcheck disable=SC2162
@@ -121,9 +128,10 @@ else
     _gro="rm"
 fi
 
-## TASKS ##
+#-------#
+# TASKS #
+#-------#
 cd "$todoPath" || exit 1
-[ -d "$logPath" ] || mkdir -p "$logPath"
 
 _prettifyTodos() {
 # Format and colorize plain-text TODOs from STDIN 
@@ -200,8 +208,9 @@ _commitGit() {
 commitDoneTodos() {
     _confirmDialog && _printDoneTodos >> "journal.md" && _deleteDoneTodos && _commitGit
 }
-
-# FZF
+#-----#
+# FZF #
+#-----#
 # FZF env: $1 is function, $2 is file name, $3 is line number and $4 is task description.
 fzfPrint() {
 # Print TODOs for fzf
@@ -260,7 +269,11 @@ fzfDelete() {
 	sed -i "${line}d" "$file"
 }
 
-## JOURNALING ##
+#-------#
+# DIARY #
+#-------#
+[ -d "$logPath" ] || mkdir -p "$logPath" # create dir if not found
+
 writeLog() {
 # Create a log entry with present date/time and open it with $EDITOR
     while getopts "d" option; do
@@ -329,7 +342,9 @@ rotateLogs() {
     _rotateLog "^[0-9]{2}-[0-9]{2}.md$" 5 2 "$retentionMonthly" "+%Y"
 }
 
-## SWITCHES
+#----------#
+# SWITCHES #
+#----------#
 set +u
 case $1 in
 	print) printTodos;;
