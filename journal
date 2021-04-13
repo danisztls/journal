@@ -207,10 +207,10 @@ fzfPreview() {
     local file="$1"
     local line="$2"
 
-    t=$(( FZF_PREVIEW_LINES / 2 )) # threshold
-	s=$(( line - t )) && [ $s -lt 1 ] && s=1 # start line w/ failsafe
-	e=$(( line + t )) # end line
-	bat --color always -l md --highlight-line "$line" -r $s:$e -pp "$file" # wraping is being done in fzf now
+    tresh=$(( FZF_PREVIEW_LINES / 2 )) # threshold
+	start=$(( line - tresh )); [ $start -lt 1 ] && start=1 # failsafe
+    end=$(( line + tresh )) # end line
+	bat --color always -l md --highlight-line "$line" -r $start:$end -pp "$file" # wraping is being done in fzf now
 }
 
 fzfCycle() {
