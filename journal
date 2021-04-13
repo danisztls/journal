@@ -4,6 +4,22 @@
 # It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with it. If not, see <https://www.gnu.org/licenses/>.
 
+## DEBUG
+
+# Command verbosity 
+# set -v
+
+# Exit if any command return a non-zero
+# put '||:' at the end of a pipe to mask a non-zero
+set -e
+
+# Exit when referencing an undefined variable
+# $* and $@ are exceptions
+set -u
+
+# Exit if any command in a pipe fail
+set -o pipefail
+
 ## CONFIG
 # Set general defaults
 todoPath="$HOME"
@@ -32,11 +48,13 @@ blue=$(printf '\e[34m')
 
 # Testing mode
 # Overrides conf for unit testing if $journalTesting=true
+set +u
 # shellcheck disable=SC2154
-if [ "$journalTesting" ]; then
+if [ "$journalTesting" = true ]; then
+set -u
     todoPath="sample"
     logPath="sample/log"
-    unset ignore
+    unset ignoreFile
     if ! { [ -d "$todoPath" ] && [ -d "$logPath" ]; }; then
        echo "Expected dirs weren't found!" && exit 1 
     fi
@@ -44,10 +62,14 @@ fi
 
 # Set editor
 # Use $editor from config, otherwise, use $EDITOR, if defined, or whatever is available.
+set +u
 if ! [ "$editor" ]; then
+set -u
     editors=(vi vim nvim nano)
+    set +u
     # shellcheck disable=SC2153
     if [ "$EDITOR" ]; then
+    set -u
         editor=$EDITOR
     else
         for prog in "${editors[@]}"; do
@@ -129,15 +151,17 @@ printPrettyTodos() {
     while getopts ":a" option; do
       case $option in
         a) local printAll=True ;;
-        ?) echo "Error: option -$OPTARG is not implemented";;
+        ?) echo "Error, wrong argument.";;
       esac
     done
 
 	printTodos "^TODO:.*\+done.*$"  | _prettifyTodos
 	printTodos "^TODO:.*\+asap.*$"  | _prettifyTodos
 	printTodos "^TODO:.[^\+]*$"     | _prettifyTodos
+    set +u
     [ $printAll ] && # only print if -a flag is set
     printTodos "^TODO:.*\+later.*$" | _prettifyTodos
+    set -u
 }
 
 _printDoneTodos() { 
@@ -187,20 +211,20 @@ fzfPrint() {
 fzfFind() {
 # Invoke FZF to fuzzy find and preview TODOs context
 # {1} is file name, {2} is line number and {3} is task description.
-# TODO: Abstract fzfFind() and readLog()
     fzfPrint |
     fzf --ansi --delimiter ':' \
         --preview "journal fzf-preview {1} {2}" \
         --preview-window=right:50%:wrap \
         --header "f1 → default, f2 → editor, f3 → cycle priority, del → delete" \
         --layout=reverse \
-        --bind \
-"f1:execute-silent(xdg-open {1} 2>/dev/null),\
+        --bind "\
+f1:execute-silent(xdg-open {1} 2>/dev/null),\
 f2:execute($editorJump2Line),\
 f3:reload(journal fzf-cycle {1} {2} {3} && journal fzf-print),\
 del:reload(journal fzf-delete {1} {2} && journal fzf-print)"
 }
 
+# FIXME: It's possibly bugged
 fzfPreview() {
 # Output a preview of the file with the selected line somewhat centered.
 # FZF env: $FZF_PREVIEW_LINES and $FZF_PREVIEW_COLUMNS is the size of the preview window.
@@ -304,7 +328,8 @@ rotateLogs() {
     _rotateLog "^[0-9]{2}-[0-9]{2}.md$" 5 2 "$retentionMonthly" "+%Y"
 }
 
-## SWITCHES ##
+## SWITCHES
+set +u
 case $1 in
 	print) printTodos;;
 	show) printPrettyTodos "${@:2}" | less -R;;
@@ -319,3 +344,4 @@ case $1 in
 	fzf-delete) fzfDelete "$2" "$3";;
     *) printHelp;;
 esac
+set -u
