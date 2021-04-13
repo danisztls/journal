@@ -92,10 +92,11 @@ _confirmDialog() {
 
 # Use 'trash' if available, otherwise 'rm'
 # _gro is a short for getridof
+# have to be a variable to work inside fzf
 if [ "$(command -v trash)" ]; then
-    _gro() { trash "$1"; } 
+    _gro="trash" 
 else
-    _gro() { rm "$1"; }
+    _gro="rm"
 fi
 
 ## TASKS ##
@@ -273,7 +274,7 @@ readLog() {
         --layout=reverse \
         --preview "bat --color always -pp --wrap character --terminal-width $(( $(tput cols) / 2 - 4)) -l md -r :500 {}" \
         --header "f1 → default, f2 → editor, del → delete" \
-        --bind "f1:execute-silent(xdg-open {} 2>/dev/null),f2:execute($editor {}),del:reload(_gro {} && fd '^[0-9]{2}.*.md$')"
+        --bind "f1:execute-silent(xdg-open {} 2>/dev/null),f2:execute($editor {}),del:reload($_gro {} && fd '^[0-9]{2}.*.md$')"
 }
 
 _rotateLog() {
@@ -291,7 +292,7 @@ _rotateLog() {
             {   printf "## %s\n" "$(date "$dateFormat" -d "${entry:0:$offsetB}")"
                 printf "%s\n" "$(<"$entry")"
             } >> "${entry:0:$offsetA}.md"
-            _gro "$entry"
+            $_gro "$entry"
         fi
     done
 }
