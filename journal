@@ -239,24 +239,30 @@ writeLog() {
 # Create a log entry with present date/time and open it with $EDITOR
     while getopts ":d" option; do
       case $option in
-        d) dailyStandup=True ;;
-        ?) echo "Error: option -$OPTARG is not implemented";;
+        d) dailyStandup=true ;;
+        ?) echo "Error, wrong argument.";;
       esac
     done
 
     cd "$logPath" || exit 1
-    #now="$(date '+%y-%m-%dT-%H-%M').md"
-    now="$(date '+%y-%m-%d').md"
-    # insert line break if file exists
-    [[ -f $now ]] && header="\n"
-    header+="### $(date '+%H:%M')"
+
+    fileName="$(date '+%y-%m-%d').md"
+    #fileName="$(date '+%y-%m-%dT-%H-%M').md" # +granularity on file name
+    
+    header="### $(date '+%H:%M')"
     # insert daily standup if flag if found
-    [[ $dailyStandup ]] && header+="
+    set +u; [ $dailyStandup ] && header+="
 #### What did I accomplish yesterday?
 #### What will I do today?
-#### What obstacles are impeding my progress?\n"
-    echo -e "$header" >> "$now"
-	$EDITOR "$now" 
+#### What obstacles are impeding my progress?
+"; set -u
+
+    if ! [[ -f $fileName ]]; then # write header to file
+        printf "%s\n" "$header" >> "$fileName"
+    else
+        printf "\n%s\n" "$header" >> "$fileName" # insert line break if file exists
+    fi
+    $EDITOR "$fileName" # open file
 }
 
 readLog() {
