@@ -19,9 +19,9 @@
 ## Present
 Refactoring and hunting bugs.
 
-- Abstract queries into a single generic function.
 - Write unitary tests for queries.
 - Review tests for syntax.
+- Read path as an argument
 - Vim TODO syntax is conflicting with [vim-markdown](https://github.com/plasticboy/vim-markdown)
 - Review Vim TODO syntax setup.
 - Compare with similar software.
