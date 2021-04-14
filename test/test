@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Unitary tests for Journal
 # We can't write unit tests for interactive behaviour interacting with external software.
 # But we can compare commands strings for a range of inputs to see if they match with what we expect.
@@ -6,8 +6,6 @@
 #-----#
 # LIB #
 #-----#
-todoPath="."
-logPath="./log"
 export journalDebug="true"
 
 reset='\e[0m'
@@ -30,14 +28,6 @@ _report() {
 # ----- #
 # TASKS #
 # ----- #
-if ! [ -d "$todoPath" ]; then
-    printf "TODOs path is missing. Critical!\n"
-    exit 1
-else
-    # shellcheck disable=SC2164
-    cd "$todoPath"
-fi
-
 # PRINT
 ## expected
 ## actual
@@ -52,14 +42,6 @@ fi
 # --- #
 # LOG #
 # --- #
-if ! [ -d "$logPath" ]; then
-    printf "Logs path is missing. Critical!\n"
-    exit 1
-else
-    # shellcheck disable=SC2164
-    cd "$logPath"
-fi
-
 # WRITE (later)
 
 # READ (later)

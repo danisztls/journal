@@ -21,12 +21,21 @@ set -e
 # Exit if any command in a pipe fail
 set -o pipefail
 
+# Set journalDebug to false if variable is not set
+# just to avoid variable unset warnings
+[ "$journalDebug" ] || journalDebug="false"
+
 #--------#
 # CONFIG #
 #--------#
 # Set general defaults
-todoPath="$HOME"
-logPath="$HOME/Docs/log"
+if [ "$journalDebug" = "true" ]; then
+    todoPath="$HOME"
+    logPath="$HOME/Docs/log"
+else
+    todoPath="test"
+    logPath="test/log"
+fi
 retentionDaily="-7days" # leave the minus, unless you want to warp time
 retentionMonthly="-3months"
 [ -f "/usr/share/journal/ignore" ] && ignoreFile="/usr/share/journal/ignore"
@@ -35,8 +44,10 @@ retentionMonthly="-3months"
 configDir="${XDG_CONFIG_HOME:-"$HOME/.config"}/journal"
 configFile="$configDir/config"
 ignoreFile="$configDir/ignore"
-#shellcheck disable=SC1090
-[ -f "$configFile" ] && source "$configFile"
+if [ -f "$configFile" ] && ! [ "$journalDebug" = "false" ]; then
+    #shellcheck disable=SC1090
+    source "$configFile"
+fi
 
 # Set escape code colors variables
 reset=$(printf '\e[0m')
@@ -65,10 +76,6 @@ if ! [ "$editor" ]; then
         done
     fi
 fi
-
-# Set journalDebug to false if variable is not set
-# just to avoid unset variable warnings
-[ "$journalDebug" ] || journalDebug="false"
 
 #------#
 # HELP #
