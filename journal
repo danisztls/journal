@@ -7,27 +7,26 @@
 #-------#
 # DEBUG #
 #-------#
-# Command verbosity 
-# set -v
-
-# Exit if any command return a non-zero
-# put '||:' at the end of a pipe to mask a non-zero
-set -e
-
-# Exit when referencing an undefined variable
-# $* and $@ are exceptions
-#set -u
-
-# Exit if any command in a pipe fail
-set -o pipefail
-
-# Set debug mode (WIP)
 # shellcheck disable=SC2154
-#if [ "$journalDebug" = "true" ]; then
-#    debug="true"
-#else
-#    debug="false"
-#fi
+if [ "$journalDebug" = "true" ]; then
+    debug="true"
+    # Command verbosity 
+    # set -v
+
+    # Exit if any command return a non-zero
+    # put '||:' at the end of a pipe to mask a non-zero
+    set -e
+
+    # Exit when referencing an undefined variable
+    # $* and $@ are exceptions
+    #set -u
+
+    # Exit if any command in a pipe fail
+    set -o pipefail
+else
+    # shellcheck disable=SC2034
+    debug="false"
+fi
 
 #--------#
 # CONFIG #
