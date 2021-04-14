@@ -98,7 +98,7 @@ printHelp() {
 # UTILS #
 #-------#
 _confirmDialog() {
-# Subprocedure that asks for user confirmation
+# Sub procedure that asks for user confirmation
     # shellcheck disable=SC2162
 	read -p "Are you sure? (y/N) " yn;
 	case $yn in
@@ -117,7 +117,7 @@ else
     _gro="rm"
 fi
 
-# Jump to line with Vim when openingand jump to given line (to use with fzf)
+# Jump to line with Vim when opening and jump to given line (to use with fzf)
 # if not vim or nvim it will be the same as $editor
 # shellcheck disable=SC2001
 editorJump2Line=$(sed "s/vim/vim {1} -c '{2} normal zz'/" <<< "$editor")
@@ -139,11 +139,11 @@ _queryTodos() {
 	rg -n --color never --no-heading -t md --ignore-file "$ignoreFile" -e "$regexRule"
 }
 
-printTodos() { 
+printTodos() {
 # Print plain TODOs to STDOUT
 # As it prints to STDOUT, normal and debug mode are the same
     cd "$todoPath" || exit 1
-    _queryTodos | sed 's/TODO: //;s/\r//' # delete todo preffix and carriage return escape code
+    _queryTodos | sed 's/TODO: //;s/\r//' # delete todo prefix and carriage return escape code
 }
 
 _prettifyTodos() {
@@ -210,7 +210,7 @@ _deleteDoneTodos() {
 }
 
 _commitGit() {
-# Non-interactively commit changes in a Git repo
+# Non-interactively commit changes in a Git repository
 	local lastCommit="git -C '$todoPath' log HEAD^..HEAD --pretty=format:'%s'" # find last commit
 	local today && today=$(date "+%y-%m-%d") 
 	git -C "$todoPath" add -A &&
@@ -230,7 +230,7 @@ commitDoneTodos() {
 #-----#
 # FZF #
 #-----#
-# $1 is function, $2 is file name, $3 is line number and $4 is task description in FZF environment.
+# $1 is function, $2 is file name, $3 is line number and $4 is task description in Fzf environment.
 _fzfPrint() {
 # Print TODOs for Fzf
 # Between ':' should be, in order, file name, line number and task description.
@@ -240,14 +240,14 @@ _fzfPrint() {
 
 _fzfPreview() {
 # Output a preview of the file with the selected line somewhat centered.
-# FZF env: $FZF_PREVIEW_LINES and $FZF_PREVIEW_COLUMNS is the size of the preview window.
+# Fzf env: $FZF_PREVIEW_LINES and $FZF_PREVIEW_COLUMNS is the size of the preview window.
     local file="$1"
     local line="$2"
 
     tresh=$(( FZF_PREVIEW_LINES / 2 )) # threshold
 	start=$(( line - tresh )); [ $start -lt 1 ] && start=1 # failsafe
     end=$(( line + tresh )) # end line
-	bat --color always -l md --highlight-line "$line" -r $start:$end -pp "$file" # wraping is being done in fzf now
+	bat --color always -l md --highlight-line "$line" -r $start:$end -pp "$file" # wrapping is being done in Fzf now
 }
 
 fzfCycle() {
@@ -274,7 +274,7 @@ _fzfDelete() {
 }
 
 fzfFind() {
-# Invoke FZF to fuzzy find and preview TODOs context
+# Invoke Ffz to fuzzy find and preview TODOs context
 # {1} is file name, {2} is line number and {3} is task description.
     cd "$todoPath" || exit 1
     # Debug Mode
@@ -315,7 +315,7 @@ writeLog() {
     fileName="$(date '+%y-%m-%d').md"
     #fileName="$(date '+%y-%m-%dT-%H-%M').md" # +granularity on file name
     header="### $(date '+%H:%M')"
-    # insert daily standup if flag if found
+    # insert daily stand-up if flag if found
     [ $dailyStandup ] && header+="
 #### What did I accomplish yesterday/today?
 #### What will I do today/tomorrow?
@@ -331,7 +331,7 @@ writeLog() {
 }
 
 readLog() {
-# Invoke FZF to fuzzy find and preview log entries
+# Invoke Fzf to fuzzy find and preview log entries
     cd "$logPath" || exit 1
     fd '^[0-9]{2}.*.md$' |
     fzf --tac --no-sort \
