@@ -30,11 +30,11 @@ set -o pipefail
 #--------#
 # Set general defaults
 if [ "$journalDebug" = "true" ]; then
-    todoPath="$HOME"
-    logPath="$HOME/Docs/log"
-else
     todoPath="test"
     logPath="test/log"
+else
+    todoPath="$HOME"
+    logPath="$HOME/Docs/log"
 fi
 retentionDaily="-7days" # leave the minus, unless you want to warp time
 retentionMonthly="-3months"
