@@ -9,7 +9,10 @@
 export journalTesting="true"
 
 reset='\e[0m'
-#bold='\e[1m'
+bold='\e[1m'
+italic='\e[3m'
+dim='\e[2m'
+blink='\e[5m'
 red='\e[1;31m'
 green='\e[1;32m'
 
@@ -20,7 +23,7 @@ _diff() {
     if command -v delta &>/dev/null; then
         delta <(echo "$exp") <(echo "$obs")
     else
-        # FIXME: Work on shell but not on script
+        # FIXME: Working on shell but not on script (maybe zsh only)
         # diff --color=always -d <(<<< "$exp") <(<<< "$obs")
         diff --color=always -d <(echo "$exp") <(echo "$obs")
     fi
@@ -31,8 +34,10 @@ _report() {
 # variables are passed by reference
     local status="$1"
     if [ "$status" -eq 0 ]; then
+        hits+=1
         printf "[${green}PASS${reset}]: %s\n" "'$name'"
     elif [ "$status" -eq 1 ]; then
+        misses+=1
         printf "[${red}FAIL${reset}]: %s\n" "'$name'"
         _diff
     else
@@ -83,17 +88,31 @@ testFind() {
     _test
 }
 
-# COMMIT (later)
+# COMMIT (TODO)
+
+#-----#
+# LOG #
+#-----#
+# WRITE (TODO)
+
+# READ (TODO)
+
+# ROTATE (TODO)
+
+#---------#
+# TESTING #
+#---------#
+declare -i hits     # integer
+declare -i misses
+declare -i total
+
+printf "${italic}%s${blink}%s${reset}\n\n" "Running tests" "..."
 
 testPrint
 testShow
 testFind
 
-#-----#
-# LOG #
-#-----#
-# WRITE (later)
-
-# READ (later)
-
-# ROTATE (later)
+# Show summary
+total="$(( hits + misses ))"
+printf "\nHIT: ${green}%i${reset} of %i\n" "$hits" "$total"
+printf "MISS: ${red}%i${reset} of %i\n" "$misses" "$total"
