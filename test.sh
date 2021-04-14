@@ -14,34 +14,42 @@ red='\e[1;31m'
 green='\e[1;32m'
 
 _report() {
-    # $name is passed by reference
+# Print a report of the test
+# variables are passed by reference
     local status="$1"
     if [ "$status" -eq 0 ]; then
-        printf "[${green}PASS${reset}]: %s\n" "$name"
+        printf "[${green}PASS${reset}]: %s\n" "'$name'"
     elif [ "$status" -eq 1 ]; then
-        printf "[${red}FAIL${reset}]: %s\n" "$name"
+        printf "[${red}FAIL${reset}]: %s\n" "'$name'"
+        diff --color=always -d <(echo "$exp") <(echo "$obs")
     else
         printf "${red}ERROR: Wrong status code for %s.${reset}\n" "$name"
     fi
 }
 
-# ----- #
-# TASKS #
-# ----- #
-# PRINT
-testPrint() {
-    local name="journal print -a"
-    local exp=
-    local obs; obs="$(../journal print -a)"
-
-    # Do observations pass expectations?
+_test() {
+# Check if observations pass expectations
+# variables are passed by reference
     if [ "$obs" = "$exp" ]; then
         _report 0
     else
         _report 1
-        diff <(echo "$exp") <(echo "$obs")
     fi
 }
+
+#-------#
+# TASKS #
+#-------#
+# PRINT
+testPrint() {
+    local name; local exp; local obs
+    name="journal print -a"
+    exp="$(< "test/print.txt")" # read contents of file to variable
+    # shellcheck disable=SC2086
+    obs="$(./$name)" # read stdout of command to variable
+    _test
+}
+
 # SHOW
 
 # FIND
@@ -50,9 +58,9 @@ testPrint() {
 
 testPrint
 
-# --- #
+#-----#
 # LOG #
-# --- #
+#-----#
 # WRITE (later)
 
 # READ (later)
