@@ -16,7 +16,7 @@ set -e
 
 # Exit when referencing an undefined variable
 # $* and $@ are exceptions
-set -u
+#set -u
 
 # Exit if any command in a pipe fail
 set -o pipefail
@@ -51,14 +51,10 @@ blue=$(printf '\e[34m')
 
 # Set editor
 # Use $editor from config, otherwise, use $EDITOR, if defined, or whatever is available.
-set +u
 if ! [ "$editor" ]; then
-set -u
     editors=(vi vim nvim nano)
-    set +u
     # shellcheck disable=SC2153
     if [ "$EDITOR" ]; then
-    set -u
         editor=$EDITOR
     else
         for prog in "${editors[@]}"; do
@@ -72,10 +68,8 @@ fi
 
 # Testing mode
 # Overrides conf for unit testing if $journalDebug=true
-set +u
 # shellcheck disable=SC2154
 if [ "$journalDebug" = true ]; then
-set -u
     todoPath="sample"
     logPath="sample/log"
     if ! { [ -d "$todoPath" ] && [ -d "$logPath" ]; }; then
@@ -178,15 +172,11 @@ showPrettyTodos() {
     done
     regexRules=("^TODO:.*\+done.*$" "^TODO:.*\+asap.*$" "^TODO:.[^\+]*$") 
 
-    set +u
     if [ $printAll ]; then # only print if -a flag is set
-    set -u
         regexRules+=("^TODO:.*\+later.*$")
     fi
 
-    set +u
     if [ "$journalDebug" = true ]; then # if debug is on, print to STDOUT
-    set -u
         _show="cat"
     else
         _show="less -R"
@@ -326,11 +316,11 @@ writeLog() {
     #fileName="$(date '+%y-%m-%dT-%H-%M').md" # +granularity on file name
     header="### $(date '+%H:%M')"
     # insert daily standup if flag if found
-    set +u; [ $dailyStandup ] && header+="
+    [ $dailyStandup ] && header+="
 #### What did I accomplish yesterday?
 #### What will I do today?
 #### What obstacles are impeding my progress?
-"; set -u
+"
 
     if ! [[ -f $fileName ]]; then # write header to file
         printf "%s\n" "$header" >> "$fileName"
@@ -381,7 +371,6 @@ rotateLogs() {
 #------#
 # MAIN #
 #------#
-set +u
 case $1 in
 	print) printTodos;;
 	show) showPrettyTodos "${@:2}";;
@@ -396,4 +385,3 @@ case $1 in
 	_fzfDelete) _fzfDelete "$2" "$3";;
     *) printHelp;;
 esac
-set -u
