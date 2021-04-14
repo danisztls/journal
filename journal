@@ -242,12 +242,12 @@ commitDoneTodos() {
 #-----#
 # $1 is function, $2 is file name, $3 is line number and $4 is task description in FZF environment.
 _fzfPrint() {
-# Print TODOs for fzf
+# Print TODOs for Fzf
+# Between ':' should be, in order, file name, line number and task description.
     _queryTodos |
-    sed -E "s/(.*):([0-9]*):(.*)/${magenta}\1${reset}:${gray}\2${reset}:\3/"
+    sed -E "s/^(.*):([0-9]*):TODO: (.*)$/${magenta}\1${reset}:${gray}\2${reset}:\3/"
 }
 
-# FIXME: It's possibly bugged
 _fzfPreview() {
 # Output a preview of the file with the selected line somewhat centered.
 # FZF env: $FZF_PREVIEW_LINES and $FZF_PREVIEW_COLUMNS is the size of the preview window.
@@ -271,7 +271,7 @@ fzfCycle() {
     fi
 
     # cycle between priority tags otherwise
-    # TODO: Refactor
+    # don't refactor: it would be complex to iterate over two variables as multi-dimensional arrays aren't supported
     rg "\+asap"  <<< "$task" >/dev/null && sed -i "${line}s/\+asap/\+done/" "$file" && return 0
     rg "\+done"  <<< "$task" >/dev/null && sed -i "${line}s/\+done/\+later/" "$file" && return 0
     rg "\+later" <<< "$task" >/dev/null && sed -i "${line}s/\+later//" "$file" && return 0
