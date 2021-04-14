@@ -9,7 +9,7 @@ doInstall() {
     config="$XDG_CONFIG_HOME/journal" && mkdir -p "$config"
     
     # Create default ignore file if non existent
-    [ -f "$config/ignore" ] || printf "log/journal.md\nlog/backlog.md\nlog/backlog-old.md\n" > "$config/ignore" 
+    [ -f "$config/ignore" ] || cp -n "ignore" "$config/" 
 
     # Install syntax for vim
     if [ "$(command -v vim)" ] || [ "$(command -v nvim)" ]; then
