@@ -193,6 +193,7 @@ showPrettyTodos() {
 
     local regexRule
     for regexRule in "${regexRules[@]}"; do
+    # FIXME: If query is empty it will return 1 and break the loop
         _queryTodos | _prettifyTodos
     done | $_show
 }
