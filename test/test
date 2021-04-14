@@ -8,6 +8,7 @@
 #-----#
 todoPath="."
 logPath="./log"
+export journalDebug="true"
 
 reset='\e[0m'
 #bold='\e[1m'
