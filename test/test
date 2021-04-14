@@ -9,6 +9,22 @@
 todoPath="."
 logPath="./log"
 
+reset='\e[0m'
+#bold='\e[1m'
+red='\e[1;31m'
+green='\e[1;32m'
+
+_report() {
+    local name="$1"
+    local status="$2"
+    if [ "$status" -eq 0 ]; then
+        printf "[${green}PASS${reset}]: %s\n" "$name"
+    elif [ "$status" -eq 1 ]; then
+        printf "[${green}FAIL${reset}]: %s\n" "$name"
+    else
+        printf "${red}ERROR: Wrong status code for %s.${reset}\n" "$name"
+    fi
+}
 
 # ----- #
 # TASKS #
