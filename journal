@@ -138,8 +138,8 @@ editorJump2Line=$(sed "s/vim/vim {1} -c '{2} normal zz'/" <<< "$editor")
 _queryTodos() { 
 # Find TODOs on files
 # $1 is a [Rust RE](https://docs.rs/regex/1.3.9/regex/) rule
-    local regexRule="${regexRule:-TODO: }"
-	rg -N --color never --no-heading -t md --ignore-file "$ignoreFile" -e "$regexRule"
+    local regexRule="${regexRule:-^TODO: }"
+	rg -n --color never --no-heading -t md --ignore-file "$ignoreFile" -e "$regexRule"
 }
 
 printTodos() { 
