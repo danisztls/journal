@@ -77,7 +77,16 @@ It expects notes saved in **YY-MM-DD.md**, **YY-MM.md** and **YY.md** format and
 ## Setup
 Install through the [AUR](https://aur.archlinux.org/packages/journal-git/).
 
-Or run the **setup** script to install it at home. Dependencies are **ripgrep**, **fzf** and **bat**.
+Or run the **setup** script to install at home.
+```sh
+./setup.sh install
+```
+
+Dependencies are:
+- [ripgrep](https://github.com/BurntSushi/ripgrep)
+- [fd](https://github.com/sharkdp/fd)
+- [fzf](https://github.com/junegunn/fzf)
+- [bat](https://github.com/sharkdp/bat)
 
 ## Development
 Feedback and contributions are welcomed. Development info at [DEVELOPMENT.md](https://gitlab.com/lbcnz/journal/-/blob/main/DEVELOPMENT.md).
