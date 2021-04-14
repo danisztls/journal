@@ -128,6 +128,9 @@ fi
 # shellcheck disable=SC2001
 editorJump2Line=$(sed "s/vim/vim {1} -c '{2} normal zz'/" <<< "$editor")
 
+# Deduplicate lines
+_dedup() { awk '!x[$0]++'; }
+
 #-------#
 # TASKS #
 #-------#
@@ -151,7 +154,9 @@ printTodos() {
 
 _prettifyTodos() {
 # Format and colorize plain-text TODOs from STDIN 
-	sed 's/TODO: //;s/:/\n/' | awk '!x[$0]++' | # split & dedup
+    sed "s/TODO: //;s/:/\n/" | # remove todo placeholder and split
+    sed -E "s/^[0-9]*://" | # remove numbers
+    _dedup | # remove duplicate file names 
 	sed "s/^.*\.md$/\n${boldBlue}&${reset}/;
         s/\+done/${green}&${reset}/;
         s/\+asap/${red}&${reset}/;
@@ -207,7 +212,7 @@ _deleteDoneTodos() {
     local files && files=$(
         _queryTodos   | # find done todos
         sed 's/:.*//' | # extract files
-        awk '!x[$0]++'  # remove duplicates
+        _dedup          # remove duplicates
     )
 	for file in $files; do # iterate over files
 		sed -i '/\^TODO: .*+done/d' "$file" # delete line with todo
