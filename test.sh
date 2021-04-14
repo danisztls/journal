@@ -13,6 +13,19 @@ reset='\e[0m'
 red='\e[1;31m'
 green='\e[1;32m'
 
+_diff() {
+# Diff two strings
+# variables are passed by reference
+    # use delta if available
+    if command -v delta &>/dev/null; then
+        delta <(echo "$exp") <(echo "$obs")
+    else
+        # FIXME: Work on shell but not on script
+        # diff --color=always -d <(<<< "$exp") <(<<< "$obs")
+        diff --color=always -d <(echo "$exp") <(echo "$obs")
+    fi
+}
+
 _report() {
 # Print a report of the test
 # variables are passed by reference
@@ -21,7 +34,7 @@ _report() {
         printf "[${green}PASS${reset}]: %s\n" "'$name'"
     elif [ "$status" -eq 1 ]; then
         printf "[${red}FAIL${reset}]: %s\n" "'$name'"
-        diff --color=always -d <(echo "$exp") <(echo "$obs")
+        _diff
     else
         printf "${red}ERROR: Wrong status code for %s.${reset}\n" "$name"
     fi
