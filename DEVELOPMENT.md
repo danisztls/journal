@@ -17,15 +17,23 @@
 <!-- /TOC -->
 
 ## Present
-Refactoring and hunting bugs.
-
+Testing
 - Write unitary tests for queries.
 - Review tests for syntax.
+Setup
 - Write Makefile
-- Read path as an argument
+- Set testing procedures on build
+
+Syntax
 - Vim TODO syntax is conflicting with [vim-markdown](https://github.com/plasticboy/vim-markdown)
-- Review Vim TODO syntax setup.
-- Compare with similar software.
+- Review Vim TODO syntax setup
+
+Docs
+- Record ascii animations to showcase features
+- Compare it with similar software.
+
+Features
+- Read path as an argument
 
 ## Future
 I started this as a fun project to improve my knowledge of Shell scripting. I liked it and I have a lots of ideas of how I can improve it, make it more useful and friendly. But I will do that in a new Python code base. It wil be more sane, easier to add new features, better to debug and mantain and will support a larger base of users as Python can run everywhere. As such I will retain myself to fixing bugs and doing minor improvements to the Shell script.
