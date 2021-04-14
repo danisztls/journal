@@ -235,23 +235,6 @@ _fzfPrint() {
     sed -E "s/(.*):([0-9]*):(.*)/${magenta}\1${reset}:${gray}\2${reset}:\3/"
 }
 
-fzfFind() {
-# Invoke FZF to fuzzy find and preview TODOs context
-# {1} is file name, {2} is line number and {3} is task description.
-    cd "$todoPath" || exit 1
-    _fzfPrint |
-    fzf --ansi --delimiter ':' \
-        --preview "journal _fzf-preview {1} {2}" \
-        --preview-window=right:50%:wrap \
-        --header "f1 → default, f2 → editor, f3 → cycle priority, del → delete" \
-        --layout=reverse \
-        --bind "\
-f1:execute-silent(xdg-open {1} 2>/dev/null),\
-f2:execute($editorJump2Line),\
-f3:reload(journal _fzfCycle {1} {2} {3} && journal _fzfPrint),\
-del:reload(journal _fzfDelete {1} {2} && journal _fzfPrint)"
-}
-
 # FIXME: It's possibly bugged
 _fzfPreview() {
 # Output a preview of the file with the selected line somewhat centered.
@@ -286,6 +269,23 @@ _fzfDelete() {
     local file="$1"
     local line="$2"
 	sed -i "${line}d" "$file"
+}
+
+fzfFind() {
+# Invoke FZF to fuzzy find and preview TODOs context
+# {1} is file name, {2} is line number and {3} is task description.
+    cd "$todoPath" || exit 1
+    _fzfPrint |
+    fzf --ansi --delimiter ':' \
+        --preview "journal _fzf-preview {1} {2}" \
+        --preview-window=right:50%:wrap \
+        --header "f1 → default, f2 → editor, f3 → cycle priority, del → delete" \
+        --layout=reverse \
+        --bind "\
+f1:execute-silent(xdg-open {1} 2>/dev/null),\
+f2:execute($editorJump2Line),\
+f3:reload(journal _fzfCycle {1} {2} {3} && journal _fzfPrint),\
+del:reload(journal _fzfDelete {1} {2} && journal _fzfPrint)"
 }
 
 #-------#
