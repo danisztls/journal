@@ -66,17 +66,6 @@ if ! [ "$editor" ]; then
     fi
 fi
 
-# Testing mode
-# Overrides conf for unit testing if $journalDebug=true
-# shellcheck disable=SC2154
-if [ "$journalDebug" = true ]; then
-    todoPath="sample"
-    logPath="sample/log"
-    if ! { [ -d "$todoPath" ] && [ -d "$logPath" ]; }; then
-       printf "Expected dirs weren't found!\n" && exit 1 
-    fi
-fi
-
 #------#
 # HELP #
 #------#

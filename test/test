@@ -2,17 +2,44 @@
 # Unitary tests for Journal
 # We can't write unit tests for interactive behaviour interacting with external software.
 # But we can compare commands strings for a range of inputs to see if they match with what we expect.
+todoPath="../sample"
+logPath="../sample/log"
 
-# print
+# ----- #
+# TASKS #
+# ----- #
+if ! [ -d "$todoPath" ]; then
+    printf "TODOs path is missing. Critical!\n"
+    exit 1
+else
+    # shellcheck disable=SC2164
+    cd "$todoPath"
+fi
 
-# show
+# PRINT
+## expected
+## actual
+## pass?
 
-# find
+# SHOW
 
-# commit
+# FIND
 
-# write
+# COMMIT (later)
 
-# read
+# --- #
+# LOG #
+# --- #
+if ! [ -d "$logPath" ]; then
+    printf "Logs path is missing. Critical!\n"
+    exit 1
+else
+    # shellcheck disable=SC2164
+    cd "$logPath"
+fi
 
-# rotate
+# WRITE (later)
+
+# READ (later)
+
+# ROTATE (later)
