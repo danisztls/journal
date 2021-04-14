@@ -131,6 +131,10 @@ editorJump2Line=$(sed "s/vim/vim {1} -c '{2} normal zz'/" <<< "$editor")
 #-------#
 # TASKS #
 #-------#
+# Functions with '_' preffix are akin to private functions.
+# Although some of them are even being called externally.
+# They should be understood as parent functions for tracing purposes.
+
 _queryTodos() { 
 # Find TODOs on files
 # $1 is a [Rust RE](https://docs.rs/regex/1.3.9/regex/) rule
@@ -220,11 +224,12 @@ commitDoneTodos() {
     cd "$todoPath" || exit 1
     _confirmDialog && _printDoneTodos >> "journal.md" && _deleteDoneTodos && _commitGit
 }
+
 #-----#
 # FZF #
 #-----#
-# FZF env: $1 is function, $2 is file name, $3 is line number and $4 is task description.
-fzfPrint() {
+# $1 is function, $2 is file name, $3 is line number and $4 is task description in FZF environment.
+_fzfPrint() {
 # Print TODOs for fzf
     _queryTodos |
     sed -E "s/(.*):([0-9]*):(.*)/${magenta}\1${reset}:${gray}\2${reset}:\3/"
@@ -234,21 +239,21 @@ fzfFind() {
 # Invoke FZF to fuzzy find and preview TODOs context
 # {1} is file name, {2} is line number and {3} is task description.
     cd "$todoPath" || exit 1
-    fzfPrint |
+    _fzfPrint |
     fzf --ansi --delimiter ':' \
-        --preview "journal fzf-preview {1} {2}" \
+        --preview "journal _fzf-preview {1} {2}" \
         --preview-window=right:50%:wrap \
         --header "f1 → default, f2 → editor, f3 → cycle priority, del → delete" \
         --layout=reverse \
         --bind "\
 f1:execute-silent(xdg-open {1} 2>/dev/null),\
 f2:execute($editorJump2Line),\
-f3:reload(journal fzf-cycle {1} {2} {3} && journal fzf-print),\
-del:reload(journal fzf-delete {1} {2} && journal fzf-print)"
+f3:reload(journal _fzfCycle {1} {2} {3} && journal _fzfPrint),\
+del:reload(journal _fzfDelete {1} {2} && journal _fzfPrint)"
 }
 
 # FIXME: It's possibly bugged
-fzfPreview() {
+_fzfPreview() {
 # Output a preview of the file with the selected line somewhat centered.
 # FZF env: $FZF_PREVIEW_LINES and $FZF_PREVIEW_COLUMNS is the size of the preview window.
     local file="$1"
@@ -262,7 +267,6 @@ fzfPreview() {
 
 fzfCycle() {
 # Cycle between task priorities
-    cd "$todoPath" || exit 1
     local file="$1"
     local line="$2"
     local task="$3"
@@ -272,12 +276,13 @@ fzfCycle() {
     fi
 
     # cycle between priority tags otherwise
+    # TODO: Refactor
     rg "\+asap"  <<< "$task" >/dev/null && sed -i "${line}s/\+asap/\+done/" "$file" && return 0
     rg "\+done"  <<< "$task" >/dev/null && sed -i "${line}s/\+done/\+later/" "$file" && return 0
     rg "\+later" <<< "$task" >/dev/null && sed -i "${line}s/\+later//" "$file" && return 0
 }
 
-fzfDelete() {
+_fzfDelete() {
     local file="$1"
     local line="$2"
 	sed -i "${line}d" "$file"
@@ -301,7 +306,6 @@ writeLog() {
 
     fileName="$(date '+%y-%m-%d').md"
     #fileName="$(date '+%y-%m-%dT-%H-%M').md" # +granularity on file name
-    
     header="### $(date '+%H:%M')"
     # insert daily standup if flag if found
     set +u; [ $dailyStandup ] && header+="
@@ -368,10 +372,10 @@ case $1 in
 	write) writeLog "${@:2}";;
 	read) readLog;;
 	rotate) rotateLogs;;
-    fzf-print) fzfPrint;;
-	fzf-preview) fzfPreview "$2" "$3";;
-	fzf-cycle) fzfCycle "$2" "$3" "$4";;
-	fzf-delete) fzfDelete "$2" "$3";;
+    _fzfPrint) _fzfPrint;;
+	_fzfPreview) _fzfPreview "$2" "$3";;
+	_fzfCycle) _fzfCycle "$2" "$3" "$4";;
+	_fzfDelete) _fzfDelete "$2" "$3";;
     *) printHelp;;
 esac
 set -u
