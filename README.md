@@ -10,10 +10,11 @@
 * [Journaling](#journaling)
 * [Setup](#setup)
 * [Development](#development)
-* [Extra](#extra)
-  * [Contained](#contained)
-  * [Hierarchical](#hierarchical)
-  * [Design principles](#design-principles)
+* [FAQ](#faq)
+  * [Is it fast?](#is-it-fast)
+  * [What is contained?](#what-is-contained)
+  * [Why hierarchical instead of tags?](#why-hierarchical-instead-of-tags)
+  * [What are the design principles?](#what-are-the-design-principles)
 
 <!-- /TOC -->
 
@@ -81,12 +82,15 @@ Or run the **setup** script to install it at home. Dependencies are **ripgrep**,
 ## Development
 Feedback and contributions are welcomed. Development info at [DEVELOPMENT.md](https://gitlab.com/lbcnz/journal/-/blob/main/DEVELOPMENT.md).
 
-## Extra
-### Contained
+## FAQ
+### Is it fast?
+Yes. It is written in Bash but most of the heavy work is done by [ripgrep](https://github.com/BurntSushi/ripgrep) and it is the fastest file searches available. Unless you need to do terabyte volume searches it will get the job done. You can also set an ignore file to ignore large binaries objects and other non-desired files.
+
+### What is contained?
 Assets should, preferably, be contained in the same directory as it parent note. If they are stored somewhere else it will be painful to move the note without breaking links. Also Electron based text editors, like Visual Studio, will not allow access to assets outside root directory of file. In other words, preview will be broken.
 
-### Hierarchical
+### Why hierarchical instead of tags?
 Tags are popular nowadays and really useful but file systems are hierarchical and I am sticking with it. Although you can still tag your notes and use content search to find tagged notes, you can even put everything inside a single directory.
 
-### Design principles
+### What are the design principles?
 Agnosticism, bottom-up approach, form follows functions, minimalism, modularity and interoperability are principles that guide its development.
