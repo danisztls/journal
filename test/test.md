@@ -10,6 +10,7 @@ This is a test note for
 TODO: Do what is important +asap #einsenhower
 TODO: Leave the urgent trivial to +later #priority
 TODO: And then you will get things +done #matrix
+TODO: Remember it.
 
 **While this shouldn't:**
 

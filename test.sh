@@ -56,7 +56,7 @@ _test() {
 # PRINT
 testPrint() {
     local name; local exp; local obs
-    name="journal print -a"
+    name="journal print"
     exp="$(< "test/print.txt")" # read contents of file to variable
     # shellcheck disable=SC2086
     obs="$(./$name)" # read stdout of command to variable
