@@ -14,12 +14,12 @@ red='\e[1;31m'
 green='\e[1;32m'
 
 _report() {
-    local name="$1"
-    local status="$2"
+    # $name is passed by reference
+    local status="$1"
     if [ "$status" -eq 0 ]; then
         printf "[${green}PASS${reset}]: %s\n" "$name"
     elif [ "$status" -eq 1 ]; then
-        printf "[${green}FAIL${reset}]: %s\n" "$name"
+        printf "[${red}FAIL${reset}]: %s\n" "$name"
     else
         printf "${red}ERROR: Wrong status code for %s.${reset}\n" "$name"
     fi
@@ -29,15 +29,26 @@ _report() {
 # TASKS #
 # ----- #
 # PRINT
-## expected
-## actual
-## pass?
+testPrint() {
+    local name="journal print -a"
+    local exp=
+    local obs; obs="$(../journal print -a)"
 
+    # Do observations pass expectations?
+    if [ "$obs" = "$exp" ]; then
+        _report 0
+    else
+        _report 1
+        diff <("$exp") <("$obs")
+    fi
+}
 # SHOW
 
 # FIND
 
 # COMMIT (later)
+
+testPrint
 
 # --- #
 # LOG #
