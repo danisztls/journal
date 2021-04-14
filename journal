@@ -49,20 +49,6 @@ cyan=$(printf '\e[36m')
 yellow=$(printf '\e[33m')
 blue=$(printf '\e[34m')
 
-# Testing mode
-# Overrides conf for unit testing if $journalTesting=true
-set +u
-# shellcheck disable=SC2154
-if [ "$journalTesting" = true ]; then
-set -u
-    todoPath="sample"
-    logPath="sample/log"
-    unset ignoreFile
-    if ! { [ -d "$todoPath" ] && [ -d "$logPath" ]; }; then
-       printf "Expected dirs weren't found!\n" && exit 1 
-    fi
-fi
-
 # Set editor
 # Use $editor from config, otherwise, use $EDITOR, if defined, or whatever is available.
 set +u
@@ -81,6 +67,19 @@ set -u
                 editor=$(command -v "$prog" | sed 's/alias .*=//;s#.*/##')
             fi
         done
+    fi
+fi
+
+# Testing mode
+# Overrides conf for unit testing if $journalDebug=true
+set +u
+# shellcheck disable=SC2154
+if [ "$journalDebug" = true ]; then
+set -u
+    todoPath="sample"
+    logPath="sample/log"
+    if ! { [ -d "$todoPath" ] && [ -d "$logPath" ]; }; then
+       printf "Expected dirs weren't found!\n" && exit 1 
     fi
 fi
 
