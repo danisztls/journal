@@ -1,10 +1,15 @@
-# Syntax and HL Test
+# Test Note
 
-This is a syntax matching and highlighting test.
+This is a test note for
+- todo parsing.
+- syntax matching.
+- highlighting test.
 
 **This should get highlighted:**
 
-TODO: Do something. +later +asap +done #test @lbcnz =20-07-12 >20-07-12 !20-07-12 
+TODO: Do what is important +asap #einsenhower
+TODO: Leave the urgent trivial to +later #priority
+TODO: And then you will get things +done #matrix
 
 **While this shouldn't:**
 

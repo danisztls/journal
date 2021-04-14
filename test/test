@@ -2,8 +2,13 @@
 # Unitary tests for Journal
 # We can't write unit tests for interactive behaviour interacting with external software.
 # But we can compare commands strings for a range of inputs to see if they match with what we expect.
-todoPath="../sample"
-logPath="../sample/log"
+
+#-----#
+# LIB #
+#-----#
+todoPath="."
+logPath="./log"
+
 
 # ----- #
 # TASKS #
