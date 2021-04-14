@@ -66,6 +66,10 @@ if ! [ "$editor" ]; then
     fi
 fi
 
+# Set journalDebug to false if variable is not set
+# just to avoid unset variable warnings
+[ "$journalDebug" ] || journalDebug="false"
+
 #------#
 # HELP #
 #------#
