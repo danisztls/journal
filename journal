@@ -317,8 +317,8 @@ writeLog() {
     header="### $(date '+%H:%M')"
     # insert daily standup if flag if found
     [ $dailyStandup ] && header+="
-#### What did I accomplish yesterday?
-#### What will I do today?
+#### What did I accomplish yesterday/today?
+#### What will I do today/tomorrow?
 #### What obstacles are impeding my progress?
 "
 
