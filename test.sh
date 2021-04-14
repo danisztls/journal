@@ -64,12 +64,30 @@ testPrint() {
 }
 
 # SHOW
+testShow() {
+    local name; local exp; local obs
+    name="journal show -a"
+    exp="$(< "test/show.txt")" # read contents of file to variable
+    # shellcheck disable=SC2086
+    obs="$(./$name)" # read stdout of command to variable
+    _test
+}
 
 # FIND
+testFind() {
+    local name; local exp; local obs
+    name="journal find"
+    exp="$(< "test/find.txt")" # read contents of file to variable
+    # shellcheck disable=SC2086
+    obs="$(./$name)" # read stdout of command to variable
+    _test
+}
 
 # COMMIT (later)
 
 testPrint
+testShow
+testFind
 
 #-----#
 # LOG #
