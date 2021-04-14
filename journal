@@ -144,6 +144,7 @@ _queryTodos() {
 
 printTodos() { 
 # Print plain TODOs to STDOUT
+# As it prints to STDOUT, normal and debug mode are the same
     cd "$todoPath" || exit 1
     _queryTodos | sed 's/TODO: //;s/\r//' # delete todo preffix and carriage return escape code
 }
@@ -174,16 +175,22 @@ showPrettyTodos() {
 
     set +u
     if [ $printAll ]; then # only print if -a flag is set
+    set -u
         regexRules+=("^TODO:.*\+later.*$")
     fi
+
+    set +u
+    if [ "$journalDebug" = true ]; then # if debug is on, print to STDOUT
     set -u
+        _show="cat"
+    else
+        _show="less -R"
+    fi
 
     local regexRule
-    {
     for regexRule in "${regexRules[@]}"; do
         _queryTodos | _prettifyTodos
-    done
-    } | less -R 
+    done | $_show
 }
 
 _printDoneTodos() { 
@@ -275,17 +282,23 @@ fzfFind() {
 # Invoke FZF to fuzzy find and preview TODOs context
 # {1} is file name, {2} is line number and {3} is task description.
     cd "$todoPath" || exit 1
-    _fzfPrint |
-    fzf --ansi --delimiter ':' \
-        --preview "journal _fzf-preview {1} {2}" \
-        --preview-window=right:50%:wrap \
-        --header "f1 → default, f2 → editor, f3 → cycle priority, del → delete" \
-        --layout=reverse \
-        --bind "\
+    # Debug Mode
+    if [ "$journalDebug" = true ]; then
+        _fzfPrint
+    # Normal Mode
+    else
+        _fzfPrint |
+        fzf --ansi --delimiter ':' \
+            --preview "journal _fzfPreview {1} {2}" \
+            --preview-window=right:50%:wrap \
+            --header "f1 → default, f2 → editor, f3 → cycle priority, del → delete" \
+            --layout=reverse \
+            --bind "\
 f1:execute-silent(xdg-open {1} 2>/dev/null),\
 f2:execute($editorJump2Line),\
 f3:reload(journal _fzfCycle {1} {2} {3} && journal _fzfPrint),\
 del:reload(journal _fzfDelete {1} {2} && journal _fzfPrint)"
+    fi
 }
 
 #-------#
