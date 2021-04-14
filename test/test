@@ -39,7 +39,7 @@ testPrint() {
         _report 0
     else
         _report 1
-        diff <("$exp") <("$obs")
+        diff <(echo "$exp") <(echo "$obs")
     fi
 }
 # SHOW
