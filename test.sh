@@ -6,7 +6,7 @@
 #-----#
 # LIB #
 #-----#
-export journalDebug="true"
+export journalTesting="true"
 
 reset='\e[0m'
 #bold='\e[1m'

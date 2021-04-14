@@ -21,21 +21,22 @@ set -e
 # Exit if any command in a pipe fail
 set -o pipefail
 
-# Set journalDebug to false if variable is not set
-# just to avoid variable unset warnings
-[ "$journalDebug" ] || journalDebug="false"
-
 #--------#
 # CONFIG #
 #--------#
-# Set general defaults
-if [ "$journalDebug" = "true" ]; then
+# Set defaults for testing/normal
+# shellcheck disable=SC2154
+if [ "$journalTesting" = "true" ]; then
+    testing="true"
     todoPath="test"
     logPath="test/log"
 else
+    testing="false"
     todoPath="$HOME"
     logPath="$HOME/Docs/log"
 fi
+
+# Immutable defaults
 retentionDaily="-7days" # leave the minus, unless you want to warp time
 retentionMonthly="-3months"
 [ -f "/usr/share/journal/ignore" ] && ignoreFile="/usr/share/journal/ignore"
@@ -44,7 +45,7 @@ retentionMonthly="-3months"
 configDir="${XDG_CONFIG_HOME:-"$HOME/.config"}/journal"
 configFile="$configDir/config"
 ignoreFile="$configDir/ignore"
-if [ -f "$configFile" ] && ! [ "$journalDebug" = "false" ]; then
+if [ -f "$configFile" ] && ! [ "$testing" = "false" ]; then
     #shellcheck disable=SC1090
     source "$configFile"
 fi
@@ -176,7 +177,7 @@ showPrettyTodos() {
         regexRules+=("^TODO:.*\+later.*$")
     fi
 
-    if [ "$journalDebug" = true ]; then # if debug is on, print to STDOUT
+    if [ "$testing" = true ]; then # if debug is on, print to STDOUT
         _show="cat"
     else
         _show="less -R"
@@ -278,7 +279,7 @@ fzfFind() {
 # {1} is file name, {2} is line number and {3} is task description.
     cd "$todoPath" || exit 1
     # Debug Mode
-    if [ "$journalDebug" = true ]; then
+    if [ "$testing" = true ]; then
         _fzfPrint
     # Normal Mode
     else
