@@ -155,24 +155,40 @@ _dedup() { awk '!x[$0]++'; }
 # Although some of them are even being called externally.
 # They should be understood as parent functions for tracing purposes.
 
+_queryRegex() {
+# Query a [Rust RE](https://docs.rs/regex/1.3.9/regex/) rule
+	rg -n --color never --no-heading -t md --ignore-file "$ignoreFile" -e "$regexRule"
+}
+
 _queryTodos() { 
 # Find TODOs on files
-# $1 is a [Rust RE](https://docs.rs/regex/1.3.9/regex/) rule
-    local regexRule="${regexRule:-^TODO: }"
-	rg -n --color never --no-heading -t md --ignore-file "$ignoreFile" -e "$regexRule"
+    # use default rules if no set of rules is passed
+    if ! [ "$regexRules" ]; then
+        local regexRules=("^TODO:.*\+done.*$" "^TODO:.*\+asap.*$" "^TODO:.[^\+]*$")
+        # only print '+later' if -a flag is set
+        [ "$printAll" ] && regexRules+=("^TODO:.*\+later.*$")
+    fi
+
+    local regexRule
+    {
+    for regexRule in "${regexRules[@]}"; do
+    # FIXME: If query is empty it will return 1 and break the loop
+        _queryRegex
+    done
+    } | sed 's/TODO: //' # delete todo prefix
 }
 
 printTodos() {
 # Print plain TODOs to STDOUT
 # As it prints to STDOUT, normal and debug mode are the same
     cd "$todoPath" || exit 1
-    _queryTodos | sed 's/TODO: //;s/\r//' # delete todo prefix and carriage return escape code
+    _queryTodos 
 }
 
 _prettifyTodos() {
 # Format and colorize plain-text TODOs from STDIN 
-    sed "s/TODO: //;s/:/\n/" | # remove todo placeholder and split
-    sed -E "s/^[0-9]*://" | # remove numbers
+    sed "s/:[0-9]*//" | # remove numbers
+    sed "s/:/\n/" | # split
     _dedup | # remove duplicate file names 
 	sed "s/^.*\.md$/\n${bold}${blue}&${reset}/;
         s/\+done/${green}&${reset}/;
@@ -187,22 +203,12 @@ _prettifyTodos() {
 showPrettyTodos() {
 # Show pretty TODOs on a pager
     cd "$todoPath" || exit 1
-
-    regexRules=("^TODO:.*\+done.*$" "^TODO:.*\+asap.*$" "^TODO:.[^\+]*$") 
-    # only print if -a flag is set
-    [ "$printAll" ] && regexRules+=("^TODO:.*\+later.*$")
-
     if [ "$testing" = true ]; then # if debug is on, print to STDOUT
         _show="cat"
     else
         _show="less -R"
     fi
-
-    local regexRule
-    for regexRule in "${regexRules[@]}"; do
-    # FIXME: If query is empty it will return 1 and break the loop
-        _queryTodos | _prettifyTodos
-    done | $_show
+    _queryTodos | _prettifyTodos | $_show
 }
 
 _printDoneTodos() { 
@@ -253,7 +259,7 @@ _fzfPrint() {
 # Print TODOs for Fzf
 # Between ':' should be, in order, file name, line number and task description.
     _queryTodos |
-    sed -E "s/^(.*):([0-9]*):TODO: (.*)$/${magenta}\1${reset}:${dim}\2${reset}:\3/"
+    sed -E "s/^(.*):([0-9]*):(.*)$/${magenta}\1${reset}:${dim}\2${reset}:\3/"
 }
 
 _fzfPreview() {
