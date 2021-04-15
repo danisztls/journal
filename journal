@@ -90,16 +90,18 @@ fi
 #------#
 # Show help if no valid argument is parsed
 printHelp() {
-    printf "HELP:
-    TODOs:
-    \t\e[1m'print'\e[0m print todo tasks to stdout in plain text;
-    \t\e[1m'show'\e[0m show tasks in a pager with pretty formatting, use -a to display parked tasks;
-    \t\e[1m'find'\e[0m show tasks in fzf with note preview. f1 opens in editor, f2 cycles priority tags and f5 delete;
-    \t\e[1m'commit'\e[0m write to journal and clean done tasks within files.;
-    LOG:
-    \t\e[1m'write'\e[0m create/edit log entry, use -d to do a daily review
-    \t\e[1m'read'\e[0m fuzzy browse among entries; 
-    \t\e[1m'merge'\e[0m merge entries in monthly and yearly entries following the retention policy.\n" && exit
+    # shellcheck disable=SC2059
+    printf "
+TODOs:
+    ${bold}'print'${reset} print plain text tasks to STDOUT;
+    ${bold}'show'${reset} show tasks in a pager with pretty formatting, use '-a' to include all;
+    ${bold}'find'${reset} fuzzy find tasks and preview file context;
+    ${bold}'clean'${reset} clean done tasks within files and commit them to a journal.
+     override path with ${bold}'-p <path>'${reset}, works for any mode;\n
+LOG:
+    ${bold}'write'${reset} create/edit entry, use ${bold}'-d'${reset} to do a daily review;
+    ${bold}'read'${reset} fuzzy find entries and read content; 
+    ${bold}'merge'${reset} merge entries in monthly and yearly entries following the retention policy.\n" && exit
 }
 
 #-------#
