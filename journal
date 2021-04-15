@@ -386,13 +386,13 @@ _getopts "${@:2}"
 
 # Run subprogram
 case $1 in
-	print) printTodos;;
-	show) showPrettyTodos;;
-    find) fzfFind;;
-	commit) commitDoneTodos;;
-	write) writeLog;;
-	read) readLog;;
-	rotate) rotateLogs;;
+	p|print) printTodos;;
+	s|show) showPrettyTodos;;
+    f|find) fzfFind;;
+	c|commit) commitDoneTodos;;
+	w|write) writeLog;;
+	r|read) readLog;;
+	m|rotate) rotateLogs;;
     _fzfPrint) _fzfPrint;;
 	_fzfPreview) _fzfPreview "$2" "$3";;
 	_fzfCycle) _fzfCycle "$2" "$3" "$4";;
