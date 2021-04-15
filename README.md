@@ -3,6 +3,8 @@
 
 [![GitHub Super-Linter](https://github.com/lbcnz/journal/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
 
+[![asciicast](https://asciinema.org/a/407415.svg)](https://asciinema.org/a/407415)
+
 <!-- TOC GitLab -->
 
 * [Features](#features)
@@ -41,8 +43,6 @@
 - Fuzzy find and **read** your entries.
 - **Merge** old entries into monthly and yearly notes following a retention policy.
 - Save time that would be spent with file naming and copy & paste.
-
-![$ journal find](https://github.com/lbcnz/journal/blob/main/journal-fzf.png)
 
 ## Design
 - Notes are short named [markdown](markdown.md) files and thus can be viewed and edited in any text editor and easily exported to any format.
