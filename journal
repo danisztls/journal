@@ -105,6 +105,18 @@ printHelp() {
 #-------#
 # UTILS #
 #-------#
+# Get arguments
+_getopts() {
+    while getopts "adp:" option; do
+        # shellcheck disable=SC2220 # let getopts deal with input validation
+        case $option in
+            a) printAll="true";;
+            d) dailyStandup="true";;
+            p) todoPath="$OPTARG"
+        esac
+    done
+}
+
 _confirmDialog() {
 # Sub procedure that asks for user confirmation
     # shellcheck disable=SC2162
@@ -172,13 +184,6 @@ _prettifyTodos() {
 showPrettyTodos() {
 # Show pretty TODOs on a pager
     cd "$todoPath" || exit 1
-    while getopts "a" option; do
-      # shellcheck disable=SC2220 # let getopts deal with input validation
-      case $option in
-        a) local printAll=True ;;
-      esac
-    done
-    regexRules=("^TODO:.*\+done.*$" "^TODO:.*\+asap.*$" "^TODO:.[^\+]*$") 
 
     regexRules=("^TODO:.*\+done.*$" "^TODO:.*\+asap.*$" "^TODO:.[^\+]*$") 
     # only print if -a flag is set
@@ -316,13 +321,6 @@ writeLog() {
 # Create a log entry with present date/time and open it with $EDITOR
     cd "$logPath" || exit 1
 
-    while getopts "d" option; do
-        # shellcheck disable=SC2220 # let getops deal with input validation
-        case $option in
-            d) dailyStandup=true ;;
-        esac
-    done
-
     fileName="$(date '+%y-%m-%d').md"
     #fileName="$(date '+%y-%m-%dT-%H-%M').md" # +granularity on file name
     header="### $(date '+%H%M')"
@@ -381,12 +379,18 @@ rotateLogs() {
 #------#
 # MAIN #
 #------#
+# Get arguments
+# getopts don't work when mixing parameters and arguments
+# slice the parameters array to remove 1st parameter
+_getopts "${@:2}"
+
+# Run subprogram
 case $1 in
 	print) printTodos;;
-	show) showPrettyTodos "${@:2}";;
+	show) showPrettyTodos;;
     find) fzfFind;;
 	commit) commitDoneTodos;;
-	write) writeLog "${@:2}";;
+	write) writeLog;;
 	read) readLog;;
 	rotate) rotateLogs;;
     _fzfPrint) _fzfPrint;;
