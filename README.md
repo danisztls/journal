@@ -152,8 +152,15 @@ Install as user.
 ```
 
 ### Config
-Configuration files
+Optionally create `$HOME/.config/journal/config` and set:
 
+```sh
+todoPath="$HOME"            # path to notes
+logPath="$HOME/log"         # path to log entries
+ignoreFile=""               # path to ignore file (syntax like .gitignore)   
+retentionDaily=-7days       # merge daily older than it
+retentionMonthly=-3days     # merge monthly older than it
+```
 
 ### Uninstall
 Depends on how you installed it.
