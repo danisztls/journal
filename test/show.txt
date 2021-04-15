@@ -1,12 +1,12 @@
 
-[1;34mtest.md[0m
+[1m[34mtest.md[0m
 And then you will get things [32m+done[0m [33m#matrix[0m
 
-[1;34mtest.md[0m
+[1m[34mtest.md[0m
 Do what is important [31m+asap[0m [33m#einsenhower[0m
 
-[1;34mtest.md[0m
+[1m[34mtest.md[0m
 Remember it.
 
-[1;34mtest.md[0m
+[1m[34mtest.md[0m
 Leave the urgent trivial to [35m+later[0m [33m#priority[0m
