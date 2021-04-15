@@ -99,7 +99,7 @@ printHelp() {
     LOG:
     \t\e[1m'write'\e[0m create/edit log entry, use -d to do a daily review
     \t\e[1m'read'\e[0m fuzzy browse among entries; 
-    \t\e[1m'rotate'\e[0m merge entries in monthly and yearly entries following the retention policy.\n" && exit
+    \t\e[1m'merge'\e[0m merge entries in monthly and yearly entries following the retention policy.\n" && exit
 }
 
 #-------#
@@ -369,8 +369,8 @@ _rotateLog() {
     done
 }
 
-rotateLogs() {
-# Rotate old entries to monthly and yearly entries
+mergeLogs() {
+# Merge old entries to monthly and yearly entries
     cd "$logPath" || exit 1
     _rotateLog "^[0-9]{2}-[0-9]{2}-[0-9]{2}.*.md$" 8 5 "$retentionDaily" "+%d %^b" 
     _rotateLog "^[0-9]{2}-[0-9]{2}.md$" 5 2 "$retentionMonthly" "+%Y"
@@ -392,7 +392,7 @@ case $1 in
 	c|commit) commitDoneTodos;;
 	w|write) writeLog;;
 	r|read) readLog;;
-	m|rotate) rotateLogs;;
+	m|merge) mergeLogs;;
     _fzfPrint) _fzfPrint;;
 	_fzfPreview) _fzfPreview "$2" "$3";;
 	_fzfCycle) _fzfCycle "$2" "$3" "$4";;
