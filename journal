@@ -172,7 +172,6 @@ _queryTodos() {
     local regexRule
     {
     for regexRule in "${regexRules[@]}"; do
-    # FIXME: If query is empty it will return 1 and break the loop
         _queryRegex
     done
     } | sed 's/TODO: //' # delete todo prefix
