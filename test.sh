@@ -35,13 +35,13 @@ _report() {
     local status="$1"
     if [ "$status" -eq 0 ]; then
         hits+=1
-        printf "[${green}PASS${reset}]: %s\n" "'$name'"
+        printf "[${green}PASS${reset}]: %s\n" "'$cmd'"
     elif [ "$status" -eq 1 ]; then
         misses+=1
-        printf "[${red}FAIL${reset}]: %s\n" "'$name'"
+        printf "[${red}FAIL${reset}]: %s\n" "'$cmd'"
         _diff
     else
-        printf "${red}ERROR: Wrong status code for %s.${reset}\n" "$name"
+        printf "${red}ERROR: Wrong status code for %s.${reset}\n" "$cmd"
     fi
 }
 
@@ -60,31 +60,31 @@ _test() {
 #-------#
 # PRINT
 testPrint() {
-    local name; local exp; local obs
-    name="journal print"
+    local cmd; local exp; local obs
+    cmd="journal print -a"
     exp="$(< "test/print.txt")" # read contents of file to variable
     # shellcheck disable=SC2086
-    obs="$(./$name)" # read stdout of command to variable
+    obs="$(./$cmd)" # read stdout of command to variable
     _test
 }
 
 # SHOW
 testShow() {
-    local name; local exp; local obs
-    name="journal show -a"
+    local cmd; local exp; local obs
+    cmd="journal show -a"
     exp="$(< "test/show.txt")" # read contents of file to variable
     # shellcheck disable=SC2086
-    obs="$(./$name)" # read stdout of command to variable
+    obs="$(./$cmd)" # read stdout of command to variable
     _test
 }
 
 # FIND
 testFind() {
-    local name; local exp; local obs
-    name="journal find"
+    local cmd; local exp; local obs
+    cmd="journal find -a"
     exp="$(< "test/find.txt")" # read contents of file to variable
     # shellcheck disable=SC2086
-    obs="$(./$name)" # read stdout of command to variable
+    obs="$(./$cmd)" # read stdout of command to variable
     _test
 }
 
