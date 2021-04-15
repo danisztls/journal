@@ -58,15 +58,16 @@ if [ -f "$configFile" ] && ! [ "$testing" = "false" ]; then
 fi
 
 # Set escape code colors variables
-reset=$(printf '\e[0m')
-gray=$(printf '\e[2;20m')
-boldBlue=$(printf '\e[1;34m')
-red=$(printf '\e[31m')
-green=$(printf '\e[32m')
-magenta=$(printf '\e[35m')
-cyan=$(printf '\e[36m')
-yellow=$(printf '\e[33m')
-blue=$(printf '\e[34m')
+# $'...' are escaped strings
+reset=$'\e[0m'
+bold=$'\e[1m'
+dim=$'\e[2;20m'
+red=$'\e[31m'
+green=$'\e[32m'
+magenta=$'\e[35m'
+cyan=$'\e[36m'
+yellow=$'\e[33m'
+blue=$'\e[34m'
 
 # Set editor
 # Use $editor from config, otherwise, use $EDITOR, if defined, or whatever is available.
@@ -173,7 +174,7 @@ _prettifyTodos() {
     sed "s/TODO: //;s/:/\n/" | # remove todo placeholder and split
     sed -E "s/^[0-9]*://" | # remove numbers
     _dedup | # remove duplicate file names 
-	sed "s/^.*\.md$/\n${boldBlue}&${reset}/;
+	sed "s/^.*\.md$/\n${bold}${blue}&${reset}/;
         s/\+done/${green}&${reset}/;
         s/\+asap/${red}&${reset}/;
         s/\+later/${magenta}&${reset}/;
@@ -252,7 +253,7 @@ _fzfPrint() {
 # Print TODOs for Fzf
 # Between ':' should be, in order, file name, line number and task description.
     _queryTodos |
-    sed -E "s/^(.*):([0-9]*):TODO: (.*)$/${magenta}\1${reset}:${gray}\2${reset}:\3/"
+    sed -E "s/^(.*):([0-9]*):TODO: (.*)$/${magenta}\1${reset}:${dim}\2${reset}:\3/"
 }
 
 _fzfPreview() {
