@@ -180,9 +180,9 @@ showPrettyTodos() {
     done
     regexRules=("^TODO:.*\+done.*$" "^TODO:.*\+asap.*$" "^TODO:.[^\+]*$") 
 
-    if [ $printAll ]; then # only print if -a flag is set
-        regexRules+=("^TODO:.*\+later.*$")
-    fi
+    regexRules=("^TODO:.*\+done.*$" "^TODO:.*\+asap.*$" "^TODO:.[^\+]*$") 
+    # only print if -a flag is set
+    [ "$printAll" ] && regexRules+=("^TODO:.*\+later.*$")
 
     if [ "$testing" = true ]; then # if debug is on, print to STDOUT
         _show="cat"
@@ -198,7 +198,7 @@ showPrettyTodos() {
 }
 
 _printDoneTodos() { 
-#  Print done TODOs to STDOUT
+# Print done TODOs to STDOUT
     local regexRule="^TODO:.*\+done.*$"
 	printf "## %s\n" "$(date "+%d %^b %H%M")"
     _queryTodos |
@@ -220,8 +220,9 @@ _deleteDoneTodos() {
 
 _commitGit() {
 # Non-interactively commit changes in a Git repository
-	local lastCommit="git -C '$todoPath' log HEAD^..HEAD --pretty=format:'%s'" # find last commit
-	local today && today=$(date "+%y-%m-%d") 
+	local today lastCommit
+	today=$(date "+%y-%m-%d") 
+    lastCommit="git -C '$todoPath' log HEAD^..HEAD --pretty=format:'%s'" # find last commit
 	git -C "$todoPath" add -A &&
     if [ "$today" = "$lastCommit" ]; then
 		git -C "$todoPath" commit --amend -m "$today" # amend if not first commit in the day
@@ -259,7 +260,7 @@ _fzfPreview() {
 	bat --color always -l md --highlight-line "$line" -r $start:$end -pp "$file" # wrapping is being done in Fzf now
 }
 
-fzfCycle() {
+_fzfCycle() {
 # Cycle between task priorities
     local file="$1"
     local line="$2"
@@ -286,6 +287,7 @@ fzfFind() {
 # Invoke Ffz to fuzzy find and preview TODOs context
 # {1} is file name, {2} is line number and {3} is task description.
     cd "$todoPath" || exit 1
+
     # Debug Mode
     if [ "$testing" = true ]; then
         _fzfPrint
@@ -325,12 +327,11 @@ writeLog() {
     #fileName="$(date '+%y-%m-%dT-%H-%M').md" # +granularity on file name
     header="### $(date '+%H%M')"
     # insert daily stand-up if flag if found
-    [ $dailyStandup ] && header+="
+    [ "$dailyStandup" ] && header+="
 #### What did I accomplish yesterday/today?
 #### What will I do today/tomorrow?
 #### What obstacles are impeding my progress?
 "
-
     if ! [[ -f $fileName ]]; then # write header to file
         printf "%s\n" "$header" >> "$fileName"
     else
