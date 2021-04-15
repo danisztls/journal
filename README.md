@@ -5,14 +5,18 @@
 
 [![asciicast](https://asciinema.org/a/407415.svg)](https://asciinema.org/a/407415)
 
+## Table of contents
+
 <!-- TOC GitLab -->
 
 * [Features](#features)
 * [Design](#design)
 * [Usage](#usage)
   * [Task management](#task-management)
+    * [Syntax](#syntax)
+    * [CLI](#cli)
   * [Journaling](#journaling)
-  * [Find/Read Binds](#findread-binds)
+  * [Binds](#binds)
   * [Aliases](#aliases)
 * [Setup](#setup)
   * [Dependencies](#dependencies)
@@ -58,7 +62,7 @@
 
 ## Usage
 ### Task management
-**TODO Syntax**
+#### Syntax
 
 Priority
 - +asap
@@ -69,7 +73,7 @@ Tags
 - #house
 - #linux
 
-**CLI**
+#### CLI
 ```sh
 # Print the tasks to STDOUT as plain text
 journal print
@@ -108,7 +112,8 @@ journal merge
 
 _Note: Those notes are not deleted but grouped together in a single file._
 
-### Find/Read Binds
+### Binds
+For **find** and **read**
 - `F1` opens task note with `xdg-open`
 - `F2` opens task note in `$EDITOR`
 - `F3` cycles task priority tag _(Find only)_
@@ -141,19 +146,18 @@ j m # merge
 ### Install
 Install through the [AUR](https://aur.archlinux.org/packages/journal-git/).
 
-Use the Makefile.
+Or use the Makefile.
 ```sh
 sudo make install
 ```
 
-Install as user.
+Or install as user.
 ```sh
 ./setup.sh install
 ```
 
 ### Config
-Optionally create `$HOME/.config/journal/config` and set:
-
+Optionally set those at `$HOME/.config/journal/config`
 ```sh
 todoPath="$HOME"            # path to notes
 logPath="$HOME/log"         # path to log entries
@@ -163,19 +167,23 @@ retentionMonthly=-3days     # merge monthly older than it
 ```
 
 ### Uninstall
-Depends on how you installed it.
-
+AUR
 ```sh
-# AUR
 sudo pacman -Rcs journal-git
-# Make
+```
+Make
+```sh
 sudo make uninstall # from the project dir
-# Locally
+```
+Locally
+```sh
 ./setup.sh uninstall
 ```
 
 ## Development
-Feedback and contributions are welcomed. Development info at [DEVELOPMENT.md](https://gitlab.com/lbcnz/journal/-/blob/main/DEVELOPMENT.md).
+Feedback and contributions are welcomed.
+
+Development info at [DEVELOPMENT.md](https://gitlab.com/lbcnz/journal/-/blob/main/DEVELOPMENT.md).
 
 ## FAQ
 ### Is it fast?
