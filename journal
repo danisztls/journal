@@ -236,8 +236,8 @@ _commitGit() {
 	fi
 }
 
-# Commit all done TODOs to a journaling
-commitDoneTodos() {
+# Clean all done TODOs withi files and commit them to a journaling file
+cleanDoneTodos() {
     cd "$todoPath" || exit 1
     _confirmDialog && _printDoneTodos >> "journal.md" && _deleteDoneTodos && _commitGit
 }
@@ -389,7 +389,7 @@ case $1 in
 	p|print) printTodos;;
 	s|show) showPrettyTodos;;
     f|find) fzfFind;;
-	c|commit) commitDoneTodos;;
+	c|clean) cleanDoneTodos;;
 	w|write) writeLog;;
 	r|read) readLog;;
 	m|merge) mergeLogs;;
