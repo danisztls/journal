@@ -103,8 +103,11 @@ testFind() {
 # TESTING #
 #---------#
 declare -i hits     # integer
+hits=0
 declare -i misses
+misses=0
 declare -i total
+total=0
 
 printf "${italic}%s${blink}%s${reset}\n\n" "Running tests" "..."
 
@@ -116,3 +119,8 @@ testFind
 total="$(( hits + misses ))"
 printf "\nHIT: ${green}%i${reset} of %i\n" "$hits" "$total"
 printf "MISS: ${red}%i${reset} of %i\n" "$misses" "$total"
+
+# Exit w/ error if there are any misses
+if [ $misses -gt 0 ]; then
+    exit 1
+fi
