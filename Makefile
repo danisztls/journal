@@ -10,10 +10,17 @@ INSTALL_PROGRAM = install -p -m755
 INSTALL_DATA = install -p -m644
 
 common/$(PROJECT):
-	@echo -e '\e[1;32mRun make install...\e[0m'
+	@printf '\n\e[1;32m%s\e[0m\n' "Run make install..."
+
+test:
+	@printf '\n\e[1;32m%s\e[0m\n' "Testing..."
+	./test.sh
 
 install:
-	@echo -e '\e[1;32mInstalling program...\e[0m'
+	@printf '\n\e[1;32m%s\e[0m\n' "Testing..."
+	./test.sh || exit 1
+
+	@printf '\n\e[1;32m%s\e[0m\n' "Installing program..."
 	$(INSTALL_DIR) "$(DESTDIR)$(BINDIR)"
 	$(INSTALL_PROGRAM) journal "$(DESTDIR)$(BINDIR)"
 	$(INSTALL_DIR) "$(DESTDIR)$(SHAREDIR)"
@@ -21,10 +28,10 @@ install:
 	$(INSTALL_DATA) syntax/journal.vim "$(DESTDIR)$(SHAREDIR)"
 
 uninstall:
-	@echo -e '\e[1;32mUninstalling program...\e[0m'
+	@printf '\n\e[1;32m%s\e[0m\n' "Uninstalling program..."
 	rm "$(DESTDIR)$(BINDIR)/journal"
 	rm "$(DESTDIR)$(SHAREDIR)/ignore"
 	rm "$(DESTDIR)$(SHAREDIR)/journal.vim"
 	rmdir "$(DESTDIR)$(SHAREDIR)"
 
-.PHONY: install uninstall
+.PHONY: test install uninstall

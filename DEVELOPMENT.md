@@ -17,16 +17,8 @@
 <!-- /TOC -->
 
 ## Present
-Testing
-- Write unitary tests for queries.
-- Review tests for syntax.
-Setup
-- Write Makefile
-- Set testing procedures on build
-
 Syntax
 - Vim TODO syntax is conflicting with [vim-markdown](https://github.com/plasticboy/vim-markdown)
-- Review Vim TODO syntax setup
 
 Docs
 - Record ascii animations to showcase features
