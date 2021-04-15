@@ -21,6 +21,7 @@ Bugs
 - Vim TODO syntax is conflicting with [vim-markdown](https://github.com/plasticboy/vim-markdown)
 
 Docs
+- Update usage.
 - Record ascii animations to showcase features
 - Compare it with similar software.
 
