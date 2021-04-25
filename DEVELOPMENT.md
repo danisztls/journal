@@ -3,13 +3,13 @@
 
 * [Present](#present)
 * [Future](#future)
+  * [Librarian](#librarian)
 * [Ideas](#ideas)
   * [Master](#master)
   * [Cleaner](#cleaner)
   * [Graph](#graph)
   * [Planner](#planner)
   * [Nexus](#nexus)
-  * [Librarian](#librarian)
   * [Eudaemon](#eudaemon)
   * [Sublime highlighting](#sublime-highlighting)
   * [Tracker](#tracker)
@@ -28,6 +28,23 @@ Docs
 
 ## Future
 I started this as a fun project to improve my knowledge of Shell scripting. I liked it and I have a lots of ideas of how I can improve it, make it more useful and friendly. But I will do that in a new Python code base. It wil be more sane, easier to add new features, better to debug and mantain and will support a larger base of users as Python can run everywhere. As such I will retain myself to fixing bugs and doing minor improvements to the Shell script.
+
+### Librarian
+Librarian traverse directories, crawl notes for URLs and archive them.
+
+As there are mature tools for web archiving, like [ArchiveBox](https://github.com/ArchiveBox/ArchiveBox), Librarian will limit itself to the extract, integrate and do housekeeping like garbage collection.
+
+ArchiveBox can be installed with Docker and used programatically
+```sh
+# add pages
+archivebox add < urls.txt            
+# remove pages
+archivebox remove --yes --delete < urls.txt
+# refetch: I guess it does it automatically
+```
+Check:
+- [CLI Usage](https://github.com/ArchiveBox/ArchiveBox/wiki/Usage#CLI-Usage) 
+- [Python API Reference](https://docs.archivebox.io/en/latest/archivebox.html)
 
 ## Ideas
 ### Master
@@ -48,9 +65,6 @@ Planner, is a tool to organize the backlog, pack tasks into sprints, roadmap pro
 Nexus is the Latin radical for conciseness. It is a document management system with the goal to seamless integrate three core functions: archive, discover and provide. **Archive** means that the system should store and version the documents. **Discovery** means that the user should be able to find the right documents through context or search. **Provide** means that the user can view/edit documents and share them with others easily.
 
 In practical terms notes metadata can be inserted in YAML headers while notes can be exported to practically any format using Pandoc and easily published with Jekyll.
-
-### Librarian
-Parse URLs in notes, visit and save them to disk.
 
 ### Eudaemon
 Eudaemon is the Greek concept of good guardian spirit. It aids the user in seeing clearly his actions and avoiding unhealthy habits like use the computer for a long period of time. *Socrates during his lifetime had a daemon that always warned him of threats and bad judgment but never directed his actions.* 
