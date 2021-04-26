@@ -2,7 +2,7 @@
 
 """
 @title: Librarian
-@description: Crawl URLs in markdown notes. Take a path as input, recursively crawl files and print found URLs to STDOUT.  
+@description: Crawl markdown notes in a directory and print URLs.
 @author: danisztls
 @license: MIT
 """
@@ -20,32 +20,21 @@
 # SELECT uid FROM urls WHERE datemine < now
 """
 
+import os
+
 # LIB
-isDir(path):
-    """Check if path is a directory"""
-    if yes:
-        return true
-    else:
-        return false
-
-isNote(path):
-    """Check if path is a note (end in .md or .MD)"""
-    # I can use REGEX if there's no builtin for that
-    if yes:
-        return true
-    else:
-        return false
-
-
-traverseDir(path):
+def traverse_dir(path):
     """Traverse a directory and its subdirectories to crawl notes"""
-    for f in files:
-        if isDir(f):
-            traverseDir dir
-        else if isNote(f):
-            crawlNote
+    # traverse a path returning a 3-tuple (dirpath, dirnames, filenames)
+    for dir in os.walk(path):
+        parent = dir[0]
+        # iterate the files
+        for file in dir[2]:
+            # lower() is used to make match case insensitive
+            if file.lower().endswith('.md'):
+                crawl_note(parent + '/' + file)
 
-crawlNote(path):
+def crawl_note(path):
     """Find URLs in a markdown note"""
     # load file
     data =
