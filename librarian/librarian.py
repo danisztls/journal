@@ -23,10 +23,11 @@ import re
 # SELECT uid FROM urls WHERE datemine < now
 """
 
+
 # LIB
-def traverse_dir(_path):
+def traverse_dir(_path: str):
     """Traverse a directory and its subdirectories to crawl notes"""
-    # traverse a path returning a 3-tuple (dirpath, dirnames, filenames)
+    # traverse a path returning a 3-tuple (dirpath, dirnames, filenames)v
     for _dir in os.walk(_path):
         _parent = _dir[0]
         # iterate the files
@@ -35,7 +36,8 @@ def traverse_dir(_path):
             if _file.lower().endswith('.md'):
                 crawl_note(_parent + '/' + _file)
 
-def crawl_note(_path):
+
+def crawl_note(_path: str):
     """Find URLs in a markdown note"""
     # read file content
     with open(_path, 'r') as file:
@@ -47,8 +49,9 @@ def crawl_note(_path):
     for _url in _urls:
         urls.append(_url)
 
+
 # MAIN
-PATH="sample/" # just for testing, later should serialize config file
-urls=[]
+PATH = "sample/"  # just for testing, later should serialize config file
+urls = []
 traverse_dir(PATH)
 print(urls)
