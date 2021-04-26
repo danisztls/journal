@@ -7,6 +7,9 @@
 @license: MIT
 """
 
+import os
+import re
+
 """
 1st stage: Export the URLs as plain text to pipe to ArchiveBox
 
@@ -20,19 +23,17 @@
 # SELECT uid FROM urls WHERE datemine < now
 """
 
-import os
-
 # LIB
-def traverse_dir(path):
+def traverse_dir(_path):
     """Traverse a directory and its subdirectories to crawl notes"""
     # traverse a path returning a 3-tuple (dirpath, dirnames, filenames)
-    for _dir in os.walk(path):
-        parent = _dir[0]
+    for _dir in os.walk(_path):
+        _parent = _dir[0]
         # iterate the files
         for _file in _dir[2]:
             # lower() is used to make match case insensitive
             if _file.lower().endswith('.md'):
-                crawl_note(parent + '/' + _file)
+                crawl_note(_parent + '/' + _file)
 
 def crawl_note(_path):
     """Find URLs in a markdown note"""
@@ -56,6 +57,7 @@ def crawl_note(_path):
             #    log('ERROR')
 
 # MAIN
+PATH="sample/" # just for testing, later should serialize config file
 urls=[]
-traverseDir(path)
+traverse_dir(PATH)
 print(urls)
