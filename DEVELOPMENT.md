@@ -3,7 +3,6 @@
 
 * [Present](#present)
 * [Future](#future)
-  * [Librarian](#librarian)
 * [Ideas](#ideas)
   * [Master](#master)
   * [Cleaner](#cleaner)
@@ -28,23 +27,6 @@ Docs
 
 ## Future
 I started this as a fun project to improve my knowledge of Shell scripting. I liked it and I have a lots of ideas of how I can improve it, make it more useful and friendly. But I will do that in a new Python code base. It wil be more sane, easier to add new features, better to debug and mantain and will support a larger base of users as Python can run everywhere. As such I will retain myself to fixing bugs and doing minor improvements to the Shell script.
-
-### Librarian
-Librarian traverse directories, crawl notes for URLs and archive them.
-
-As there are mature tools for web archiving, like [ArchiveBox](https://github.com/ArchiveBox/ArchiveBox), Librarian will limit itself to the extract, integrate and do housekeeping like garbage collection.
-
-ArchiveBox can be installed with Docker and used programatically
-```sh
-# add pages
-archivebox add < urls.txt            
-# remove pages
-archivebox remove --yes --delete < urls.txt
-# refetch: I guess it does it automatically
-```
-Check:
-- [CLI Usage](https://github.com/ArchiveBox/ArchiveBox/wiki/Usage#CLI-Usage) 
-- [Python API Reference](https://docs.archivebox.io/en/latest/archivebox.html)
 
 ## Ideas
 ### Master
