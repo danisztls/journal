@@ -54,4 +54,5 @@ def crawl_note(_path: str):
 PATH = "sample/"  # just for testing, later should serialize config file
 urls = []
 traverse_dir(PATH)
-print(urls)
+for url in urls:
+    print(url)
