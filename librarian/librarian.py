@@ -41,16 +41,16 @@ def crawl_note(_path):
     with open(_path, 'r') as file:
         _content = file.read()
 
-    sensitive_pattern = re.compile(r"http[s]*://[^\)\s]*")
-    specific_pattern  = re.compile(r"@(https?)://(-\.)?([^\s/?\.#-]+\.?)+(/[^\s]*)?$@iS")
     # iterate over lines
     for _line in _content.split('\n'):
         # use regex to look for url
-        # hight sensitivity match to find all http(s) urls
-        _url = re.search(sensitive_pattern, _line)
+        # high sensitivity match to find all http(s) urls
+        sensitive_pattern = re.compile(r"http[s]*://[^\)\s]*")
+        _url = str(re.search(sensitive_pattern, _line))
         if _url:
             # high specificity match to validate url
-            if specific_pattern.match(_url):
+            specific_pattern = re.compile(r"@(https?)://(-\.)?([^\s/?\.#-]+\.?)+(/[^\s]*)?$@iS")
+            if specific_pattern.search(_url):
                 urls.append(_url)
             # TODO: log error when not valid
             #else
