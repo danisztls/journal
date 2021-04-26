@@ -56,6 +56,11 @@ def print_urls():
     for url in urls:
         print(url)
 
+
+def call_web_archive(_url: str):
+    """Make a request to the Wayback Machine API requesting an snapshot"""
+    # API Docs: https://archive.org/help/wayback_api.php
+
 # MAIN
 urls = []
 traverse_dir(PATH)
