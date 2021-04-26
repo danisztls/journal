@@ -42,19 +42,18 @@ def crawl_note(_path):
         _content = file.read()
 
     # iterate over lines
+    # FIXME: Do I need to iterate line by line? I can use multiline.
     for _line in _content.split('\n'):
         # use regex to look for url
-        # high sensitivity match to find all http(s) urls
+        # match all http(s) urls
+        # FIXME: What if there's more than one URL in a line
         sensitive_pattern = re.compile(r"http[s]*://[^\)\s]*")
         _url = str(re.search(sensitive_pattern, _line))
         if _url:
-            # high specificity match to validate url
-            specific_pattern = re.compile(r"@(https?)://(-\.)?([^\s/?\.#-]+\.?)+(/[^\s]*)?$@iS")
-            if specific_pattern.search(_url):
-                urls.append(_url)
-            # TODO: log error when not valid
-            #else
-            #    log('ERROR')
+            urls.append(_url)
+        # TODO: log error when not valid
+        #else
+        #    log('ERROR')
 
 # MAIN
 PATH="sample/" # just for testing, later should serialize config file
