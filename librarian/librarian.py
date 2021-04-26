@@ -10,10 +10,9 @@
 import os
 import re
 
-"""
-1st stage: Export the URLs as plain text to pipe to ArchiveBox
+# ---------------------------------------
+# Future: Store URLs on a SQLite DB.
 
-2nd stage: Store URLs on a SQLite database for housekeeping
 # fields: urls.uid (PK, hash of url + path), urls.url, urls.path, url.datetime
 
 # remove duplicate URLs
@@ -21,8 +20,10 @@ import re
 
 # find orphaned URLs to remove
 # SELECT uid FROM urls WHERE datemine < now
-"""
+# ---------------------------------------
 
+# CONFIG
+PATH = "sample/"  # just for testing, later should serialize config file
 
 # LIB
 def traverse_dir(_path: str):
@@ -50,9 +51,12 @@ def crawl_note(_path: str):
         urls.append(_url)
 
 
+def print_urls():
+    """Print URLs to STDOUT """
+    for url in urls:
+        print(url)
+
 # MAIN
-PATH = "sample/"  # just for testing, later should serialize config file
 urls = []
 traverse_dir(PATH)
-for url in urls:
-    print(url)
+print_urls()
