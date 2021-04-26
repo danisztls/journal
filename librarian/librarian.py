@@ -26,13 +26,13 @@ import os
 def traverse_dir(path):
     """Traverse a directory and its subdirectories to crawl notes"""
     # traverse a path returning a 3-tuple (dirpath, dirnames, filenames)
-    for dir in os.walk(path):
-        parent = dir[0]
+    for _dir in os.walk(path):
+        parent = _dir[0]
         # iterate the files
-        for file in dir[2]:
+        for _file in _dir[2]:
             # lower() is used to make match case insensitive
-            if file.lower().endswith('.md'):
-                crawl_note(parent + '/' + file)
+            if _file.lower().endswith('.md'):
+                crawl_note(parent + '/' + _file)
 
 def crawl_note(path):
     """Find URLs in a markdown note"""
