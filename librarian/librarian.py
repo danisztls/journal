@@ -34,15 +34,26 @@ def traverse_dir(path):
             if _file.lower().endswith('.md'):
                 crawl_note(parent + '/' + _file)
 
-def crawl_note(path):
+def crawl_note(_path):
     """Find URLs in a markdown note"""
-    # load file
-    data =
+    # read file content
+    with open(_path, 'r') as file:
+        _content = file.read()
 
-    for l in data:
+    sensitive_pattern = re.compile(r"http[s]*://[^\)\s]*")
+    specific_pattern  = re.compile(r"@(https?)://(-\.)?([^\s/?\.#-]+\.?)+(/[^\s]*)?$@iS")
+    # iterate over lines
+    for _line in _content.split('\n'):
         # use regex to look for url
-        if matchURL(l):
-            urls.append(url)
+        # hight sensitivity match to find all http(s) urls
+        _url = re.search(sensitive_pattern, _line)
+        if _url:
+            # high specificity match to validate url
+            if specific_pattern.match(_url):
+                urls.append(_url)
+            # TODO: log error when not valid
+            #else
+            #    log('ERROR')
 
 # MAIN
 urls=[]
