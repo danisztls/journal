@@ -17,6 +17,7 @@
     * [CLI](#cli)
   * [Journaling](#journaling)
   * [Binds](#binds)
+* [Modules](#modules)
 * [Setup](#setup)
   * [Dependencies](#dependencies)
   * [Install](#install)
@@ -118,6 +119,9 @@ For **find** and **read**
 - `F2` opens task note in `$EDITOR`
 - `F3` cycles task priority tag _(Find only)_
 - `DEL` deletes the task
+
+## Modules
+- [Librarian](https://github.com/lbcnz/journal-librarian): archives URLs without getting on your way. It automatically watches for URLs insertions and removals in markdown notes. 
 
 ## Setup
 ### Dependencies
