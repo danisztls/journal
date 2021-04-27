@@ -17,11 +17,11 @@
     * [CLI](#cli)
   * [Journaling](#journaling)
   * [Binds](#binds)
-  * [Aliases](#aliases)
 * [Setup](#setup)
   * [Dependencies](#dependencies)
   * [Install](#install)
   * [Config](#config)
+    * [Aliases](#aliases)
   * [Uninstall](#uninstall)
 * [Development](#development)
 * [FAQ](#faq)
@@ -119,23 +119,6 @@ For **find** and **read**
 - `F3` cycles task priority tag _(Find only)_
 - `DEL` deletes the task
 
-### Aliases 
-Set an alias for journal
-```sh
-echo "alias j='journal'" >> ~/.profile
-```
-
-You can use the first letter of a mode to invoke it.
-```sh
-j p # print
-j s # show
-j f # find
-f c # clean
-j w # write
-j r # read
-j m # merge
-```
-
 ## Setup
 ### Dependencies
 - [ripgrep](https://github.com/BurntSushi/ripgrep)
@@ -164,6 +147,23 @@ logPath="$HOME/log"         # path to log entries
 ignoreFile=""               # path to ignore file (syntax like .gitignore)   
 retentionDaily=-7days       # merge daily older than it
 retentionMonthly=-3days     # merge monthly older than it
+```
+
+#### Aliases 
+Set an alias for journal
+```sh
+echo "alias j='journal'" >> ~/.profile
+```
+
+You can use the first letter of a mode to invoke it.
+```sh
+j p # print
+j s # show
+j f # find
+f c # clean
+j w # write
+j r # read
+j m # merge
 ```
 
 ### Uninstall
