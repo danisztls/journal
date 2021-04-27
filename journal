@@ -95,10 +95,13 @@ printHelp() {
     printf "
 TODOs:
     ${bold}'print'${reset} print the tasks to STDOUT as plaintext;
-    ${bold}'show'${reset} show tasks in a pager with pretty formatting, use '-a' to include all;
+    ${bold}'show'${reset} show tasks in a pager with pretty formatting;
     ${bold}'find'${reset} fuzzy find tasks and preview file context;
     ${bold}'clean'${reset} clean done tasks within files and commit them on a journal.
-     override path with ${bold}'-p <path>'${reset}, works for any mode;\n
+
+    override path with ${bold}'-p <path>'${reset};
+    use ${bold}'-a'${reset} to include tasks marked '+later';
+    use ${bold}'-s'${reset} search tasks in all non-binary files (and not only markdown);
 LOG:
     ${bold}'write'${reset} create a new entry, use ${bold}'-d'${reset} to do a daily 'standup';
     ${bold}'read'${reset} fuzzy find entries and read content; 
@@ -110,10 +113,11 @@ LOG:
 #-------#
 # Get arguments
 _getopts() {
-    while getopts "adp:" option; do
+    while getopts "asdp:" option; do
         # shellcheck disable=SC2220 # let getopts deal with input validation
         case $option in
             a) printAll="true";;
+            s) searchAll="true";;
             d) dailyStandup="true";;
             p) todoPath="$OPTARG"
         esac
@@ -157,7 +161,11 @@ _dedup() { awk '!x[$0]++'; }
 
 _queryRegex() {
 # Query a [Rust RE](https://docs.rs/regex/1.3.9/regex/) rule
-	rg -n --color never --no-heading -t md --ignore-file "$ignoreFile" -e "$regexRule"
+    if [ $searchAll ]; then
+	    rg -n --color never --no-heading --ignore-file "$ignoreFile" -e "${regexRule//\^/\.\*}"
+    else
+	    rg -n --color never --no-heading -t md --ignore-file "$ignoreFile" -e "$regexRule"
+    fi
 }
 
 _queryTodos() { 
