@@ -72,15 +72,16 @@ blue=$'\e[34m'
 # Set editor
 # Use $editor from config, otherwise, use $EDITOR or whatever is available.
 if ! [ "$editor" ]; then
-    editors=(vi vim nvim nano)
+    editors=(emacs nvim nano vim vi) # in that order of preference
     # shellcheck disable=SC2153
     if [ "$EDITOR" ]; then
         editor=$EDITOR
     else # whatever is available
         for prog in "${editors[@]}"; do
-            if command -v "$prog" $>/dev/null; then
+            if command -v "$prog" >/dev/null; then
                 # remove alias and path prefix
                 editor=$(command -v "$prog" | sed 's/alias .*=//;s#.*/##')
+                break # stop iteration after conditions is satisfied
             fi
         done
     fi
