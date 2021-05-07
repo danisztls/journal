@@ -70,13 +70,13 @@ yellow=$'\e[33m'
 blue=$'\e[34m'
 
 # Set editor
-# Use $editor from config, otherwise, use $EDITOR, if defined, or whatever is available.
+# Use $editor from config, otherwise, use $EDITOR or whatever is available.
 if ! [ "$editor" ]; then
     editors=(vi vim nvim nano)
     # shellcheck disable=SC2153
     if [ "$EDITOR" ]; then
         editor=$EDITOR
-    else
+    else # whatever is available
         for prog in "${editors[@]}"; do
             if command -v "$prog" $>/dev/null; then
                 # remove alias and path prefix
@@ -334,7 +334,7 @@ del:reload(journal _fzfDelete {1} {2} && journal _fzfPrint)"
 [ -d "$logPath" ] || mkdir -p "$logPath" # create dir if not found
 
 writeLog() {
-# Create a log entry with present date/time and open it with $EDITOR
+# Create a log entry with present date/time and open it with $editor
     cd "$logPath" || exit 1
 
     fileName="$(date '+%y-%m-%d').md"
@@ -351,7 +351,7 @@ writeLog() {
     else
         printf "\n%s\n" "$header" >> "$fileName" # insert line break if file exists
     fi
-    $EDITOR "$fileName" # open file
+    $editor "$fileName" # open file
 }
 
 readLog() {
