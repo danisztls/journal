@@ -52,7 +52,7 @@ retentionMonthly="-3months"
 configDir="${XDG_CONFIG_HOME:-"$HOME/.config"}/journal"
 configFile="$configDir/config"
 ignoreFile="$configDir/ignore"
-if [ -f "$configFile" ] && ! [ "$testing" = "false" ]; then
+if [ -f "$configFile" ] && [ "$testing" = "false" ]; then
     #shellcheck disable=SC1090
     source "$configFile"
 fi
