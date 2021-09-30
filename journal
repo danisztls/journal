@@ -113,7 +113,7 @@ LOG:
 # UTILS #
 #-------#
 # Get arguments
-_getopts() {
+_getOpts() {
     while getopts "asdp:" option; do
         # shellcheck disable=SC2220 # let getopts deal with input validation
         case $option in
@@ -399,7 +399,7 @@ mergeLogs() {
 # Get arguments
 # getopts don't work when mixing parameters and arguments
 # slice the parameters array to remove 1st parameter
-_getopts "${@:2}"
+_getOpts "${@:2}"
 
 # Run subprogram
 case $1 in
