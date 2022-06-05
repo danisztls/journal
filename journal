@@ -260,6 +260,8 @@ cleanDoneTodos() {
 # ---
 # $1 is file name, $2 is line number and $3 is task description
 
+# TODO: Does it make sense to make this a module?
+
 # Print TODOs for Fzf
 # captured groups are file name, line number and task description
 _fzfPrint() {
@@ -326,6 +328,9 @@ fzfFind() {
 
 # DIARY
 # -----
+
+# TODO: Does it make sense to make this a module?
+
 [ -d "$logPath" ] || mkdir -p "$logPath" # create dir if not found
 
 # Create a log entry with present date/time and open it with $editor
