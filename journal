@@ -32,7 +32,6 @@ fi
 # Defaults
 retentionDaily="-7days" # leave the minus, unless you want to warp time
 retentionMonthly="-3months"
-[ -f "/usr/share/journal/ignore" ] && ignoreFile="/usr/share/journal/ignore"
 
 if [ "$journalTesting" = "true" ]; then
     testing="true"
@@ -47,11 +46,14 @@ fi
 # Load user configuration
 configDir="${XDG_CONFIG_HOME:-"$HOME/.config"}/journal"
 configFile="$configDir/config"
-[ -f "$configDir/ignore" ] && ignoreFile="$configDir/ignore"
+
 if [ -f "$configFile" ] && [ "$testing" = "false" ]; then
     #shellcheck disable=SC1090
     source "$configFile"
 fi
+
+[ -f "/usr/share/journal/ignore" ] && ignoreFile="/usr/share/journal/ignore"
+[ -f "$configDir/ignore" ] && ignoreFile="$configDir/ignore"
 
 # Set escape code colors variables
 reset=$'\e[0m'
@@ -153,6 +155,7 @@ _dedup() { awk '!x[$0]++'; }
 # They should be understood as parent functions for tracing purposes.
 
 # Query a [Rust RE](https://docs.rs/regex/1.3.9/regex/) rule
+
 _queryRegex() {
     if [ $searchAll ]; then
 	    rg -n --color never --no-heading --ignore-file "$ignoreFile" -e "${regexRule//\^/\.\*}"
