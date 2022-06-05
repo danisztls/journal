@@ -31,8 +31,11 @@ fi
 #--------#
 # CONFIG #
 #--------#
-# Set defaults for testing/normal
-# shellcheck disable=SC2154
+# Defaults
+retentionDaily="-7days" # leave the minus, unless you want to warp time
+retentionMonthly="-3months"
+[ -f "/usr/share/journal/ignore" ] && ignoreFile="/usr/share/journal/ignore"
+
 if [ "$journalTesting" = "true" ]; then
     testing="true"
     todoPath="test"
@@ -43,15 +46,10 @@ else
     logPath="$HOME/Docs/log"
 fi
 
-# Immutable defaults
-retentionDaily="-7days" # leave the minus, unless you want to warp time
-retentionMonthly="-3months"
-[ -f "/usr/share/journal/ignore" ] && ignoreFile="/usr/share/journal/ignore"
-
 # Load user configuration
 configDir="${XDG_CONFIG_HOME:-"$HOME/.config"}/journal"
 configFile="$configDir/config"
-ignoreFile="$configDir/ignore"
+[ -f "$configDir/ignore" ] && ignoreFile="$configDir/ignore"
 if [ -f "$configFile" ] && [ "$testing" = "false" ]; then
     #shellcheck disable=SC1090
     source "$configFile"
