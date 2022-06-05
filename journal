@@ -4,9 +4,8 @@
 # It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with it. If not, see <https://www.gnu.org/licenses/>.
 
-#-------#
-# DEBUG #
-#-------#
+# DEBUG
+# -----
 # shellcheck disable=SC2154
 if [ "$journalDebug" = "true" ]; then
     debug="true"
@@ -28,9 +27,8 @@ else
     debug="false"
 fi
 
-#--------#
-# CONFIG #
-#--------#
+# CONFIG
+# ------
 # Defaults
 retentionDaily="-7days" # leave the minus, unless you want to warp time
 retentionMonthly="-3months"
@@ -56,7 +54,6 @@ if [ -f "$configFile" ] && [ "$testing" = "false" ]; then
 fi
 
 # Set escape code colors variables
-# $'...' are escaped strings
 reset=$'\e[0m'
 bold=$'\e[1m'
 dim=$'\e[2;20m'
@@ -68,7 +65,7 @@ yellow=$'\e[33m'
 blue=$'\e[34m'
 
 # Set editor
-# Use $editor from config, otherwise, use $EDITOR or whatever is available.
+# use $editor from config, otherwise, use $EDITOR or what is available.
 if ! [ "$editor" ]; then
     editors=(emacs nvim nano vim vi) # in that order of preference
     # shellcheck disable=SC2153
@@ -85,9 +82,8 @@ if ! [ "$editor" ]; then
     fi
 fi
 
-#------#
-# HELP #
-#------#
+# HELP 
+# ----
 # Show help if no valid argument is parsed
 printHelp() {
     # shellcheck disable=SC2059
@@ -107,9 +103,8 @@ LOG:
     ${bold}'merge'${reset} merge old entries in monthly and yearly notes following the retention policy.\n" && exit
 }
 
-#-------#
-# UTILS #
-#-------#
+# UTILS
+# -----
 # Get arguments
 _getOpts() {
     while getopts "asdp:" option; do
@@ -123,8 +118,8 @@ _getOpts() {
     done
 }
 
-_confirmDialog() {
 # Sub procedure that asks for user confirmation
+_confirmDialog() {
     # shellcheck disable=SC2162
 	read -p "Are you sure? (y/N) " yn;
 	case $yn in
@@ -151,15 +146,14 @@ editorJump2Line=$(sed "s/vim/vim {1} -c '{2} normal zz'/" <<< "$editor")
 # Deduplicate lines
 _dedup() { awk '!x[$0]++'; }
 
-#-------#
-# TASKS #
-#-------#
+# TASKS
+# -----
 # Functions with '_' preffix are akin to private functions.
 # Although some of them are even being called externally.
 # They should be understood as parent functions for tracing purposes.
 
-_queryRegex() {
 # Query a [Rust RE](https://docs.rs/regex/1.3.9/regex/) rule
+_queryRegex() {
     if [ $searchAll ]; then
 	    rg -n --color never --no-heading --ignore-file "$ignoreFile" -e "${regexRule//\^/\.\*}"
     else
@@ -167,12 +161,10 @@ _queryRegex() {
     fi
 }
 
-_queryTodos() { 
 # Find TODOs on files
-    # use default rules if no set of rules is passed
+_queryTodos() { 
     if ! [ "$regexRules" ]; then
         local regexRules=("^TODO:.*\+done.*$" "^TODO:.*\+asap.*$" "^TODO:.[^\+]*$")
-        # only print '+later' if -a flag is set
         [ "$printAll" ] && regexRules+=("^TODO:.*\+later.*$")
     fi
 
@@ -184,15 +176,14 @@ _queryTodos() {
     } | sed 's/TODO: //' # delete todo prefix
 }
 
-printTodos() {
 # Print plain TODOs to STDOUT
-# As it prints to STDOUT, normal and debug mode are the same
+printTodos() {
     cd "$todoPath" || exit 1
     _queryTodos 
 }
 
-_prettifyTodos() {
 # Format and colorize plain-text TODOs from STDIN 
+_prettifyTodos() {
     sed "s/:[0-9]*//" | # remove numbers
     sed "s/:/\n/" | # split
     _dedup | # remove duplicate file names 
@@ -206,8 +197,8 @@ _prettifyTodos() {
         s/@.[^ ]*/${blue}&${reset}/" #colorize
 }
 
-showPrettyTodos() {
 # Show pretty TODOs on a pager
+showPrettyTodos() {
     cd "$todoPath" || exit 1
     if [ "$testing" = true ]; then # if debug is on, print to STDOUT
         _show="cat"
@@ -217,16 +208,16 @@ showPrettyTodos() {
     _queryTodos | _prettifyTodos | $_show
 }
 
-_printDoneTodos() { 
 # Print done TODOs to STDOUT
+_printDoneTodos() { 
     local regexRule="^TODO:.*\+done.*$"
 	printf "## %s\n" "$(date "+%d %^b %H%M")"
     _queryTodos |
     sed 's/TODO: //;s/:/: /;s/\+done//' # && echo -e ""
 }
 
-_deleteDoneTodos() {	
 # Delete done TODOs within files
+_deleteDoneTodos() {	
     local regexRule="^TODO:.*\+done.*$"
     local files && files=$(
         _queryTodos   | # find done todos
@@ -238,8 +229,8 @@ _deleteDoneTodos() {
 	done
 }
 
-_commitGit() {
 # Non-interactively commit changes in a Git repository
+_commitGit() {
 	local today lastCommit
 	today=$(date "+%y-%m-%d") 
     lastCommit="git -C '$todoPath' log HEAD^..HEAD --pretty=format:'%s'" # find last commit
@@ -257,20 +248,19 @@ cleanDoneTodos() {
     _confirmDialog && _printDoneTodos >> "journal.md" && _deleteDoneTodos && _commitGit
 }
 
-#-----#
-# FZF #
-#-----#
-# $1 is function, $2 is file name, $3 is line number and $4 is task description in Fzf environment.
-_fzfPrint() {
+# FZF
+# ---
+# $1 is file name, $2 is line number and $3 is task description
+
 # Print TODOs for Fzf
-# Between ':' should be, in order, file name, line number and task description.
+# captured groups are file name, line number and task description
+_fzfPrint() {
     _queryTodos |
     sed -E "s/^(.*):([0-9]*):(.*)$/${magenta}\1${reset}:${dim}\2${reset}:\3/"
 }
 
+# Output a preview of the file with the selected line somewhat centered
 _fzfPreview() {
-# Output a preview of the file with the selected line somewhat centered.
-# Fzf env: $FZF_PREVIEW_LINES and $FZF_PREVIEW_COLUMNS is the size of the preview window.
     local file="$1"
     local line="$2"
 
@@ -280,18 +270,18 @@ _fzfPreview() {
 	  bat --color always -l md --highlight-line "$line" -r $start:$end -pp "$file"
 }
 
-_fzfCycle() {
 # Cycle between task priorities
+_fzfCycle() {
     local file="$1"
     local line="$2"
     local task="$3"
+
     # check if priority tag exists in tasks and append +asap if not
     if ! rg '\+(asap|done|later)' <<< "$task" >/dev/null; then
         sed -i -E "${line}s/^(.*)$/\1 \+asap/" "$file" && return 0
     fi
 
     # cycle between priority tags otherwise
-    # don't refactor: it would be complex to iterate over two variables as multi-dimensional arrays aren't supported
     rg "\+asap"  <<< "$task" >/dev/null && sed -i "${line}s/\+asap/\+done/" "$file" && return 0
     rg "\+done"  <<< "$task" >/dev/null && sed -i "${line}s/\+done/\+later/" "$file" && return 0
     rg "\+later" <<< "$task" >/dev/null && sed -i "${line}s/\+later//" "$file" && return 0
@@ -303,9 +293,9 @@ _fzfDelete() {
 	sed -i "${line}d" "$file"
 }
 
-fzfFind() {
 # Invoke Ffz to fuzzy find and preview TODOs context
 # {1} is file name, {2} is line number and {3} is task description.
+fzfFind() {
     cd "$todoPath" || exit 1
 
     # Debug Mode
@@ -327,13 +317,12 @@ del:reload(journal _fzfDelete {1} {2} && journal _fzfPrint)"
     fi
 }
 
-#-------#
-# DIARY #
-#-------#
+# DIARY
+# -----
 [ -d "$logPath" ] || mkdir -p "$logPath" # create dir if not found
 
-writeLog() {
 # Create a log entry with present date/time and open it with $editor
+writeLog() {
     cd "$logPath" || exit 1
 
     fileName="$(date '+%y-%m-%d').md"
@@ -353,8 +342,8 @@ writeLog() {
     $editor "$fileName" # open file
 }
 
-readLog() {
 # Invoke Fzf to fuzzy find and preview log entries
+readLog() {
     cd "$logPath" || exit 1
     fd '^[0-9]{2}.*.md$' |
     fzf --tac --no-sort \
@@ -364,8 +353,8 @@ readLog() {
         --bind "f1:execute-silent(xdg-open {} 2>/dev/null),f2:execute($editor {}),del:reload($_gro {} && fd '^[0-9]{2}.*.md$')"
 }
 
-_rotateLogs() {
 # Rotate old entries
+_rotateLogs() {
     local matchPattern="$1"
     local offsetB="$2" # B is before, eg. day substring is 0:8 (YY-MM-DD)
     local offsetA="$3" # A is after, eg. month substring is 0:5 (YY-MM)
@@ -384,16 +373,15 @@ _rotateLogs() {
     done
 }
 
-mergeLogs() {
 # Merge old entries to monthly and yearly entries
+mergeLogs() {
     cd "$logPath" || exit 1
     _rotateLogs "^[0-9]{2}-[0-9]{2}-[0-9]{2}.*.md$" 8 5 "$retentionDaily" "+%d %^b" 
     _rotateLogs "^[0-9]{2}-[0-9]{2}.md$" 5 2 "$retentionMonthly" "+%Y"
 }
 
-#------#
-# MAIN #
-#------#
+# MAIN
+# ----
 # Get arguments
 # getopts don't work when mixing parameters and arguments
 # slice the parameters array to remove 1st parameter
@@ -403,14 +391,14 @@ _getOpts "${@:2}"
 case $1 in
 	p|print) printTodos;;
 	s|show) showPrettyTodos;;
-    f|find) fzfFind;;
+  f|find) fzfFind;;
 	c|clean) cleanDoneTodos;;
 	w|write) writeLog;;
 	r|read) readLog;;
 	m|merge) mergeLogs;;
-    _fzfPrint) _fzfPrint;;
+  _fzfPrint) _fzfPrint;;
 	_fzfPreview) _fzfPreview "$2" "$3";;
 	_fzfCycle) _fzfCycle "$2" "$3" "$4";;
 	_fzfDelete) _fzfDelete "$2" "$3";;
-    *) printHelp;;
+  *) printHelp;;
 esac
