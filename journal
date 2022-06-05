@@ -8,23 +8,25 @@
 # -----
 # shellcheck disable=SC2154
 if [ "$journalDebug" = "true" ]; then
-    debug="true"
-    # Command verbosity 
-    # set -v
+  debug="true"
 
-    # Exit if any command return a non-zero
-    # put '||:' at the end of a pipe to mask a non-zero
-    set -e
+  # Command verbosity 
+  # set -v
 
-    # Exit when referencing an undefined variable
-    # $* and $@ are exceptions
-    #set -u
+  # Exit if any command return a non-zero
+  # put '||:' at the end of a pipe to mask a non-zero
+  set -e
 
-    # Exit if any command in a pipe fail
-    set -o pipefail
+  # Exit when referencing an undefined variable
+  # $* and $@ are exceptions
+  # set -u
+
+  # Exit if any command in a pipe fail
+  set -o pipefail
+
 else
-    # shellcheck disable=SC2034
-    debug="false"
+  # shellcheck disable=SC2034
+  debug="false"
 fi
 
 # CONFIG
@@ -34,13 +36,13 @@ retentionDaily="-7days" # leave the minus, unless you want to warp time
 retentionMonthly="-3months"
 
 if [ "$journalTesting" = "true" ]; then
-    testing="true"
-    todoPath="test"
-    logPath="test/log"
+  testing="true"
+  todoPath="test"
+  logPath="test/log"
 else
-    testing="false"
-    todoPath="$HOME"
-    logPath="$HOME/Docs/log"
+  testing="false"
+  todoPath="$HOME"
+  logPath="$HOME/Docs/log"
 fi
 
 # Load user configuration
@@ -48,8 +50,8 @@ configDir="${XDG_CONFIG_HOME:-"$HOME/.config"}/journal"
 configFile="$configDir/config"
 
 if [ -f "$configFile" ] && [ "$testing" = "false" ]; then
-    #shellcheck disable=SC1090
-    source "$configFile"
+  #shellcheck disable=SC1090
+  source "$configFile"
 fi
 
 [ -f "/usr/share/journal/ignore" ] && ignoreFile="/usr/share/journal/ignore"
@@ -69,75 +71,77 @@ blue=$'\e[34m'
 # Set editor
 # use $editor from config, otherwise, use $EDITOR or what is available.
 if ! [ "$editor" ]; then
-    editors=(emacs nvim nano vim vi) # in that order of preference
-    # shellcheck disable=SC2153
-    if [ "$EDITOR" ]; then
-        editor=$EDITOR
-    else # whatever is available
-        for prog in "${editors[@]}"; do
-            if command -v "$prog" >/dev/null; then
-                # remove alias and path prefix
-                editor=$(command -v "$prog" | sed 's/alias .*=//;s#.*/##')
-                break # stop iteration after conditions is satisfied
-            fi
-        done
-    fi
+  editors=(emacs nvim nano vim vi) # by order of preference
+
+  # shellcheck disable=SC2153
+  if [ "$EDITOR" ]; then
+    editor=$EDITOR
+
+  else # whatever is available
+    for prog in "${editors[@]}"; do
+      if command -v "$prog" >/dev/null; then
+        # remove alias and path prefix
+        editor=$(command -v "$prog" | sed 's/alias .*=//;s#.*/##')
+        break # stop iteration after conditions is satisfied
+      fi
+    done
+  fi
 fi
 
 # HELP 
 # ----
 # Show help if no valid argument is parsed
 printHelp() {
-    # shellcheck disable=SC2059
-    printf "
-TODOs:
-    ${bold}'print'${reset} print the tasks to STDOUT as plaintext;
-    ${bold}'show'${reset} show tasks in a pager with pretty formatting;
-    ${bold}'find'${reset} fuzzy find tasks and preview file context;
-    ${bold}'clean'${reset} clean done tasks within files and commit them on a journal.
+  # shellcheck disable=SC2059
+  printf "
+  TODOs:
+  ${bold}'print'${reset} print the tasks to STDOUT as plaintext;
+  ${bold}'show'${reset} show tasks in a pager with pretty formatting;
+  ${bold}'find'${reset} fuzzy find tasks and preview file context;
+  ${bold}'clean'${reset} clean done tasks within files and commit them on a journal.
 
-    override path with ${bold}'-p <path>'${reset};
-    use ${bold}'-a'${reset} to include tasks marked '+later';
-    use ${bold}'-s'${reset} search tasks in all non-binary files (and not only markdown);
-LOG:
-    ${bold}'write'${reset} create a new entry, use ${bold}'-d'${reset} to do a daily 'standup';
-    ${bold}'read'${reset} fuzzy find entries and read content; 
-    ${bold}'merge'${reset} merge old entries in monthly and yearly notes following the retention policy.\n" && exit
+  override path with ${bold}'-p <path>'${reset};
+  use ${bold}'-a'${reset} to include tasks marked '+later';
+  use ${bold}'-s'${reset} search tasks in all non-binary files (and not only markdown);
+  LOG:
+  ${bold}'write'${reset} create a new entry, use ${bold}'-d'${reset} to do a daily 'standup';
+  ${bold}'read'${reset} fuzzy find entries and read content; 
+  ${bold}'merge'${reset} merge old entries in monthly and yearly notes following the retention policy.\n" && exit
 }
 
 # UTILS
 # -----
 # Get arguments
 _getOpts() {
-    while getopts "asdp:" option; do
-        # shellcheck disable=SC2220 # let getopts deal with input validation
-        case $option in
-            a) printAll="true";;
-            s) searchAll="true";;
-            d) dailyStandup="true";;
-            p) todoPath="$OPTARG"
-        esac
-    done
+  while getopts "asdp:" option; do
+    # shellcheck disable=SC2220 # let getopts deal with input validation
+    case $option in
+      a) printAll="true";;
+      s) searchAll="true";;
+      d) dailyStandup="true";;
+      p) todoPath="$OPTARG"
+    esac
+  done
 }
 
 # Sub procedure that asks for user confirmation
 _confirmDialog() {
-    # shellcheck disable=SC2162
-	read -p "Are you sure? (y/N) " yn;
-	case $yn in
-		[Yy][Ee][Ss]|[Yy]) return 0;;
-		[Nn][Oo]|[Nn]) return 1;;
-		*) printf "Please answer yes or no.\n" && return 1;;
-	esac
+  # shellcheck disable=SC2162
+  read -p "Are you sure? (y/N) " yn;
+  case $yn in
+    [Yy][Ee][Ss]|[Yy]) return 0;;
+    [Nn][Oo]|[Nn]) return 1;;
+    *) printf "Please answer yes or no.\n" && return 1;;
+  esac
 }
 
 # Use 'trash' if available, otherwise 'rm'
 # _gro is a short for getridof
 # have to be a variable to work inside fzf
 if command -v "trash" &>/dev/null; then
-    _gro="trash" 
+  _gro="trash" 
 else
-    _gro="rm"
+  _gro="rm"
 fi
 
 # Jump to line with Vim when opening and jump to given line (to use with fzf)
@@ -157,98 +161,100 @@ _dedup() { awk '!x[$0]++'; }
 # Query a [Rust RE](https://docs.rs/regex/1.3.9/regex/) rule
 
 _queryRegex() {
-    if [ $searchAll ]; then
-	    rg -n --color never --no-heading --ignore-file "$ignoreFile" -e "${regexRule//\^/\.\*}"
-    else
-	    rg -n --color never --no-heading -t md --ignore-file "$ignoreFile" -e "$regexRule"
-    fi
+  if [ $searchAll ]; then
+    rg -n --color never --no-heading --ignore-file "$ignoreFile" -e "${regexRule//\^/\.\*}"
+  else
+    rg -n --color never --no-heading -t md --ignore-file "$ignoreFile" -e "$regexRule"
+  fi
 }
 
 # Find TODOs on files
 _queryTodos() { 
-    if ! [ "$regexRules" ]; then
-        local regexRules=("^TODO:.*\+done.*$" "^TODO:.*\+asap.*$" "^TODO:.[^\+]*$")
-        [ "$printAll" ] && regexRules+=("^TODO:.*\+later.*$")
-    fi
+  if ! [ "$regexRules" ]; then
+    local regexRules=("^TODO:.*\+done.*$" "^TODO:.*\+asap.*$" "^TODO:.[^\+]*$")
+    [ "$printAll" ] && regexRules+=("^TODO:.*\+later.*$")
+  fi
 
-    local regexRule
-    {
+  local regexRule
+  {
     for regexRule in "${regexRules[@]}"; do
-        _queryRegex
+      _queryRegex
     done
-    } | sed 's/TODO: //' # delete todo prefix
+  } | sed 's/TODO: //' # delete todo prefix
 }
 
 # Print plain TODOs to STDOUT
 printTodos() {
-    cd "$todoPath" || exit 1
-    _queryTodos 
+  cd "$todoPath" || exit 1
+  _queryTodos 
 }
 
 # Format and colorize plain-text TODOs from STDIN 
 _prettifyTodos() {
-    sed "s/:[0-9]*//" | # remove numbers
+  sed "s/:[0-9]*//" | # remove numbers
     sed "s/:/\n/" | # split
     _dedup | # remove duplicate file names 
-	sed "s/^.*\.md$/\n${bold}${blue}&${reset}/;
-        s/\+done/${green}&${reset}/;
-        s/\+asap/${red}&${reset}/;
-        s/\+later/${magenta}&${reset}/;
-        s/[=!?].[^ ]*/${cyan}&${reset}/;
-        s/\!.[^ ]*/${cyan}&${reset}/;
-        s/#.[^ ]*/${yellow}&${reset}/;
-        s/@.[^ ]*/${blue}&${reset}/" #colorize
-}
+    sed "s/^.*\.md$/\n${bold}${blue}&${reset}/;
+      s/\+done/${green}&${reset}/;
+      s/\+asap/${red}&${reset}/;
+      s/\+later/${magenta}&${reset}/;
+      s/[=!?].[^ ]*/${cyan}&${reset}/;
+      s/\!.[^ ]*/${cyan}&${reset}/;
+      s/#.[^ ]*/${yellow}&${reset}/;
+      s/@.[^ ]*/${blue}&${reset}/" #colorize
+    }
 
 # Show pretty TODOs on a pager
 showPrettyTodos() {
-    cd "$todoPath" || exit 1
-    if [ "$testing" = true ]; then # if debug is on, print to STDOUT
-        _show="cat"
-    else
-        _show="less -R"
-    fi
-    _queryTodos | _prettifyTodos | $_show
+  cd "$todoPath" || exit 1
+  if [ "$testing" = true ]; then # if debug is on, print to STDOUT
+    _show="cat"
+  else
+    _show="less -R"
+  fi
+  _queryTodos | _prettifyTodos | $_show
 }
 
 # Print done TODOs to STDOUT
 _printDoneTodos() { 
-    local regexRule="^TODO:.*\+done.*$"
-	printf "## %s\n" "$(date "+%d %^b %H%M")"
-    _queryTodos |
+  local regexRule="^TODO:.*\+done.*$"
+
+  printf "## %s\n" "$(date "+%d %^b %H%M")"
+  _queryTodos |
     sed 's/TODO: //;s/:/: /;s/\+done//' # && echo -e ""
-}
+  }
 
 # Delete done TODOs within files
 _deleteDoneTodos() {	
-    local regexRule="^TODO:.*\+done.*$"
-    local files && files=$(
-        _queryTodos   | # find done todos
-        sed 's/:.*//' | # extract files
-        _dedup          # remove duplicates
-    )
-	for file in $files; do # iterate over files
-		sed -i '/\^TODO: .*+done/d' "$file" # delete line with todo
-	done
+  local regexRule="^TODO:.*\+done.*$"
+  local files && files=$(
+  _queryTodos   | # find done todos
+    sed 's/:.*//' | # extract files
+    _dedup          # remove duplicates
+  )
+
+  for file in $files; do # iterate over files
+    sed -i '/\^TODO: .*+done/d' "$file" # delete line with todo
+  done
 }
 
 # Non-interactively commit changes in a Git repository
 _commitGit() {
-	local today lastCommit
-	today=$(date "+%y-%m-%d") 
-    lastCommit="git -C '$todoPath' log HEAD^..HEAD --pretty=format:'%s'" # find last commit
-	git -C "$todoPath" add -A &&
+  local today lastCommit
+  today=$(date "+%y-%m-%d") 
+  lastCommit="git -C '$todoPath' log HEAD^..HEAD --pretty=format:'%s'" # find last commit
+  git -C "$todoPath" add -A &&
     if [ "$today" = "$lastCommit" ]; then
-		git -C "$todoPath" commit --amend -m "$today" # amend if not first commit in the day
-	else
-		git -C "$todoPath" commit -m "$today" # do not amend otherwise
-	fi
-}
+      git -C "$todoPath" commit --amend -m "$today" # amend if not first commit in the day
+    else
+      git -C "$todoPath" commit -m "$today" # do not amend otherwise
+    fi
+  }
 
 # Clean all done TODOs withi files and commit them to a journaling file
 cleanDoneTodos() {
-    cd "$todoPath" || exit 1
-    _confirmDialog && _printDoneTodos >> "journal.md" && _deleteDoneTodos && _commitGit
+  cd "$todoPath" || exit 1
+  _confirmDialog && _printDoneTodos >> "journal.md" && _deleteDoneTodos && _commitGit
 }
 
 # FZF
@@ -258,66 +264,65 @@ cleanDoneTodos() {
 # Print TODOs for Fzf
 # captured groups are file name, line number and task description
 _fzfPrint() {
-    _queryTodos |
+  _queryTodos |
     sed -E "s/^(.*):([0-9]*):(.*)$/${magenta}\1${reset}:${dim}\2${reset}:\3/"
-}
+  }
 
 # Output a preview of the file with the selected line somewhat centered
 _fzfPreview() {
-    local file="$1"
-    local line="$2"
+  local file="$1"
+  local line="$2"
 
-    offsetY=$(( FZF_PREVIEW_LINES / 2 ))
-	  start=$(( line - offsetY )); [ $start -lt 1 ] && start=1
-    end=$(( line + offsetY ))
-	  bat --color always -l md --highlight-line "$line" -r $start:$end -pp "$file"
+  offsetY=$(( FZF_PREVIEW_LINES / 2 ))
+  start=$(( line - offsetY )); [ $start -lt 1 ] && start=1
+  end=$(( line + offsetY ))
+  bat --color always -l md --highlight-line "$line" -r $start:$end -pp "$file"
 }
 
 # Cycle between task priorities
 _fzfCycle() {
-    local file="$1"
-    local line="$2"
-    local task="$3"
+  local file="$1"
+  local line="$2"
+  local task="$3"
 
-    # check if priority tag exists in tasks and append +asap if not
-    if ! rg '\+(asap|done|later)' <<< "$task" >/dev/null; then
-        sed -i -E "${line}s/^(.*)$/\1 \+asap/" "$file" && return 0
-    fi
+  # check if priority tag exists in tasks and append +asap if not
+  if ! rg '\+(asap|done|later)' <<< "$task" >/dev/null; then
+    sed -i -E "${line}s/^(.*)$/\1 \+asap/" "$file" && return 0
+  fi
 
-    # cycle between priority tags otherwise
-    rg "\+asap"  <<< "$task" >/dev/null && sed -i "${line}s/\+asap/\+done/" "$file" && return 0
-    rg "\+done"  <<< "$task" >/dev/null && sed -i "${line}s/\+done/\+later/" "$file" && return 0
-    rg "\+later" <<< "$task" >/dev/null && sed -i "${line}s/\+later//" "$file" && return 0
+  # cycle between priority tags otherwise
+  rg "\+asap"  <<< "$task" >/dev/null && sed -i "${line}s/\+asap/\+done/" "$file" && return 0
+  rg "\+done"  <<< "$task" >/dev/null && sed -i "${line}s/\+done/\+later/" "$file" && return 0
+  rg "\+later" <<< "$task" >/dev/null && sed -i "${line}s/\+later//" "$file" && return 0
 }
 
 _fzfDelete() {
-    local file="$1"
-    local line="$2"
-	sed -i "${line}d" "$file"
+  local file="$1"
+  local line="$2"
+  sed -i "${line}d" "$file"
 }
 
 # Invoke Ffz to fuzzy find and preview TODOs context
 # {1} is file name, {2} is line number and {3} is task description.
 fzfFind() {
-    cd "$todoPath" || exit 1
+  cd "$todoPath" || exit 1
 
-    # Debug Mode
-    if [ "$testing" = true ]; then
-        _fzfPrint
-    # Normal Mode
-    else
-        _fzfPrint |
-        fzf --ansi --delimiter ':' \
-            --preview "journal _fzfPreview {1} {2}" \
-            --preview-window=right:50%:wrap \
-            --header "f1 → default, f2 → editor, f3 → cycle priority, del → delete" \
-            --layout=reverse \
-            --bind "\
-f1:execute-silent(xdg-open {1} 2>/dev/null),\
-f2:execute($editorJump2Line),\
-f3:reload(journal _fzfCycle {1} {2} {3} && journal _fzfPrint),\
-del:reload(journal _fzfDelete {1} {2} && journal _fzfPrint)"
-    fi
+  if [ "$testing" = true ]; then
+    _fzfPrint
+
+  else
+    _fzfPrint |
+    fzf --ansi --delimiter ':' \
+        --preview "journal _fzfPreview {1} {2}" \
+        --preview-window=right:50%:wrap \
+        --header "f1 → default, f2 → editor, f3 → cycle priority, del → delete" \
+        --layout=reverse \
+        --bind "\
+          f1:execute-silent(xdg-open {1} 2>/dev/null),\
+          f2:execute($editorJump2Line),\
+          f3:reload(journal _fzfCycle {1} {2} {3} && journal _fzfPrint),\
+          del:reload(journal _fzfDelete {1} {2} && journal _fzfPrint)"
+  fi
 }
 
 # DIARY
@@ -326,61 +331,65 @@ del:reload(journal _fzfDelete {1} {2} && journal _fzfPrint)"
 
 # Create a log entry with present date/time and open it with $editor
 writeLog() {
-    cd "$logPath" || exit 1
+  cd "$logPath" || exit 1
 
-    fileName="$(date '+%y-%m-%d').md"
-    #fileName="$(date '+%y-%m-%dT-%H-%M').md" # +granularity on file name
-    header="### $(date '+%H%M')"
-    # insert daily stand-up if flag if found
-    [ "$dailyStandup" ] && header+="
-#### What did I accomplish yesterday/today?
-#### What will I do today/tomorrow?
-#### What obstacles are impeding my progress?
-"
-    if ! [[ -f $fileName ]]; then # write header to file
-        printf "%s\n" "$header" >> "$fileName"
-    else
-        printf "\n%s\n" "$header" >> "$fileName" # insert line break if file exists
-    fi
-    $editor "$fileName" # open file
+  fileName="$(date '+%y-%m-%d').md"
+  #fileName="$(date '+%y-%m-%dT-%H-%M').md" # +granularity on file name
+  header="### $(date '+%H%M')"
+
+  # insert daily stand-up if flag is enabled
+  [ "$dailyStandup" ] && header+="
+  #### What did I accomplish yesterday/today?
+  #### What will I do today/tomorrow?
+  #### What obstacles are impeding my progress?
+  "
+
+  if ! [[ -f $fileName ]]; then # write header to file
+    printf "%s\n" "$header" >> "$fileName"
+  else
+    printf "\n%s\n" "$header" >> "$fileName" # insert line break if file exists
+  fi
+
+  $editor "$fileName" # open file
 }
 
 # Invoke Fzf to fuzzy find and preview log entries
 readLog() {
-    cd "$logPath" || exit 1
-    fd '^[0-9]{2}.*.md$' |
-    fzf --tac --no-sort \
-        --layout=reverse \
-        --preview "bat --color always -pp --wrap character --terminal-width $(( $(tput cols) / 2 - 4)) -l md -r :500 {}" \
-        --header "f1 → default, f2 → editor, del → delete" \
-        --bind "f1:execute-silent(xdg-open {} 2>/dev/null),f2:execute($editor {}),del:reload($_gro {} && fd '^[0-9]{2}.*.md$')"
-}
+  cd "$logPath" || exit 1
+  fd '^[0-9]{2}.*.md$' |
+  fzf --tac --no-sort \
+      --layout=reverse \
+      --preview "bat --color always -pp --wrap character --terminal-width $(( $(tput cols) / 2 - 4)) -l md -r :500 {}" \
+      --header "f1 → default, f2 → editor, del → delete" \
+      --bind "f1:execute-silent(xdg-open {} 2>/dev/null),f2:execute($editor {}),del:reload($_gro {} && fd '^[0-9]{2}.*.md$')"
+  }
 
 # Rotate old entries
 _rotateLogs() {
-    local matchPattern="$1"
-    local offsetB="$2" # B is before, eg. day substring is 0:8 (YY-MM-DD)
-    local offsetA="$3" # A is after, eg. month substring is 0:5 (YY-MM)
-    local dateRetention="$4"
-    local dateFormat="$5"
-    local entries
-    mapfile -t entries < <(fd -t f -d 1 "$matchPattern")
-    for entry in "${entries[@]}"; do
-        if [[ ${entry:0:$offsetB} < $(date '+%y-%m-%d' -d "$dateRetention" ) ]]; then
-            printf "Moved \e[31m%s\e[0m to \e[32m%s.md\e[0m\n" "$entry" "${entry:0:$offsetA}"
-            {   printf "## %s\n" "$(date "$dateFormat" -d "${entry:0:$offsetB}")"
-                printf "%s\n" "$(<"$entry")"
-            } >> "${entry:0:$offsetA}.md"
-            $_gro "$entry"
-        fi
-    done
+  local matchPattern="$1"
+  local offsetB="$2" # B is before, eg. day substring is 0:8 (YY-MM-DD)
+  local offsetA="$3" # A is after, eg. month substring is 0:5 (YY-MM)
+  local dateRetention="$4"
+  local dateFormat="$5"
+  local entries
+
+  mapfile -t entries < <(fd -t f -d 1 "$matchPattern")
+  for entry in "${entries[@]}"; do
+    if [[ ${entry:0:$offsetB} < $(date '+%y-%m-%d' -d "$dateRetention" ) ]]; then
+      printf "Moved \e[31m%s\e[0m to \e[32m%s.md\e[0m\n" "$entry" "${entry:0:$offsetA}"
+      {   printf "## %s\n" "$(date "$dateFormat" -d "${entry:0:$offsetB}")"
+        printf "%s\n" "$(<"$entry")"
+      } >> "${entry:0:$offsetA}.md"
+      $_gro "$entry"
+    fi
+  done
 }
 
 # Merge old entries to monthly and yearly entries
 mergeLogs() {
-    cd "$logPath" || exit 1
-    _rotateLogs "^[0-9]{2}-[0-9]{2}-[0-9]{2}.*.md$" 8 5 "$retentionDaily" "+%d %^b" 
-    _rotateLogs "^[0-9]{2}-[0-9]{2}.md$" 5 2 "$retentionMonthly" "+%Y"
+  cd "$logPath" || exit 1
+  _rotateLogs "^[0-9]{2}-[0-9]{2}-[0-9]{2}.*.md$" 8 5 "$retentionDaily" "+%d %^b" 
+  _rotateLogs "^[0-9]{2}-[0-9]{2}.md$" 5 2 "$retentionMonthly" "+%Y"
 }
 
 # MAIN
@@ -392,16 +401,16 @@ _getOpts "${@:2}"
 
 # Run subprogram
 case $1 in
-	p|print) printTodos;;
-	s|show) showPrettyTodos;;
+  p|print) printTodos;;
+  s|show) showPrettyTodos;;
   f|find) fzfFind;;
-	c|clean) cleanDoneTodos;;
-	w|write) writeLog;;
-	r|read) readLog;;
-	m|merge) mergeLogs;;
+  c|clean) cleanDoneTodos;;
+  w|write) writeLog;;
+  r|read) readLog;;
+  m|merge) mergeLogs;;
   _fzfPrint) _fzfPrint;;
-	_fzfPreview) _fzfPreview "$2" "$3";;
-	_fzfCycle) _fzfCycle "$2" "$3" "$4";;
-	_fzfDelete) _fzfDelete "$2" "$3";;
+  _fzfPreview) _fzfPreview "$2" "$3";;
+  _fzfCycle) _fzfCycle "$2" "$3" "$4";;
+  _fzfDelete) _fzfDelete "$2" "$3";;
   *) printHelp;;
 esac
