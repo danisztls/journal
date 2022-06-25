@@ -1,4 +1,4 @@
-[35mtest.md[0m:[2;20m12[0m:And then you will get things +done #matrix
-[35mtest.md[0m:[2;20m10[0m:Do what is important +asap #einsenhower
-[35mtest.md[0m:[2;20m13[0m:Remember it.
-[35mtest.md[0m:[2;20m11[0m:Leave the urgent trivial to +later #priority
+[35mtest.md[0;0m:[2;20m12[0;0m:And then you will get things +done #matrix
+[35mtest.md[0;0m:[2;20m10[0;0m:Do what is important +asap #einsenhower
+[35mtest.md[0;0m:[2;20m13[0;0m:Remember it.
+[35mtest.md[0;0m:[2;20m11[0;0m:Leave the urgent trivial to +later #priority

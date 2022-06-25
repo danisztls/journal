@@ -1,6 +1,6 @@
 
-[1m[34mtest.md[0m
-And then you will get things [32m+done[0m [33m#matrix[0m
-Do what is important [31m+asap[0m [33m#einsenhower[0m
+[1m[34mtest.md[0;0m
+And then you will get things [32m+done[0;0m [33m#matrix[0;0m
+Do what is important [31m+asap[0;0m [33m#einsenhower[0;0m
 Remember it.
-Leave the urgent trivial to [35m+later[0m [33m#priority[0m
+Leave the urgent trivial to [35m+later[0;0m [33m#priority[0;0m
