@@ -10,7 +10,6 @@ export journalTesting="true"
 
 reset='\e[0;0m'
 bold='\e[1m'
-italic='\e[3m'
 dim='\e[2m'
 italic='\e[3m'
 blink='\e[5m'
@@ -59,6 +58,12 @@ _test() {
     _report 0
   else
     _report 1
+  fi
+  
+  # shellcheck disable=SC2154
+  if [ "$journalTestDebug" == "true" ]; then
+    mkdir -p "./test-debug"
+    echo "$observed" > "test-debug/${name}.txt" 
   fi
 }
 
