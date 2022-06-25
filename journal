@@ -374,20 +374,29 @@ alt-D:reload($_delCMD {} && fd '^[0-9]{2}.*.md$')"
 # Rotate old entries
 _rotateLogs() {
   local matchPattern="$1"
-  local offsetB="$2" # B is before, eg. day substring is 0:8 (YY-MM-DD)
-  local offsetA="$3" # A is after, eg. month substring is 0:5 (YY-MM)
-  local dateRetention="$4"
-  local dateFormat="$5"
-  local entries
+  local dateInPos="$2" # e.g. day substring is 0:8 (YY-MM-DD)
+  local dateOutPos="$3" # e.g. month substring is 0:5 (YY-MM)
+  local dateFormat="$4"
+  local retentionDuration="$5"
 
+  local entries
   mapfile -t entries < <(fd -t f -d 1 "$matchPattern")
-  for entry in "${entries[@]}"; do
-    if [[ ${entry:0:$offsetB} < $(date '+%y-%m-%d' -d "$dateRetention" ) ]]; then
-      printf "Moved \e[31m%s\e[0m to \e[32m%s.md\e[0m\n" "$entry" "${entry:0:$offsetA}"
-      {   printf "## %s\n" "$(date "$dateFormat" -d "${entry:0:$offsetB}")"
-        printf "%s\n" "$(<"$entry")"
-      } >> "${entry:0:$offsetA}.md"
-      $_delCMD "$entry"
+  for file in "${entries[@]}"; do
+    local dateRaw=${file##\.\/}  # remove './' prefix
+    local dateIn="${dateRaw:0:$dateInPos}"
+    local dateOut="${dateRaw:0:$dateOutPos}"
+    local fileOut="${dateOut}.md"
+    local retentionThreshold
+    retentionThreshold="$(date '+%y-%m-%d' -d "$retentionDuration")"
+
+    if [[ "$dateIn" < "$retentionThreshold" ]]; then
+      printf "Moved ${red}%s${reset} to ${green}%s${reset}\n" "$file" "$fileOut"
+
+      { printf "## %s\n" "$(date "$dateFormat" -d "${dateIn}")"
+        printf "%s\n" "$(< "$file")"
+      } >> "$fileOut"
+
+      $_delCMD "$file"
     fi
   done
 }
@@ -395,8 +404,12 @@ _rotateLogs() {
 # Merge old entries to monthly and yearly entries
 mergeLogs() {
   cd "$logPath" || exit 1
-  _rotateLogs "^[0-9]{2}-[0-9]{2}-[0-9]{2}.*.md$" 8 5 "$retentionDaily" "+%d %^b" 
-  _rotateLogs "^[0-9]{2}-[0-9]{2}.md$" 5 2 "$retentionMonthly" "+%Y"
+  
+  printf "\n${blue}%s${reset}\n" "Rotating dailies into monthlies"
+  _rotateLogs "^[0-9]{2}-[0-9]{2}-[0-9]{2}.*.md$" 8 5 "+%d %^b" "$retentionDaily"
+
+  printf "\n${blue}%s${reset}\n" "Rotating monthlies into yearlies"
+  _rotateLogs "^[0-9]{2}-[0-9]{2}.md$" 5 2 "+%Y" "$retentionMonthly"
 }
 
 # MAIN
