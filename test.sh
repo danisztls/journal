@@ -12,43 +12,50 @@ reset='\e[0;0m'
 bold='\e[1m'
 italic='\e[3m'
 dim='\e[2m'
+italic='\e[3m'
 blink='\e[5m'
 red='\e[1;31m'
 green='\e[1;32m'
 
-_diff() {
   # Diff two strings
-  # variables are passed by reference
+_diff() {
   # use delta if available
   if command -v delta &>/dev/null; then
-    delta <(echo "$exp") <(echo "$obs")
+    delta <(echo "$expected") <(echo "$observed")
+
   else
     # FIXME: Working on shell but not on script (maybe zsh only)
-    # diff --color=always -d <(<<< "$exp") <(<<< "$obs")
-    diff --color=always -d <(echo "$exp") <(echo "$obs")
+    # diff --color=always -d <(<<< "$expected") <(<<< "$observed")
+    diff --color=always -d <(echo "$expected") <(echo "$observed")
   fi
 }
 
+# Print a report of the test
 _report() {
-  # Print a report of the test
-  # variables are passed by reference
   local status="$1"
+
   if [ "$status" -eq 0 ]; then
     hits+=1
     printf "[${green}PASS${reset}]: %s\n" "'$cmd'"
+
   elif [ "$status" -eq 1 ]; then
     misses+=1
     printf "[${red}FAIL${reset}]: %s\n" "'$cmd'"
     _diff
+
   else
     printf "${red}ERROR: Wrong status code for %s.${reset}\n" "$cmd"
   fi
 }
 
+# Check if observations pass expectations
 _test() {
-  # Check if observations pass expectations
-  # variables are passed by reference
-  if [ "$obs" = "$exp" ]; then
+  local cmd expected observed
+  cmd="./journal ${name} -a"
+  observed="$($cmd)" # read stdout of command to variable
+  expected="$(< "./test/${name}.txt")" # read contents of file to variable
+
+  if [ "$observed" = "$expected" ]; then
     _report 0
   else
     _report 1
@@ -58,29 +65,20 @@ _test() {
 # Tasks
 # -----
 testPrint() {
-  local cmd; local exp; local obs
-  cmd="journal print -a"
-  exp="$(< "test/print.txt")" # read contents of file to variable
-  # shellcheck disable=SC2086
-  obs="$(./$cmd)" # read stdout of command to variable
+  local name # pass variables by reference
+  name="print"
   _test
 }
 
 testShow() {
-  local cmd; local exp; local obs
-  cmd="journal show -a"
-  exp="$(< "test/show.txt")" # read contents of file to variable
-  # shellcheck disable=SC2086
-  obs="$(./$cmd)" # read stdout of command to variable
+  local name # pass variables by reference
+  name="show"
   _test
 }
 
 testFind() {
-  local cmd; local exp; local obs
-  cmd="journal find -a"
-  exp="$(< "test/find.txt")" # read contents of file to variable
-  # shellcheck disable=SC2086
-  obs="$(./$cmd)" # read stdout of command to variable
+  local name # pass variables by reference
+  name="find"
   _test
 }
 
