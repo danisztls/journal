@@ -50,7 +50,7 @@ configDir="${XDG_CONFIG_HOME:-"$HOME/.config"}/journal"
 configFile="$configDir/config"
 
 if [ -f "$configFile" ] && [ "$testing" = "false" ]; then
-  #shellcheck disable=SC1090
+  # shellcheck disable=SC1090
   source "$configFile"
 fi
 
@@ -206,7 +206,7 @@ _prettifyTodos() {
 # Show pretty TODOs on a pager
 showPrettyTodos() {
   cd "$todoPath" || exit 1
-  if [ "$testing" = true ]; then # if debug is on, print to STDOUT
+  if [ "$testing" = true ]; then # when testing, print to STDOUT
     _show="cat"
   else
     _show="less -R"
