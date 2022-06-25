@@ -387,7 +387,7 @@ _rotateLogs() {
       {   printf "## %s\n" "$(date "$dateFormat" -d "${entry:0:$offsetB}")"
         printf "%s\n" "$(<"$entry")"
       } >> "${entry:0:$offsetA}.md"
-      $_gro "$entry"
+      $_delCMD "$entry"
     fi
   done
 }
