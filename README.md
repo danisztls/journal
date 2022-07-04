@@ -1,8 +1,6 @@
 # Journal
 **Journal** is a place to organize your life and get things done. It is an agnostic CLI approach to personal organization and note taking.
 
-[![GitHub Super-Linter](https://github.com/lbcnz/journal/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
-
 [![asciicast](https://asciinema.org/a/407415.svg)](https://asciinema.org/a/407415)
 
 ## Table of contents
