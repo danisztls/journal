@@ -1,6 +1,6 @@
 " Vim syntax file for Journal
 " Language:	Markdown
-" Maintainer: lbcnz
+" Maintainer: danisztls
 " URL:
 
 syn match todoLine "^TODO:"
