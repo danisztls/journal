@@ -393,7 +393,7 @@ _rotateLogs() {
       printf "Moved ${red}%s${reset} to ${green}%s${reset}\n" "$file" "$fileOut"
 
       { printf "## %s\n" "$(date "$dateFormat" -d "${dateIn}")"
-        printf "%s\n" "$(< "$file")"
+        printf "%s\n\n" "$(< "$file")"
       } >> "$fileOut"
 
       $_delCMD "$file"
