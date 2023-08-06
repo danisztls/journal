@@ -359,8 +359,9 @@ writeLog() {
 
 # Invoke Fzf to fuzzy find and preview log entries
 readLog() {
+  _query="fd '^[0-9]{2}.*.md$' --type file --no-ignore-vcs"
   cd "$logPath" || exit 1
-  fd '^[0-9]{2}.*.md$' --type file --no-ignore-vcs |
+  eval "$_query" |
   fzf --tac --no-sort \
       --layout=reverse \
       --preview "bat --color always -pp --wrap character --terminal-width $(( $(tput cols) / 2 - 4)) -l md -r :500 {}" \
@@ -368,7 +369,7 @@ readLog() {
       --bind "\
 f1:execute-silent(xdg-open {} 2>/dev/null),\
 f2:execute($editor {}),\
-alt-D:reload($_delCMD {} && fd '^[0-9]{2}.*.md$')"
+alt-D:reload($_delCMD {} && $_query)"
   }
 
 # Rotate old entries
