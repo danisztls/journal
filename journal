@@ -360,7 +360,7 @@ writeLog() {
 # Invoke Fzf to fuzzy find and preview log entries
 readLog() {
   cd "$logPath" || exit 1
-  fd '^[0-9]{2}.*.md$' |
+  fd '^[0-9]{2}.*.md$' --type file --no-ignore-vcs |
   fzf --tac --no-sort \
       --layout=reverse \
       --preview "bat --color always -pp --wrap character --terminal-width $(( $(tput cols) / 2 - 4)) -l md -r :500 {}" \
