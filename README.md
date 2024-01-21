@@ -117,18 +117,10 @@ For **find** and **read**
 
 ### Install
 
-Install through the [AUR](https://aur.archlinux.org/packages/journal-git/).
-
-Or use the Makefile.
+Install through [AUR](https://aur.archlinux.org/packages/journal-git/) or use the Makefile:
 
 ```sh
 sudo make install
-```
-
-Or install as user.
-
-```sh
-./setup.sh install
 ```
 
 ### Config
@@ -163,31 +155,9 @@ j r # read
 j m # merge
 ```
 
-### Uninstall
-
-AUR
-
-```sh
-sudo pacman -Rcs journal-git
-```
-
-Make
-
-```sh
-sudo make uninstall # from the project dir
-```
-
-Locally
-
-```sh
-./setup.sh uninstall
-```
-
 ## Development
 
 Feedback and contributions are welcomed.
-
-Development info at [DEVELOPMENT.md](https://gitlab.com/lbcnz/journal/-/blob/main/DEVELOPMENT.md).
 
 ## FAQ
 
