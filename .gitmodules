@@ -1,3 +1,6 @@
 [submodule "librarian"]
 	path = librarian
 	url = https://github.com/danisztls/journal-librarian
+[submodule "pkg/arch"]
+	path = pkg/arch
+	url = ssh://aur@aur.archlinux.org/journal-git.git
