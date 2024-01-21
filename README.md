@@ -108,13 +108,6 @@ For **find** and **read**
 
 ## Setup
 
-### Dependencies
-
-- [ripgrep](https://github.com/BurntSushi/ripgrep)
-- [fd](https://github.com/sharkdp/fd)
-- [fzf](https://github.com/junegunn/fzf)
-- [bat](https://github.com/sharkdp/bat)
-
 ### Install
 
 Install through [AUR](https://aur.archlinux.org/packages/journal-git/) or use the Makefile:
