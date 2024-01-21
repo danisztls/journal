@@ -25,13 +25,11 @@ install:
 	$(INSTALL_PROGRAM) journal "$(DESTDIR)$(BINDIR)"
 	$(INSTALL_DIR) "$(DESTDIR)$(SHAREDIR)"
 	$(INSTALL_DATA) ignore "$(DESTDIR)$(SHAREDIR)"
-	$(INSTALL_DATA) syntax/journal.vim "$(DESTDIR)$(SHAREDIR)"
 
 uninstall:
 	@printf '\n\e[1;32m%s\e[0m\n' "Uninstalling program..."
 	rm "$(DESTDIR)$(BINDIR)/journal"
 	rm "$(DESTDIR)$(SHAREDIR)/ignore"
-	rm "$(DESTDIR)$(SHAREDIR)/journal.vim"
 	rmdir "$(DESTDIR)$(SHAREDIR)"
 
 .PHONY: test install uninstall
