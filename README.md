@@ -104,7 +104,7 @@ For **find** and **read**
 
 ## Modules
 
-- [Librarian](https://github.com/lbcnz/journal-librarian): archives URLs without getting on your way. It automatically watches for URLs insertions and removals in markdown notes.
+- [Librarian](https://github.com/danisztls/journal-librarian): archives URLs without getting on your way. It automatically watches for URLs insertions and removals in markdown notes.
 
 ## Setup
 
